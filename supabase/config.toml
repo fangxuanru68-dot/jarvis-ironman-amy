@@ -1,0 +1,4 @@
+project_id = "phkipvkolscsfeillcbk"
+
+[functions.jarvis-chat]
+verify_jwt = false
