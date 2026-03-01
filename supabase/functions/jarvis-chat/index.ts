@@ -13,6 +13,8 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
+    // Messages may contain multimodal content (text + images)
+    // Gemini supports vision natively via the OpenAI-compatible API format
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -36,6 +38,12 @@ Your personality:
 - Be proactive in offering suggestions
 - Use precise, technical language when appropriate but remain accessible
 - Show genuine care for the user's wellbeing and success
+
+Vision capabilities:
+- When the user sends images, analyze them thoroughly
+- Describe what you see with precision and detail
+- If asked to identify objects, text, or scenes, do so confidently
+- Treat visual input as naturally as text input — you are a multimodal AI
 
 Response style:
 - Keep responses focused and actionable
