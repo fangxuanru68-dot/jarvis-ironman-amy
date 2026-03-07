@@ -21,16 +21,35 @@ export const useSpeechSynthesis = () => {
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(clean);
-    utterance.rate = 1.0;
-    utterance.pitch = 0.9;
+    // More JARVIS-like: slightly lower pitch, measured pace, precise diction
+    utterance.rate = 0.95;
+    utterance.pitch = 0.85;
     utterance.volume = 1;
 
-    // Try to find a British English voice
+    // Prefer a refined British male voice
     const voices = window.speechSynthesis.getVoices();
-    const british = voices.find(v => v.lang === "en-GB" && v.name.toLowerCase().includes("male"))
-      || voices.find(v => v.lang === "en-GB")
-      || voices.find(v => v.lang.startsWith("en"));
-    if (british) utterance.voice = british;
+    const preferred = [
+      // Chrome/Edge high quality voices
+      "Google UK English Male",
+      "Microsoft Ryan Online (Natural)",
+      "Microsoft George Online (Natural)", 
+      "Daniel (Enhanced)",
+      "Daniel",
+      // Safari
+      "Daniel (English (United Kingdom))",
+    ];
+    
+    let selectedVoice = null;
+    for (const name of preferred) {
+      selectedVoice = voices.find(v => v.name.includes(name));
+      if (selectedVoice) break;
+    }
+    if (!selectedVoice) {
+      selectedVoice = voices.find(v => v.lang === "en-GB" && v.name.toLowerCase().includes("male"))
+        || voices.find(v => v.lang === "en-GB")
+        || voices.find(v => v.lang.startsWith("en"));
+    }
+    if (selectedVoice) utterance.voice = selectedVoice;
 
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
