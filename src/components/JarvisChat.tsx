@@ -211,7 +211,7 @@ const JarvisChat = () => {
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
       if (voiceEnabled) speak(response);
-      // Video is ~4:46 (286s), starting at 2:15 (135s), so ~151s remaining
+      // Play from 2:15 to 2:28 (13 seconds)
       tonyMessageTimerRef.current = setTimeout(() => {
         setEasterEgg(false);
         const endMsg = "Message complete, sir. He wanted you to hear that.";
