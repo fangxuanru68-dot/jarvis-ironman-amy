@@ -273,7 +273,7 @@ const JarvisChat = () => {
           {easterEgg === "bestcoser" ? (
             <video
               src="/videos/best-coser.mp4"
-              className="absolute inset-0 w-full h-full object-cover border-0"
+              className="absolute inset-0 w-full h-full object-contain border-0 bg-black"
               autoPlay
               loop
               playsInline
