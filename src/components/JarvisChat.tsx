@@ -316,10 +316,10 @@ const JarvisChat = () => {
     }
     if (lowerMsg === "thor" || lowerMsg.includes("thor")) {
       setEasterEgg("thor");
-      // 1:08 to 1:28 = 20 seconds, auto exit
+      // 1:08 to 1:24 = 16 seconds, auto exit
       tonyMessageTimerRef.current = setTimeout(() => {
         setEasterEgg(false);
-      }, 20000);
+      }, 16000);
       setIsLoading(false);
       return;
     }
@@ -388,7 +388,7 @@ const JarvisChat = () => {
             />
           ) : easterEgg === "thor" ? (
             <iframe
-              src="https://www.youtube.com/embed/eTZZCvuYxrk?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=68&end=88"
+              src="https://www.youtube.com/embed/eTZZCvuYxrk?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=68&end=84"
               className="absolute inset-0 w-full h-full border-0"
               style={{ transform: "scale(1.2)", transformOrigin: "center" }}
               allow="autoplay; encrypted-media"
