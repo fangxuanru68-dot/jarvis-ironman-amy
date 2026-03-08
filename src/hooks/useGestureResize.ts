@@ -11,6 +11,7 @@ interface GestureResizeState {
   activePanel: ResizablePanel | null;
   isResizing: boolean;
   chatVisible: boolean;
+  globalScale: number;
 }
 
 const SCALE_MIN = 0.5;
