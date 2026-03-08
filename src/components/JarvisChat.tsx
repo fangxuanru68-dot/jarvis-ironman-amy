@@ -10,6 +10,7 @@ import { CLASSIC_TRIGGERS, GESTURE_RESPONSES } from "@/data/classicDialogues";
 import { useGestureResize } from "@/hooks/useGestureResize";
 import BodyScanPanel from "./BodyScanPanel";
 import WarModeOverlay from "./WarModeOverlay";
+import HudRightPanel from "./HudRightPanel";
 
 import tonyStark from "@/assets/tony-stark.png";
 import tonyWorkshop from "@/assets/tony-workshop.png";
@@ -422,6 +423,9 @@ const JarvisChat = () => {
           {voiceEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
         </button>
       </div>
+
+      {/* Right HUD panel (visible when chat is hidden) */}
+      <HudRightPanel visible={!gestureResize.chatVisible} />
 
       {/* ===== RIGHT SIDE: Chat panel with slide animation ===== */}
       <div
