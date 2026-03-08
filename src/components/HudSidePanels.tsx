@@ -6,143 +6,186 @@ const HudSidePanels = () => {
   const [time, setTime] = useState(new Date());
   const [powerLevel, setPowerLevel] = useState(97);
   const [cpuUsage, setCpuUsage] = useState(42);
+  const [memUsage, setMemUsage] = useState(67);
   const [temp] = useState(Math.floor(18 + Math.random() * 10));
+  const [diskTotal] = useState(500);
+  const [diskFree] = useState(Math.floor(150 + Math.random() * 100));
+  const [uptimeHours] = useState(Math.floor(Math.random() * 200));
+  const [uptimeMins] = useState(Math.floor(Math.random() * 60));
 
   useEffect(() => {
     const interval = setInterval(() => {
       setTime(new Date());
       setPowerLevel(95 + Math.floor(Math.random() * 5));
       setCpuUsage(35 + Math.floor(Math.random() * 30));
+      setMemUsage(55 + Math.floor(Math.random() * 25));
     }, 1000);
     return () => clearInterval(interval);
   }, []);
 
   const formatTime = (d: Date) =>
-    d.toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" });
-  const day = time.getDate();
-  const weekday = time.toLocaleDateString("en-US", { weekday: "long" });
-  const monthYear = time.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    d.toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const day = time.getDate().toString().padStart(2, "0");
+  const weekday = time.toLocaleDateString("en-US", { weekday: "short" });
+  const month = time.toLocaleDateString("en-US", { month: "long" });
 
   return (
     <>
-      {/* ===== LEFT SIDE - floating HUD elements ===== */}
-
-      {/* Top-left: Stark Logo */}
-      <div className="fixed left-4 top-4 z-10 pointer-events-none animate-fade-in-up">
-        <img src={starkLogo} alt="Stark Industries" className="h-8 w-auto opacity-70 invert" />
+      {/* ===== TOP BAR: Logo + Date + Time ===== */}
+      <div className="fixed left-4 top-3 z-10 pointer-events-none animate-fade-in-up flex items-center gap-4">
+        <img src={starkLogo} alt="Stark Industries" className="h-7 w-auto opacity-70 invert" />
+        <div className="flex items-baseline gap-1.5">
+          <span className="font-orbitron text-2xl text-primary/90 leading-none">{day}</span>
+          <div className="flex flex-col">
+            <span className="font-mono text-[8px] text-primary/60 tracking-widest leading-tight">{month}</span>
+            <span className="font-mono text-[7px] text-muted-foreground leading-tight">{weekday}</span>
+          </div>
+        </div>
+        <div className="font-orbitron text-sm text-primary/80 tracking-wider">{formatTime(time)}</div>
       </div>
 
-      {/* Left: JARVIS Arc Reactor (right below Stark logo) */}
-      <div className="fixed left-2 top-14 z-10 pointer-events-none animate-fade-in-up">
+      {/* ===== LEFT SIDE ===== */}
+
+      {/* JARVIS Arc Reactor */}
+      <div className="fixed left-2 top-12 z-10 pointer-events-none animate-fade-in-up">
         <ArcReactor size={110} isActive />
       </div>
 
-      {/* Left: Date block */}
-      <div className="fixed left-5 top-[170px] z-10 pointer-events-none animate-fade-in-up">
-        <div className="font-orbitron text-4xl text-primary/90 leading-none">{day}</div>
-        <div className="font-mono text-[9px] text-primary/60 tracking-widest">{weekday}</div>
-        <div className="font-mono text-[8px] text-muted-foreground">{monthYear}</div>
-      </div>
-
-      {/* Left: Time */}
-      <div className="fixed left-5 top-[240px] z-10 pointer-events-none animate-fade-in-up">
-        <div className="font-orbitron text-xl text-primary tracking-wider">{formatTime(time)}</div>
-        <div className="font-mono text-[7px] text-muted-foreground tracking-widest mt-0.5">
-          {time.toLocaleTimeString("en-US", { hour12: false, second: "2-digit" }).split(":")[2]}s
+      {/* Storage / Capacity */}
+      <div className="fixed left-5 top-[170px] z-10 pointer-events-none animate-fade-in-up w-40">
+        <div className="font-mono text-[7px] text-primary/50 tracking-widest mb-1">PRIMARY STORAGE</div>
+        <div className="flex items-center gap-2">
+          <div className="font-mono text-[8px] text-muted-foreground">Full Capacity:</div>
+          <div className="font-orbitron text-[9px] text-primary">{diskTotal} G</div>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="font-mono text-[8px] text-muted-foreground">Free Capacity:</div>
+          <div className="font-orbitron text-[9px] text-primary">{diskFree} G</div>
+        </div>
+        <div className="h-[3px] bg-border/20 rounded-full overflow-hidden mt-1">
+          <div className="h-full bg-primary/50 rounded-full transition-all" style={{ width: `${((diskTotal - diskFree) / diskTotal) * 100}%` }} />
         </div>
       </div>
 
-      {/* Left: CPU/System circular gauge */}
-      <div className="fixed left-6 top-[330px] z-10 pointer-events-none animate-fade-in-up">
+      {/* Power circular gauge */}
+      <div className="fixed left-5 top-[255px] z-10 pointer-events-none animate-fade-in-up flex items-center gap-3">
         <div className="relative w-16 h-16">
           <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
             <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(195 100% 50% / 0.1)" strokeWidth="2.5" />
             <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(195 100% 50% / 0.6)" strokeWidth="2.5"
-              strokeDasharray={`${cpuUsage * 0.942} 94.2`} strokeLinecap="round" />
+              strokeDasharray={`${powerLevel * 0.942} 94.2`} strokeLinecap="round" />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="font-mono text-[7px] text-primary/60">CPU</span>
-            <span className="font-orbitron text-[10px] text-primary">{cpuUsage}%</span>
+            <span className="font-mono text-[6px] text-primary/50">Power</span>
+            <span className="font-orbitron text-[10px] text-primary">{powerLevel}%</span>
+            <span className="font-mono text-[5px] text-muted-foreground">High</span>
+          </div>
+        </div>
+        {/* Mini CPU + MEM gauges */}
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-1.5">
+            <span className="font-mono text-[7px] text-muted-foreground w-7">CPU</span>
+            <div className="w-16 h-[3px] bg-border/20 rounded-full overflow-hidden">
+              <div className="h-full bg-primary/50 rounded-full transition-all duration-1000" style={{ width: `${cpuUsage}%` }} />
+            </div>
+            <span className="font-mono text-[7px] text-primary w-7 text-right">{cpuUsage}%</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="font-mono text-[7px] text-muted-foreground w-7">MEM</span>
+            <div className="w-16 h-[3px] bg-border/20 rounded-full overflow-hidden">
+              <div className="h-full bg-primary/50 rounded-full transition-all duration-1000" style={{ width: `${memUsage}%` }} />
+            </div>
+            <span className="font-mono text-[7px] text-primary w-7 text-right">{memUsage}%</span>
           </div>
         </div>
       </div>
 
-      {/* Left: Power bar */}
-      <div className="fixed left-5 top-[420px] z-10 pointer-events-none animate-fade-in-up w-32">
-        <div className="font-mono text-[7px] text-primary/50 tracking-widest mb-1">POWER</div>
-        <div className="flex items-end gap-[2px] h-6">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="flex-1 rounded-sm transition-all duration-500"
-              style={{
-                height: `${Math.min(100, (powerLevel / 100) * (i + 1) * 10)}%`,
-                background: "hsl(195 100% 50% / 0.5)",
-                opacity: (i / 10) < (powerLevel / 100) ? 1 : 0.15,
-              }}
-            />
+      {/* Radar */}
+      <div className="fixed left-5 top-[350px] z-10 pointer-events-none animate-fade-in-up">
+        <div className="relative w-20 h-20">
+          <svg viewBox="0 0 100 100" className="w-full h-full">
+            <circle cx="50" cy="50" r="45" fill="none" stroke="hsl(195 100% 50% / 0.12)" strokeWidth="0.5" />
+            <circle cx="50" cy="50" r="35" fill="none" stroke="hsl(195 100% 50% / 0.08)" strokeWidth="0.5" />
+            <circle cx="50" cy="50" r="25" fill="none" stroke="hsl(195 100% 50% / 0.08)" strokeWidth="0.5" />
+            <line x1="50" y1="5" x2="50" y2="95" stroke="hsl(195 100% 50% / 0.06)" strokeWidth="0.5" />
+            <line x1="5" y1="50" x2="95" y2="50" stroke="hsl(195 100% 50% / 0.06)" strokeWidth="0.5" />
+            <line x1="50" y1="50" x2="50" y2="5" stroke="hsl(195 100% 50% / 0.5)" strokeWidth="1" className="origin-center animate-rotate-slow" />
+            <circle cx="62" cy="35" r="2" fill="hsl(195 100% 50% / 0.8)" className="animate-pulse-glow" />
+            <circle cx="38" cy="58" r="1.5" fill="hsl(195 100% 50% / 0.4)" className="animate-pulse-glow" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Weather */}
+      <div className="fixed left-5 top-[460px] z-10 pointer-events-none animate-fade-in-up">
+        <div className="font-mono text-[7px] text-primary/50 tracking-widest mb-0.5">WEATHER</div>
+        <div className="font-orbitron text-lg text-primary leading-none">{temp}°C</div>
+        <div className="font-mono text-[7px] text-muted-foreground mt-0.5">PARTLY CLOUDY</div>
+        <div className="font-mono text-[7px] text-muted-foreground">WIND: 12 KM/H · HUM: 65%</div>
+      </div>
+
+      {/* Uptime */}
+      <div className="fixed left-5 top-[540px] z-10 pointer-events-none animate-fade-in-up">
+        <div className="font-mono text-[7px] text-primary/50 tracking-widest mb-0.5">UPTIME</div>
+        <div className="font-mono text-[9px] text-primary">{uptimeHours}h {uptimeMins}m</div>
+      </div>
+
+      {/* Communication */}
+      <div className="fixed left-5 top-[580px] z-10 pointer-events-none animate-fade-in-up">
+        <div className="font-mono text-[7px] text-primary/50 tracking-widest mb-0.5">COMMUNICATION</div>
+        <div className="flex flex-col gap-0.5">
+          {["S.H.I.E.L.D. NET", "STARK SAT-7", "LOCAL MESH"].map((ch, i) => (
+            <div key={i} className="flex items-center gap-1">
+              <div className="w-1 h-1 rounded-full bg-primary/60 animate-pulse-glow" style={{ animationDelay: `${i * 0.3}s` }} />
+              <span className="font-mono text-[7px] text-muted-foreground">{ch}</span>
+              <span className="font-mono text-[6px] text-primary/50 ml-auto">ACTIVE</span>
+            </div>
           ))}
         </div>
-        <div className="flex justify-between mt-0.5">
-          <span className="font-mono text-[7px] text-muted-foreground">0</span>
-          <span className="font-orbitron text-[8px] text-primary">{powerLevel}%</span>
-        </div>
       </div>
 
-      {/* Left: Weather */}
-      <div className="fixed left-5 top-[500px] z-10 pointer-events-none animate-fade-in-up">
-        <div className="font-mono text-[7px] text-primary/50 tracking-widest mb-1">WEATHER</div>
-        <div className="font-orbitron text-lg text-primary leading-none">{temp}°</div>
-        <div className="font-mono text-[7px] text-muted-foreground mt-0.5">PARTLY CLOUDY</div>
-        <div className="font-mono text-[7px] text-muted-foreground">WIND 12 KM/H</div>
-      </div>
-
-      {/* Left bottom: System stats */}
-      <div className="fixed left-5 bottom-16 z-10 pointer-events-none animate-fade-in-up w-36">
+      {/* Bottom left: System status */}
+      <div className="fixed left-5 bottom-12 z-10 pointer-events-none animate-fade-in-up w-40">
         {[
           { label: "ARC REACTOR", value: "ONLINE" },
+          { label: "REPULSOR", value: "STANDBY" },
+          { label: "FLIGHT SYS", value: "READY" },
           { label: "COMMS", value: "ENCRYPTED" },
-          { label: "FLIGHT SYS", value: "STANDBY" },
+          { label: "WEAPONS", value: "LOCKED" },
         ].map((item, i) => (
-          <div key={i} className="flex items-center gap-1.5 mb-1">
-            <div className="w-1 h-1 rounded-full bg-primary/60 animate-pulse-glow" style={{ animationDelay: `${i * 0.4}s` }} />
-            <span className="font-mono text-[7px] text-muted-foreground">{item.label}:</span>
-            <span className="font-mono text-[7px] text-primary/80">{item.value}</span>
+          <div key={i} className="flex items-center gap-1.5 mb-0.5">
+            <div className="w-1 h-1 rounded-full bg-primary/60 animate-pulse-glow" style={{ animationDelay: `${i * 0.3}s` }} />
+            <span className="font-mono text-[6px] text-muted-foreground">{item.label}:</span>
+            <span className="font-mono text-[6px] text-primary/70">{item.value}</span>
           </div>
         ))}
       </div>
 
-      {/* Left bottom: Uptime */}
       <div className="fixed left-5 bottom-4 z-10 pointer-events-none">
-        <div className="font-mono text-[7px] text-muted-foreground/40 tracking-widest">STARK INDUSTRIES</div>
+        <div className="font-mono text-[6px] text-muted-foreground/30 tracking-widest">STARK INDUSTRIES · J.A.R.V.I.S v3.2.1</div>
       </div>
 
-      {/* ===== CENTER floating data (subtle, near face area) ===== */}
-
-      {/* Top center: status bar */}
+      {/* ===== CENTER ===== */}
       <div className="fixed top-3 left-1/2 -translate-x-1/2 z-10 pointer-events-none animate-fade-in-up">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             <div className="w-1.5 h-1.5 rounded-full bg-primary/70 animate-pulse-glow" />
-            <span className="font-mono text-[8px] text-primary/60">SYSTEM ONLINE</span>
+            <span className="font-mono text-[7px] text-primary/60">SYSTEM ONLINE</span>
           </div>
-          <span className="font-mono text-[7px] text-muted-foreground/40">|</span>
-          <span className="font-mono text-[8px] text-muted-foreground/50">ALL NOMINAL</span>
-          <span className="font-mono text-[7px] text-muted-foreground/40">|</span>
-          <span className="font-mono text-[8px] text-muted-foreground/50">AC LINE: {powerLevel}%</span>
+          <span className="font-mono text-[6px] text-muted-foreground/30">|</span>
+          <span className="font-mono text-[7px] text-muted-foreground/50">ALL NOMINAL</span>
+          <span className="font-mono text-[6px] text-muted-foreground/30">|</span>
+          <span className="font-mono text-[7px] text-muted-foreground/50">AC LINE: {powerLevel}%</span>
         </div>
       </div>
 
-      {/* Center-bottom floating data */}
-      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none animate-fade-in-up">
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
         <div className="flex items-center gap-4">
-          <span className="font-mono text-[7px] text-muted-foreground/40">ENCRYPTED CHANNEL</span>
-          <span className="font-mono text-[7px] text-muted-foreground/30">·</span>
-          <span className="font-mono text-[7px] text-muted-foreground/40">SECURE</span>
+          <span className="font-mono text-[6px] text-muted-foreground/30">ENCRYPTED CHANNEL · SECURE</span>
         </div>
       </div>
 
-      {/* ===== RIGHT SIDE floating data (above chat panel) ===== */}
-
-      {/* Right: Circular gauges row */}
+      {/* ===== RIGHT data widgets ===== */}
       <div className="fixed right-[340px] top-4 z-10 pointer-events-none animate-fade-in-up">
         <div className="flex gap-2">
           {[
@@ -165,14 +208,9 @@ const HudSidePanels = () => {
         </div>
       </div>
 
-      {/* Right: Telemetry floating */}
       <div className="fixed right-[340px] top-16 z-10 pointer-events-none animate-fade-in-up">
         <div className="space-y-0.5">
-          {[
-            "REPULSOR: STANDBY",
-            "UNIBEAM: CHARGED",
-            "FLIGHT: READY",
-          ].map((line, i) => (
+          {["REPULSOR: STANDBY", "UNIBEAM: CHARGED", "FLIGHT: READY"].map((line, i) => (
             <div key={i} className="flex items-center gap-1">
               <div className="w-0.5 h-0.5 rounded-full bg-primary/50" />
               <span className="font-mono text-[6px] text-muted-foreground/60">{line}</span>
