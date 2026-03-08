@@ -186,10 +186,21 @@ const JarvisChat = () => {
     // Easter egg close
     const lowerMsg = msg.toLowerCase().replace(/[^a-z\s]/g, "").trim();
 
+    // War mode end trigger
+    if (warModeActive && (lowerMsg.includes("war mode end") || lowerMsg.includes("war mode off") || lowerMsg.includes("end war mode"))) {
+      setWarModeActive(false);
+      const response = "War mode disengaged, sir. Targeting systems offline. Returning to standard operations.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
     // War mode trigger
-    if (lowerMsg.includes("war mode") || msg.includes("战斗模式")) {
+    if (lowerMsg.includes("war mode") && !lowerMsg.includes("end") && !lowerMsg.includes("off") || msg.includes("战斗模式")) {
       setWarModeActive(true);
-      const response = "War mode activated, sir. Deploying combat targeting systems. Right-eye HUD reticle online. Tracking all hostiles in visual range.";
+      const response = "War mode activated, sir. Deploying combat targeting systems. Right-eye HUD reticle online. Tracking all hostiles in visual range. Say 'war mode end' to disengage.";
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
       if (voiceEnabled) speak(response);
