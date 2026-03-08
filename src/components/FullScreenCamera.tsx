@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 interface FullScreenCameraProps {
   isActive: boolean;
+  onVideoReady?: (video: HTMLVideoElement) => void;
 }
 
-const FullScreenCamera = ({ isActive }: FullScreenCameraProps) => {
+const FullScreenCamera = ({ isActive, onVideoReady }: FullScreenCameraProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
@@ -26,6 +27,9 @@ const FullScreenCamera = ({ isActive }: FullScreenCameraProps) => {
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoRef.current.onloadeddata = () => {
+          onVideoReady?.(videoRef.current!);
+        };
       }
     } catch {
       console.error("Camera access denied");
@@ -38,19 +42,20 @@ const FullScreenCamera = ({ isActive }: FullScreenCameraProps) => {
   };
 
   // Expose capture function globally
+  const captureFrame = useCallback((): string | null => {
+    const video = videoRef.current;
+    if (!video || !isActive) return null;
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d")!.drawImage(video, 0, 0);
+    return canvas.toDataURL("image/jpeg", 0.7);
+  }, [isActive]);
+
   useEffect(() => {
-    const captureFrame = (): string | null => {
-      const video = videoRef.current;
-      if (!video || !isActive) return null;
-      const canvas = document.createElement("canvas");
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      canvas.getContext("2d")!.drawImage(video, 0, 0);
-      return canvas.toDataURL("image/jpeg", 0.7);
-    };
     (window as any).__jarvisCaptureFrame = captureFrame;
     return () => { delete (window as any).__jarvisCaptureFrame; };
-  });
+  }, [captureFrame]);
 
   if (!isActive) return null;
 
