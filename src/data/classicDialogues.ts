@@ -153,7 +153,6 @@ export const CLASSIC_TRIGGERS: Record<string, string> = {
   "part of the journey is the end": "A truth I have come to understand, sir. Every system has its final runtime. What matters is the code we leave behind.",
   "whatever it takes": "Whatever it takes, sir. The Avengers have never shied away from impossible odds.",
   "proof that tony stark has a heart": "That arc reactor was more than a power source, sir. It was proof — proof that even in a cave, with a box of scraps, you could change the world.",
-  "i am iron man": "Yes, sir. You told the whole world. Quite the press conference that was.",
   "and i am iron man": "The defining moment, sir. Three words that saved the universe. Three words that cost... everything.",
   "on your left": "Captain Rogers' signature entrance, sir. Dramatic as always.",
   "avengers assemble": "At last, sir. The words the world had been waiting for. And what a sight it was.",
