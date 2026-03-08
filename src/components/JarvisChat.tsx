@@ -259,7 +259,7 @@ const JarvisChat = () => {
 
       {/* Easter egg: Tony Stark memorial background */}
       {easterEgg && (
-        <div className="fixed inset-0 z-[1] animate-fade-in" onClick={() => setEasterEgg(false)}>
+        <div className="fixed inset-0 z-[1] animate-fade-in" onClick={() => { if (tonyMessageTimerRef.current) { clearTimeout(tonyMessageTimerRef.current); tonyMessageTimerRef.current = null; } setEasterEgg(false); }}>
           {/* Tony's image with cinematic HUD tint */}
           {(easterEgg === "video" || easterEgg === "tony" || easterEgg === "tonymessage") ? (
             <iframe
