@@ -32,7 +32,13 @@ export function useGestureResize() {
     activePanel: null,
     isResizing: false,
     chatVisible: true,
+    pageScale: 1,
   });
+
+  // Track gesture sequence: OPEN_PALM → FIST
+  const lastGestureRef = useRef<string | null>(null);
+  const gestureTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pageShrinkCooldown = useRef(false);
 
   const lastHandY = useRef<number | null>(null);
   const resizingRef = useRef(false);
