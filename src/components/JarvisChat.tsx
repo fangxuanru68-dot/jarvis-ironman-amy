@@ -9,6 +9,7 @@ import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 import { CLASSIC_TRIGGERS, GESTURE_RESPONSES } from "@/data/classicDialogues";
 import { useGestureResize } from "@/hooks/useGestureResize";
 import BodyScanPanel from "./BodyScanPanel";
+import WarModeOverlay from "./WarModeOverlay";
 
 import tonyStark from "@/assets/tony-stark.png";
 import tonyWorkshop from "@/assets/tony-workshop.png";
@@ -37,6 +38,7 @@ const JarvisChat = () => {
   const gestureResize = useGestureResize();
   const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark" | "xman">(false);
   const [bodyScanOpen, setBodyScanOpen] = useState(false);
+  const [warModeActive, setWarModeActive] = useState(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clean up timer on unmount
@@ -179,6 +181,17 @@ const JarvisChat = () => {
 
     // Easter egg close
     const lowerMsg = msg.toLowerCase().replace(/[^a-z\s]/g, "").trim();
+
+    // War mode trigger
+    if (lowerMsg.includes("war mode") || msg.includes("战斗模式")) {
+      setWarModeActive(true);
+      const response = "War mode activated, sir. Deploying combat targeting systems. Right-eye HUD reticle online. Tracking all hostiles in visual range.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
 
     // Body scan trigger
     if (lowerMsg.includes("check my body") || lowerMsg.includes("body scan") || lowerMsg.includes("scan my body")) {
@@ -539,6 +552,7 @@ const JarvisChat = () => {
 
       {/* Body Scan Panel */}
       <BodyScanPanel isOpen={bodyScanOpen} onClose={() => setBodyScanOpen(false)} />
+      <WarModeOverlay isActive={warModeActive} onEnd={() => setWarModeActive(false)} />
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">
