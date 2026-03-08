@@ -266,7 +266,7 @@ const JarvisChat = () => {
               src={easterEgg === "tony"
                 ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&loop=1&mute=0&start=50&playlist=iBC5M69Y6ZE"
                 : easterEgg === "tonymessage"
-                ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=135"
+                ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=135&end=148"
                 : "https://www.youtube.com/embed/yGB8aj1QhIM?autoplay=1&controls=0&showinfo=0&modestbranding=1&loop=1&mute=0&playlist=yGB8aj1QhIM"
               }
               className="absolute inset-0 w-full h-full border-0"
