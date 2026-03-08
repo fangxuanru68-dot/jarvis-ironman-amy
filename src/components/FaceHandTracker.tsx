@@ -88,7 +88,7 @@ const FaceHandTracker = ({ videoElement, isActive, onGesture, onHandData }: Face
     const detect = () => {
       if (!videoElement || videoElement.readyState < 2) { animFrameRef.current = requestAnimationFrame(detect); return; }
       const now = performance.now();
-      if (now - lastTimestamp < 100) { animFrameRef.current = requestAnimationFrame(detect); return; }
+      if (now - lastTimestamp < 66) { animFrameRef.current = requestAnimationFrame(detect); return; } // ~15fps
       lastTimestamp = now;
       try {
         if (faceDetectorRef.current) {
