@@ -221,7 +221,7 @@ const JarvisChat = () => {
       </div>
 
       {/* ===== RIGHT SIDE: Chat panel ===== */}
-      <div className="fixed right-3 top-14 bottom-4 z-20 w-[320px] flex flex-col">
+      <div className={`fixed right-3 top-14 bottom-4 z-20 flex flex-col ${gestureResize.activePanel === "chat" ? "ring-1 ring-primary/50 rounded-sm" : ""}`} style={{ width: `${320 * gestureResize.chatScale}px`, transition: gestureResize.isResizing ? "none" : "width 0.3s ease-out" }}>
         {/* Welcome state (compact, in right panel) */}
         {showWelcome && (
           <div className="flex flex-col gap-3 p-3 animate-fade-in-up mb-auto">
