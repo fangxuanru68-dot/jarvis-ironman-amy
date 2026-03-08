@@ -358,12 +358,14 @@ const JarvisChat = () => {
               playsInline
               onEnded={() => setEasterEgg(false)}
             />
-          ) : (easterEgg === "video" || easterEgg === "tony" || easterEgg === "tonymessage") ? (
+          ) : (easterEgg === "video" || easterEgg === "tony" || easterEgg === "tonymessage" || easterEgg === "thor") ? (
             <iframe
               src={easterEgg === "tony"
                 ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&loop=1&mute=0&start=50&playlist=iBC5M69Y6ZE"
                 : easterEgg === "tonymessage"
                 ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=135&end=146"
+                : easterEgg === "thor"
+                ? "https://www.youtube.com/embed/eTZZCvuYxrk?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=68&end=80"
                 : "https://www.youtube.com/embed/yGB8aj1QhIM?autoplay=1&controls=0&showinfo=0&modestbranding=1&loop=1&mute=0&playlist=yGB8aj1QhIM"
               }
               className="absolute inset-0 w-full h-full border-0"
