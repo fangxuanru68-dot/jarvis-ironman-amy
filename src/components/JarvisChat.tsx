@@ -189,8 +189,9 @@ const JarvisChat = () => {
       {/* Dark overlay - heavier on sides for readability */}
       {cameraOn && (
         <>
-          <div className="fixed inset-0 z-[1]" style={{ background: "linear-gradient(to right, hsl(220 30% 6% / 0.85) 0%, hsl(220 30% 6% / 0.3) 25%, transparent 40%, transparent 60%, hsl(220 30% 6% / 0.3) 75%, hsl(220 30% 6% / 0.85) 100%)" }} />
-          <div className="fixed inset-0 z-[1]" style={{ background: "linear-gradient(to top, hsl(220 30% 6% / 0.6) 0%, transparent 30%)" }} />
+          <div className="fixed inset-0 z-[1]" style={{ background: "linear-gradient(to right, hsl(220 30% 4% / 0.75) 0%, hsl(220 30% 4% / 0.2) 20%, transparent 35%, transparent 65%, hsl(220 30% 4% / 0.2) 80%, hsl(220 30% 4% / 0.75) 100%)" }} />
+          <div className="fixed inset-0 z-[1]" style={{ background: "linear-gradient(to top, hsl(220 30% 4% / 0.5) 0%, transparent 25%)" }} />
+          <div className="fixed inset-0 z-[1]" style={{ background: "linear-gradient(to bottom, hsl(220 30% 4% / 0.3) 0%, transparent 15%)" }} />
         </>
       )}
 
