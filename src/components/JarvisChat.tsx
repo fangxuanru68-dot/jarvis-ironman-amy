@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import { Send, Mic, MicOff, Video, VideoOff, Volume2, VolumeX, PanelRightOpen, PanelRightClose } from "lucide-react";
 import FullScreenCamera from "./FullScreenCamera";
+import ArcReactor from "./ArcReactor";
 import FaceHandTracker from "./FaceHandTracker";
 import HudSidePanels from "./HudSidePanels";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
