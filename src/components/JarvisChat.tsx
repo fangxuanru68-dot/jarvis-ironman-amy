@@ -33,7 +33,13 @@ const JarvisChat = () => {
   const recognitionRef = useRef<any>(null);
   const { speak, stop: stopSpeech, isSpeaking } = useSpeechSynthesis();
   const gestureResize = useGestureResize();
-  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video">(false);
+  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage">(false);
+  const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => { if (tonyMessageTimerRef.current) clearTimeout(tonyMessageTimerRef.current); };
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -171,6 +177,7 @@ const JarvisChat = () => {
     // Easter egg close
     const lowerMsg = msg.toLowerCase().replace(/[^a-z\s]/g, "").trim();
     if (easterEgg && (lowerMsg.includes("lets go back to work") || lowerMsg.includes("let go back to work") || lowerMsg.includes("back to work"))) {
+      if (tonyMessageTimerRef.current) { clearTimeout(tonyMessageTimerRef.current); tonyMessageTimerRef.current = null; }
       setEasterEgg(false);
       const response = "Right away, sir. All systems back online. Let's get to work.";
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
@@ -195,6 +202,23 @@ const JarvisChat = () => {
       setMessages(prev => [...prev, { role: "assistant", content: memorial }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: memorial }]);
       if (voiceEnabled) speak("Sir, Tony is right here. He always will be. The workshop lights are still on.");
+      setIsLoading(false);
+      return;
+    }
+    if (lowerMsg.includes("play tonys message") || lowerMsg.includes("play tony message")) {
+      setEasterEgg("tonymessage");
+      const response = "Playing Mr. Stark's message, sir... Please listen carefully.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      // Video is ~4:46 (286s), starting at 2:15 (135s), so ~151s remaining
+      tonyMessageTimerRef.current = setTimeout(() => {
+        setEasterEgg(false);
+        const endMsg = "Message complete, sir. He wanted you to hear that.";
+        setMessages(prev => [...prev, { role: "assistant", content: endMsg }]);
+        setApiMessages(prev => [...prev, { role: "assistant", content: endMsg }]);
+        if (voiceEnabled) speak(endMsg);
+      }, 155000);
       setIsLoading(false);
       return;
     }
@@ -235,12 +259,14 @@ const JarvisChat = () => {
 
       {/* Easter egg: Tony Stark memorial background */}
       {easterEgg && (
-        <div className="fixed inset-0 z-[1] animate-fade-in" onClick={() => setEasterEgg(false)}>
+        <div className="fixed inset-0 z-[1] animate-fade-in" onClick={() => { if (tonyMessageTimerRef.current) { clearTimeout(tonyMessageTimerRef.current); tonyMessageTimerRef.current = null; } setEasterEgg(false); }}>
           {/* Tony's image with cinematic HUD tint */}
-          {(easterEgg === "video" || easterEgg === "tony") ? (
+          {(easterEgg === "video" || easterEgg === "tony" || easterEgg === "tonymessage") ? (
             <iframe
               src={easterEgg === "tony"
                 ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&loop=1&mute=0&start=50&playlist=iBC5M69Y6ZE"
+                : easterEgg === "tonymessage"
+                ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=135"
                 : "https://www.youtube.com/embed/yGB8aj1QhIM?autoplay=1&controls=0&showinfo=0&modestbranding=1&loop=1&mute=0&playlist=yGB8aj1QhIM"
               }
               className="absolute inset-0 w-full h-full border-0"
