@@ -41,6 +41,7 @@ const JarvisChat = () => {
   const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark" | "xman" | "thor">(false);
   const [bodyScanOpen, setBodyScanOpen] = useState(false);
   const [warModeActive, setWarModeActive] = useState(false);
+  const [fightModeActive, setFightModeActive] = useState(false);
   const [rightEyePos, setRightEyePos] = useState<{ x: number; y: number } | null>(null);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
