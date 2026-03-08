@@ -405,10 +405,6 @@ const JarvisChat = () => {
           transition: "right 0.4s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease-out",
         }}
       >
-        {/* Iron Man logo background */}
-        <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center">
-          <img src={ironmanLogo} alt="" className="w-40 h-40 opacity-[0.04] invert" />
-        </div>
         {/* Welcome state (compact, in right panel) */}
         {showWelcome && (
           <div className="flex flex-col gap-3 p-3 animate-fade-in-up mb-auto">
