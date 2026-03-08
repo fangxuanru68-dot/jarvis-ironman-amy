@@ -26,7 +26,7 @@ const HudSidePanels = () => {
       <div className="fixed left-3 top-0 bottom-0 z-10 pointer-events-none flex flex-col justify-between py-4 w-48 animate-fade-in-up">
         {/* Top: Logo + JARVIS title */}
         <div className="flex flex-col items-center gap-2">
-          <img src={starkLogo} alt="Stark Industries" className="h-10 w-auto opacity-80" />
+          <img src={starkLogo} alt="Stark Industries" className="h-10 w-auto opacity-90 invert" />
           <ArcReactor size={80} isActive />
           <div className="text-center">
             <div className="font-orbitron text-[11px] tracking-[0.3em] text-primary">J.A.R.V.I.S</div>
