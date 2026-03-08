@@ -5,11 +5,12 @@ interface FaceHandTrackerProps {
   isActive: boolean;
   onGesture?: (gesture: string) => void;
   onHandData?: (landmarks: Array<{ x: number; y: number; z: number }>, gesture: string) => void;
+  onFaceData?: (faceBox: { x: number; y: number; w: number; h: number } | null, rightEye: { x: number; y: number } | null) => void;
 }
 
 type HandLandmark = { x: number; y: number; z: number };
 
-const FaceHandTracker = ({ videoElement, isActive, onGesture, onHandData }: FaceHandTrackerProps) => {
+const FaceHandTracker = ({ videoElement, isActive, onGesture, onHandData, onFaceData }: FaceHandTrackerProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animFrameRef = useRef<number>(0);
   const [faceBox, setFaceBox] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
@@ -94,11 +95,21 @@ const FaceHandTracker = ({ videoElement, isActive, onGesture, onHandData }: Face
         if (faceDetectorRef.current) {
           const faceResult = faceDetectorRef.current.detectForVideo(videoElement, now);
           if (faceResult.detections?.length > 0) {
-            const bb = faceResult.detections[0].boundingBox;
+            const det = faceResult.detections[0];
+            const bb = det.boundingBox;
             if (bb) {
-              setFaceBox({ x: 1 - (bb.originX + bb.width) / videoElement.videoWidth, y: bb.originY / videoElement.videoHeight, w: bb.width / videoElement.videoWidth, h: bb.height / videoElement.videoHeight });
+              const fBox = { x: 1 - (bb.originX + bb.width) / videoElement.videoWidth, y: bb.originY / videoElement.videoHeight, w: bb.width / videoElement.videoWidth, h: bb.height / videoElement.videoHeight };
+              setFaceBox(fBox);
+              // Extract right eye keypoint (index 0 in blaze_face is right eye)
+              let rightEye: { x: number; y: number } | null = null;
+              if (det.keypoints && det.keypoints.length > 0) {
+                // Keypoint 0 = right eye, mirrored
+                const kp = det.keypoints[0];
+                rightEye = { x: 1 - kp.x, y: kp.y };
+              }
+              onFaceData?.(fBox, rightEye);
             }
-          } else { setFaceBox(null); }
+          } else { setFaceBox(null); onFaceData?.(null, null); }
         }
         if (handDetectorRef.current) {
           const handResult = handDetectorRef.current.detectForVideo(videoElement, now);
@@ -127,7 +138,7 @@ const FaceHandTracker = ({ videoElement, isActive, onGesture, onHandData }: Face
     };
     const timeout = setTimeout(() => { animFrameRef.current = requestAnimationFrame(detect); }, 2000);
     return () => { clearTimeout(timeout); cancelAnimationFrame(animFrameRef.current); };
-  }, [isActive, videoElement, detectGesture, onGesture, onHandData]);
+  }, [isActive, videoElement, detectGesture, onGesture, onHandData, onFaceData]);
 
   // Draw overlay
   useEffect(() => {
