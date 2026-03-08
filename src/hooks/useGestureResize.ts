@@ -139,16 +139,8 @@ export function useGestureResize() {
       }));
     }
   }, [state.activePanel]);
-      }));
-      return;
-    }
 
-    if (resizingRef.current && gesture !== "OPEN_PALM") {
-      resizingRef.current = false;
-      lastHandY.current = null;
-      setState(prev => ({ ...prev, isResizing: false }));
-    }
-  }, [state.activePanel]);
+
 
   const resetScale = useCallback((panel: ResizablePanel) => {
     const scaleKey = `${panel}Scale` as keyof GestureResizeState;
