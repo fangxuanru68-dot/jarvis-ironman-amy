@@ -269,6 +269,13 @@ const JarvisChat = () => {
         </div>
       )}
 
+      {/* Camera off: Iron Man logo background */}
+      {!cameraOn && !easterEgg && (
+        <div className="fixed inset-0 z-[1] flex items-center justify-center bg-background">
+          <img src={ironmanLogo} alt="Iron Man" className="w-64 h-64 opacity-20 invert" />
+        </div>
+      )}
+
       {/* Dark overlay - heavier on sides for readability */}
       {cameraOn && (
         <>
