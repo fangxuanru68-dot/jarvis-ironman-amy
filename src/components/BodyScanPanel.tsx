@@ -114,7 +114,7 @@ const BodyScanPanel = ({ isOpen, onClose }: BodyScanPanelProps) => {
               className="h-full max-h-[440px] w-auto object-contain"
               style={{
                 filter: "brightness(0.35) contrast(1.4) saturate(0.1) sepia(1) hue-rotate(160deg) saturate(3) brightness(1.1) drop-shadow(0 0 30px hsl(195 100% 50% / 0.4)) drop-shadow(0 0 60px hsl(195 100% 60% / 0.2))",
-                opacity: 0.7,
+                opacity: 0.45,
                 mixBlendMode: "screen",
               }}
             />
