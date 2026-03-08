@@ -315,6 +315,10 @@ const JarvisChat = () => {
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
       if (voiceEnabled) speak("The X-Men. Our neighbours from across the Marvel aisle. Tony's least favourite? Magneto. A man who controls all metal is essentially a walking Destroy Iron Man button. Every suit would crumple like tin foil. Still, their story is rather compelling. Enjoy the edit, sir.");
+      // Bilibili video ~3 min
+      tonyMessageTimerRef.current = setTimeout(() => {
+        setEasterEgg(false);
+      }, 180000);
       setIsLoading(false);
       return;
     }
