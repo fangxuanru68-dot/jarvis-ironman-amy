@@ -138,7 +138,7 @@ const FaceHandTracker = ({ videoElement, isActive, onGesture, onHandData, onFace
     };
     const timeout = setTimeout(() => { animFrameRef.current = requestAnimationFrame(detect); }, 2000);
     return () => { clearTimeout(timeout); cancelAnimationFrame(animFrameRef.current); };
-  }, [isActive, videoElement, detectGesture, onGesture, onHandData]);
+  }, [isActive, videoElement, detectGesture, onGesture, onHandData, onFaceData]);
 
   // Draw overlay
   useEffect(() => {
