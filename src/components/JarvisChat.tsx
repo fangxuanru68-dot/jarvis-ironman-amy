@@ -412,6 +412,14 @@ const JarvisChat = () => {
               allow="autoplay; encrypted-media"
               allowFullScreen
             />
+          ) : easterEgg === "stevesolo" ? (
+            <iframe
+              src="https://www.youtube.com/embed/jtQgKKfwNKw?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=20&end=30"
+              className="absolute inset-0 w-full h-full border-0"
+              style={{ transform: "scale(1.2)", transformOrigin: "center" }}
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            />
           ) : easterEgg === "steve" ? (
             <iframe
               src="https://www.youtube.com/embed/wHLX1bYTCtU?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=10&end=140"
