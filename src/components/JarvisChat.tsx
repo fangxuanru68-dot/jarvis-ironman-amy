@@ -309,6 +309,8 @@ const JarvisChat = () => {
               allow="autoplay; encrypted-media"
               allowFullScreen
             />
+          ) : easterEgg === "missstark" ? (
+            <img src={tonyCouch} alt="" className="absolute inset-0 w-full h-full object-cover" />
           ) : (
             <img src={tonyStark} alt="" className="absolute inset-0 w-full h-full object-cover" />
           )}
