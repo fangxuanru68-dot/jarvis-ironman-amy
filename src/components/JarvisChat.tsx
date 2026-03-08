@@ -10,6 +10,7 @@ import { CLASSIC_TRIGGERS, GESTURE_RESPONSES } from "@/data/classicDialogues";
 import { useGestureResize } from "@/hooks/useGestureResize";
 import BodyScanPanel from "./BodyScanPanel";
 import WarModeOverlay from "./WarModeOverlay";
+import FightModeOverlay from "./FightModeOverlay";
 import HudRightPanel from "./HudRightPanel";
 
 import tonyStark from "@/assets/tony-stark.png";
