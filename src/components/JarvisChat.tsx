@@ -182,6 +182,17 @@ const JarvisChat = () => {
     // Easter egg close
     const lowerMsg = msg.toLowerCase().replace(/[^a-z\s]/g, "").trim();
 
+    // War mode trigger
+    if (lowerMsg.includes("war mode") || msg.includes("战斗模式")) {
+      setWarModeActive(true);
+      const response = "War mode activated, sir. Deploying combat targeting systems. Right-eye HUD reticle online. Tracking all hostiles in visual range.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
     // Body scan trigger
     if (lowerMsg.includes("check my body") || lowerMsg.includes("body scan") || lowerMsg.includes("scan my body")) {
       setBodyScanOpen(true);
