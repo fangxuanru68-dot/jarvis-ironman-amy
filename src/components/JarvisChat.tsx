@@ -459,11 +459,12 @@ const JarvisChat = () => {
             />
           ) : (easterEgg === "video" || easterEgg === "tony" || easterEgg === "tonymessage") ? (
             <iframe
+              id="yt-easter-egg"
               src={easterEgg === "tony"
-                ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=50"
+                ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=50&enablejsapi=1&origin=" + encodeURIComponent(window.location.origin)
                 : easterEgg === "tonymessage"
-                ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=135&end=146"
-                : "https://www.youtube.com/embed/yGB8aj1QhIM?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0"
+                ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=135&end=146&enablejsapi=1&origin=" + encodeURIComponent(window.location.origin)
+                : "https://www.youtube.com/embed/yGB8aj1QhIM?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&enablejsapi=1&origin=" + encodeURIComponent(window.location.origin)
               }
               className="absolute inset-0 w-full h-full border-0"
               style={{ transform: "scale(1.2)", transformOrigin: "center" }}
