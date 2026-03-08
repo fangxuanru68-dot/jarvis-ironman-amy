@@ -186,7 +186,7 @@ const JarvisChat = () => {
     <>
       {/* Full-screen camera background */}
       <FullScreenCamera isActive={cameraOn} onVideoReady={setVideoElement} />
-      <FaceHandTracker videoElement={videoElement} isActive={cameraOn} onGesture={handleGesture} />
+      <FaceHandTracker videoElement={videoElement} isActive={cameraOn} onGesture={handleGesture} onHandData={gestureResize.handleHandData} />
 
       {/* Dark overlay - heavier on sides for readability */}
       {cameraOn && (
@@ -198,7 +198,11 @@ const JarvisChat = () => {
       )}
 
       {/* HUD side panels (left data + right data widgets) */}
-      <HudSidePanels />
+      <HudSidePanels
+        scales={{ chatScale: gestureResize.chatScale, weatherScale: gestureResize.weatherScale, radarScale: gestureResize.radarScale, powerScale: gestureResize.powerScale, storageScale: gestureResize.storageScale }}
+        activePanel={gestureResize.activePanel}
+        isResizing={gestureResize.isResizing}
+      />
 
       {/* Top bar: controls only (logo moved to left panel) */}
       <div className="fixed top-3 right-3 z-20 flex items-center gap-2">
