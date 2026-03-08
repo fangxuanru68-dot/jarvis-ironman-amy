@@ -211,14 +211,14 @@ const JarvisChat = () => {
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
       if (voiceEnabled) speak(response);
-      // Play from 2:15 to 2:28 (13 seconds)
+      // Play from 2:15 to 2:26 (11 seconds)
       tonyMessageTimerRef.current = setTimeout(() => {
         setEasterEgg(false);
         const endMsg = "Message complete, sir. He wanted you to hear that.";
         setMessages(prev => [...prev, { role: "assistant", content: endMsg }]);
         setApiMessages(prev => [...prev, { role: "assistant", content: endMsg }]);
         if (voiceEnabled) speak(endMsg);
-      }, 13000);
+      }, 11000);
       setIsLoading(false);
       return;
     }
@@ -291,7 +291,7 @@ const JarvisChat = () => {
               src={easterEgg === "tony"
                 ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&loop=1&mute=0&start=50&playlist=iBC5M69Y6ZE"
                 : easterEgg === "tonymessage"
-                ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=135&end=148"
+                ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=135&end=146"
                 : "https://www.youtube.com/embed/yGB8aj1QhIM?autoplay=1&controls=0&showinfo=0&modestbranding=1&loop=1&mute=0&playlist=yGB8aj1QhIM"
               }
               className="absolute inset-0 w-full h-full border-0"
