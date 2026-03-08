@@ -417,6 +417,14 @@ const JarvisChat = () => {
               allowFullScreen
               scrolling="no"
             />
+          ) : easterEgg === "chanchan" ? (
+            <video
+              src="/videos/chanchan.mp4"
+              className="absolute inset-0 w-full h-full object-contain border-0 bg-black"
+              autoPlay
+              playsInline
+              onEnded={() => setEasterEgg(false)}
+            />
           ) : easterEgg === "bestcoser" ? (
             <video
               src="/videos/best-coser.mp4"
