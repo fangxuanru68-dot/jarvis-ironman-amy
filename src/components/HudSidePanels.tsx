@@ -18,163 +18,164 @@ const HudSidePanels = () => {
   }, []);
 
   const formatTime = (d: Date) =>
-    d.toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    d.toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit" });
+  const day = time.getDate();
+  const weekday = time.toLocaleDateString("en-US", { weekday: "long" });
+  const monthYear = time.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 
   return (
     <>
-      {/* ===== LEFT PANEL ===== */}
-      <div className="fixed left-3 top-0 bottom-0 z-10 pointer-events-none flex flex-col justify-between py-4 w-48 animate-fade-in-up">
-        {/* Top: Logo + JARVIS title */}
-        <div className="flex flex-col items-center gap-2">
-          <img src={starkLogo} alt="Stark Industries" className="h-10 w-auto opacity-90 invert" />
-          <ArcReactor size={80} isActive />
-          <div className="text-center">
-            <div className="font-orbitron text-[11px] tracking-[0.3em] text-primary">J.A.R.V.I.S</div>
-            <div className="font-mono text-[7px] text-muted-foreground tracking-wider">ONLINE · v3.2.1</div>
-          </div>
+      {/* ===== LEFT SIDE - floating HUD elements ===== */}
+
+      {/* Top-left: Stark Logo */}
+      <div className="fixed left-4 top-4 z-10 pointer-events-none animate-fade-in-up">
+        <img src={starkLogo} alt="Stark Industries" className="h-8 w-auto opacity-70 invert" />
+      </div>
+
+      {/* Left: Date block (large day number like movie) */}
+      <div className="fixed left-5 top-16 z-10 pointer-events-none animate-fade-in-up">
+        <div className="font-orbitron text-4xl text-primary/90 leading-none">{day}</div>
+        <div className="font-mono text-[9px] text-primary/60 tracking-widest">{weekday}</div>
+        <div className="font-mono text-[8px] text-muted-foreground">{monthYear}</div>
+      </div>
+
+      {/* Left: Time */}
+      <div className="fixed left-5 top-[140px] z-10 pointer-events-none animate-fade-in-up">
+        <div className="font-orbitron text-xl text-primary tracking-wider">{formatTime(time)}</div>
+        <div className="font-mono text-[7px] text-muted-foreground tracking-widest mt-0.5">
+          {time.toLocaleTimeString("en-US", { hour12: false, second: "2-digit" }).split(":")[2]}s
         </div>
+      </div>
 
-        {/* Middle: Time + Weather + Radar */}
-        <div className="flex flex-col gap-3">
-          {/* Time & Date */}
-          <div className="border border-border/20 bg-card/20 backdrop-blur-sm rounded-sm p-2 text-center">
-            <div className="font-orbitron text-base text-primary tracking-wider">{formatTime(time)}</div>
-            <div className="font-mono text-[8px] text-muted-foreground">
-              {time.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
-            </div>
-          </div>
+      {/* Left: JARVIS Arc Reactor */}
+      <div className="fixed left-2 top-[200px] z-10 pointer-events-none animate-fade-in-up">
+        <ArcReactor size={100} isActive />
+      </div>
 
-          {/* Weather */}
-          <div className="border border-border/20 bg-card/20 backdrop-blur-sm rounded-sm p-2">
-            <div className="font-mono text-[8px] text-primary/60 tracking-widest mb-1">WEATHER</div>
-            <div className="flex items-center gap-2">
-              <div className="font-orbitron text-lg text-primary">{temp}°C</div>
-              <div className="flex flex-col">
-                <span className="font-mono text-[7px] text-muted-foreground">PARTLY CLOUDY</span>
-                <span className="font-mono text-[7px] text-muted-foreground">WIND: 12 KM/H</span>
-                <span className="font-mono text-[7px] text-muted-foreground">HUM: 65%</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Radar */}
-          <div className="relative w-24 h-24 mx-auto">
-            <svg viewBox="0 0 100 100" className="w-full h-full animate-rotate-slow">
-              <circle cx="50" cy="50" r="45" fill="none" stroke="hsl(195 100% 50% / 0.15)" strokeWidth="0.5" />
-              <circle cx="50" cy="50" r="35" fill="none" stroke="hsl(195 100% 50% / 0.1)" strokeWidth="0.5" />
-              <circle cx="50" cy="50" r="25" fill="none" stroke="hsl(195 100% 50% / 0.1)" strokeWidth="0.5" />
-              <circle cx="50" cy="50" r="15" fill="none" stroke="hsl(195 100% 50% / 0.1)" strokeWidth="0.5" />
-              <line x1="50" y1="5" x2="50" y2="95" stroke="hsl(195 100% 50% / 0.08)" strokeWidth="0.5" />
-              <line x1="5" y1="50" x2="95" y2="50" stroke="hsl(195 100% 50% / 0.08)" strokeWidth="0.5" />
-            </svg>
-            <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full">
-              <line x1="50" y1="50" x2="50" y2="5" stroke="hsl(195 100% 50% / 0.6)" strokeWidth="1" className="origin-center animate-rotate-slow" />
-              <circle cx="62" cy="35" r="2" fill="hsl(195 100% 50% / 0.8)" className="animate-pulse-glow" />
-              <circle cx="38" cy="58" r="1.5" fill="hsl(195 100% 50% / 0.5)" className="animate-pulse-glow" />
-            </svg>
-            <div className="absolute bottom-0 left-0 right-0 text-center font-mono text-[7px] text-primary/50 tracking-widest">RADAR</div>
-          </div>
-        </div>
-
-        {/* Bottom: Power + System stats */}
-        <div className="flex flex-col gap-3">
-          {/* Power gauge */}
-          <div className="border border-border/20 bg-card/20 backdrop-blur-sm rounded-sm p-2">
-            <div className="font-mono text-[8px] text-primary/60 tracking-widest mb-1">POWER OUTPUT</div>
-            <div className="flex items-end gap-0.5 h-8">
-              {Array.from({ length: 12 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="flex-1 rounded-sm transition-all duration-500"
-                  style={{
-                    height: `${Math.min(100, (powerLevel / 100) * (i + 1) * 8.5)}%`,
-                  background: i < 9 ? "hsl(195 100% 50% / 0.6)" : i < 11 ? "hsl(210 80% 55% / 0.6)" : "hsl(220 70% 45% / 0.6)",
-                    opacity: (i / 12) < (powerLevel / 100) ? 1 : 0.15,
-                  }}
-                />
-              ))}
-            </div>
-            <div className="font-orbitron text-[10px] text-primary mt-1">{powerLevel}%</div>
-          </div>
-
-          {/* System stats */}
-          <div className="border border-border/20 bg-card/20 backdrop-blur-sm rounded-sm p-2 space-y-1.5">
-            <div className="font-mono text-[8px] text-primary/60 tracking-widest">SYSTEM</div>
-            {[
-              { label: "CPU", value: cpuUsage },
-              { label: "MEM", value: 67 },
-              { label: "NET", value: 89 },
-            ].map((stat) => (
-              <div key={stat.label}>
-                <div className="flex justify-between font-mono text-[8px]">
-                  <span className="text-muted-foreground">{stat.label}</span>
-                  <span className="text-primary">{stat.value}%</span>
-                </div>
-                <div className="h-[2px] bg-border/20 rounded-full overflow-hidden">
-                  <div className="h-full bg-primary/60 rounded-full transition-all duration-1000" style={{ width: `${stat.value}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Uptime */}
-          <div className="font-mono text-[7px] text-muted-foreground/50 text-center tracking-widest">
-            STARK INDUSTRIES · ENCRYPTED
+      {/* Left: CPU/System circular gauge */}
+      <div className="fixed left-6 top-[330px] z-10 pointer-events-none animate-fade-in-up">
+        <div className="relative w-16 h-16">
+          <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+            <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(195 100% 50% / 0.1)" strokeWidth="2.5" />
+            <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(195 100% 50% / 0.6)" strokeWidth="2.5"
+              strokeDasharray={`${cpuUsage * 0.942} 94.2`} strokeLinecap="round" />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="font-mono text-[7px] text-primary/60">CPU</span>
+            <span className="font-orbitron text-[10px] text-primary">{cpuUsage}%</span>
           </div>
         </div>
       </div>
 
-      {/* ===== RIGHT PANEL (data widgets only, no chat) ===== */}
-      <div className="fixed right-[340px] top-14 z-10 pointer-events-none flex flex-col gap-3 w-40 animate-fade-in-up">
-        {/* Circular progress rings */}
-        <div className="flex gap-2 justify-center">
+      {/* Left: Power bar */}
+      <div className="fixed left-5 top-[420px] z-10 pointer-events-none animate-fade-in-up w-32">
+        <div className="font-mono text-[7px] text-primary/50 tracking-widest mb-1">POWER</div>
+        <div className="flex items-end gap-[2px] h-6">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div key={i} className="flex-1 rounded-sm transition-all duration-500"
+              style={{
+                height: `${Math.min(100, (powerLevel / 100) * (i + 1) * 10)}%`,
+                background: "hsl(195 100% 50% / 0.5)",
+                opacity: (i / 10) < (powerLevel / 100) ? 1 : 0.15,
+              }}
+            />
+          ))}
+        </div>
+        <div className="flex justify-between mt-0.5">
+          <span className="font-mono text-[7px] text-muted-foreground">0</span>
+          <span className="font-orbitron text-[8px] text-primary">{powerLevel}%</span>
+        </div>
+      </div>
+
+      {/* Left: Weather */}
+      <div className="fixed left-5 top-[500px] z-10 pointer-events-none animate-fade-in-up">
+        <div className="font-mono text-[7px] text-primary/50 tracking-widest mb-1">WEATHER</div>
+        <div className="font-orbitron text-lg text-primary leading-none">{temp}°</div>
+        <div className="font-mono text-[7px] text-muted-foreground mt-0.5">PARTLY CLOUDY</div>
+        <div className="font-mono text-[7px] text-muted-foreground">WIND 12 KM/H</div>
+      </div>
+
+      {/* Left bottom: System stats */}
+      <div className="fixed left-5 bottom-16 z-10 pointer-events-none animate-fade-in-up w-36">
+        {[
+          { label: "ARC REACTOR", value: "ONLINE" },
+          { label: "COMMS", value: "ENCRYPTED" },
+          { label: "FLIGHT SYS", value: "STANDBY" },
+        ].map((item, i) => (
+          <div key={i} className="flex items-center gap-1.5 mb-1">
+            <div className="w-1 h-1 rounded-full bg-primary/60 animate-pulse-glow" style={{ animationDelay: `${i * 0.4}s` }} />
+            <span className="font-mono text-[7px] text-muted-foreground">{item.label}:</span>
+            <span className="font-mono text-[7px] text-primary/80">{item.value}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Left bottom: Uptime */}
+      <div className="fixed left-5 bottom-4 z-10 pointer-events-none">
+        <div className="font-mono text-[7px] text-muted-foreground/40 tracking-widest">STARK INDUSTRIES</div>
+      </div>
+
+      {/* ===== CENTER floating data (subtle, near face area) ===== */}
+
+      {/* Top center: status bar */}
+      <div className="fixed top-3 left-1/2 -translate-x-1/2 z-10 pointer-events-none animate-fade-in-up">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-primary/70 animate-pulse-glow" />
+            <span className="font-mono text-[8px] text-primary/60">SYSTEM ONLINE</span>
+          </div>
+          <span className="font-mono text-[7px] text-muted-foreground/40">|</span>
+          <span className="font-mono text-[8px] text-muted-foreground/50">ALL NOMINAL</span>
+          <span className="font-mono text-[7px] text-muted-foreground/40">|</span>
+          <span className="font-mono text-[8px] text-muted-foreground/50">AC LINE: {powerLevel}%</span>
+        </div>
+      </div>
+
+      {/* Center-bottom floating data */}
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-10 pointer-events-none animate-fade-in-up">
+        <div className="flex items-center gap-4">
+          <span className="font-mono text-[7px] text-muted-foreground/40">ENCRYPTED CHANNEL</span>
+          <span className="font-mono text-[7px] text-muted-foreground/30">·</span>
+          <span className="font-mono text-[7px] text-muted-foreground/40">SECURE</span>
+        </div>
+      </div>
+
+      {/* ===== RIGHT SIDE floating data (above chat panel) ===== */}
+
+      {/* Right: Circular gauges row */}
+      <div className="fixed right-[340px] top-4 z-10 pointer-events-none animate-fade-in-up">
+        <div className="flex gap-2">
           {[
-            { label: "ARC", value: 97, color: "hsl(195 100% 50%)" },
-            { label: "SYS", value: 82, color: "hsl(210 80% 55%)" },
-            { label: "NET", value: 91, color: "hsl(220 70% 60%)" },
+            { label: "ARC", value: 97 },
+            { label: "SYS", value: 82 },
+            { label: "NET", value: 91 },
           ].map((ring) => (
-            <div key={ring.label} className="relative w-11 h-11">
+            <div key={ring.label} className="relative w-10 h-10">
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
-                <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(195 100% 50% / 0.1)" strokeWidth="2" />
-                <circle cx="18" cy="18" r="15" fill="none" stroke={ring.color} strokeWidth="2" strokeDasharray={`${ring.value * 0.942} 94.2`} strokeLinecap="round" opacity="0.7" />
+                <circle cx="18" cy="18" r="14" fill="none" stroke="hsl(195 100% 50% / 0.08)" strokeWidth="2" />
+                <circle cx="18" cy="18" r="14" fill="none" stroke="hsl(195 100% 50% / 0.5)" strokeWidth="2"
+                  strokeDasharray={`${ring.value * 0.88} 88`} strokeLinecap="round" />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="font-mono text-[6px] text-primary/70">{ring.label}</span>
-                <span className="font-orbitron text-[7px] text-primary">{ring.value}</span>
+                <span className="font-mono text-[5px] text-primary/50">{ring.label}</span>
+                <span className="font-orbitron text-[7px] text-primary/80">{ring.value}</span>
               </div>
             </div>
           ))}
         </div>
+      </div>
 
-        {/* Waveform */}
-        <div className="border border-border/20 bg-card/20 backdrop-blur-sm rounded-sm p-2">
-          <div className="font-mono text-[8px] text-primary/60 tracking-widest mb-1">AUDIO FREQ</div>
-          <div className="flex items-center justify-center gap-[2px] h-8">
-            {Array.from({ length: 16 }).map((_, i) => (
-              <div
-                key={i}
-                className="w-[2px] bg-primary/50 rounded-full animate-pulse-glow"
-                style={{
-                  height: `${4 + Math.sin(i * 0.5 + Date.now() * 0.001) * 10 + Math.random() * 4}px`,
-                  animationDelay: `${i * 0.05}s`,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* Telemetry */}
-        <div className="border border-border/20 bg-card/20 backdrop-blur-sm rounded-sm p-2 space-y-1">
-          <div className="font-mono text-[8px] text-primary/60 tracking-widest">TELEMETRY</div>
+      {/* Right: Telemetry floating */}
+      <div className="fixed right-[340px] top-16 z-10 pointer-events-none animate-fade-in-up">
+        <div className="space-y-0.5">
           {[
             "REPULSOR: STANDBY",
             "UNIBEAM: CHARGED",
             "FLIGHT: READY",
-            "COMMS: ENCRYPTED",
           ].map((line, i) => (
             <div key={i} className="flex items-center gap-1">
-              <div className="w-1 h-1 rounded-full bg-primary/60 animate-pulse-glow" style={{ animationDelay: `${i * 0.3}s` }} />
-              <span className="font-mono text-[7px] text-muted-foreground">{line}</span>
+              <div className="w-0.5 h-0.5 rounded-full bg-primary/50" />
+              <span className="font-mono text-[6px] text-muted-foreground/60">{line}</span>
             </div>
           ))}
         </div>
