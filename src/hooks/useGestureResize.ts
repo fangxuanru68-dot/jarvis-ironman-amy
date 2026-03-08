@@ -108,12 +108,12 @@ export function useGestureResize() {
       const currentY = palmCenter.y;
       if (lastHandY.current !== null) {
         const delta = lastHandY.current - currentY;
-        if (Math.abs(delta) > 0.005) {
+        if (Math.abs(delta) > 0.002) {
           const scaleKey = `${state.activePanel}Scale` as keyof GestureResizeState;
           setState(prev => ({
             ...prev,
             isResizing: true,
-            [scaleKey]: clampScale((prev[scaleKey] as number) + delta * 3),
+            [scaleKey]: clampScale((prev[scaleKey] as number) + delta * 5),
           }));
         }
       }

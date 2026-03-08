@@ -66,12 +66,12 @@ const FaceHandTracker = ({ videoElement, isActive, onGesture, onHandData }: Face
     const ring_mcp = landmarks[13];
     const pinky_mcp = landmarks[17];
 
-    const isFingerUp = (tip: HandLandmark, mcp: HandLandmark) => tip.y < mcp.y - 0.05;
+    const isFingerUp = (tip: HandLandmark, mcp: HandLandmark) => tip.y < mcp.y - 0.02;
     const indexUp = isFingerUp(index_tip, index_mcp);
     const middleUp = isFingerUp(middle_tip, middle_mcp);
     const ringUp = isFingerUp(ring_tip, ring_mcp);
     const pinkyUp = isFingerUp(pinky_tip, pinky_mcp);
-    const thumbUp = thumb_tip.y < wrist.y - 0.1;
+    const thumbUp = thumb_tip.y < wrist.y - 0.05;
 
     if (thumbUp && !indexUp && !middleUp && !ringUp && !pinkyUp) return "THUMBS_UP";
     if (indexUp && middleUp && ringUp && pinkyUp) return "OPEN_PALM";
