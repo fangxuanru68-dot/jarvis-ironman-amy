@@ -11,6 +11,7 @@ import { useGestureResize } from "@/hooks/useGestureResize";
 import ironmanLogo from "@/assets/ironman-logo.png";
 import tonyStark from "@/assets/tony-stark.png";
 import tonyWorkshop from "@/assets/tony-workshop.png";
+import tonyCouch from "@/assets/tony-couch.png";
 
 type MessageContent = string | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
 type Message = { role: "user" | "assistant"; content: MessageContent };
