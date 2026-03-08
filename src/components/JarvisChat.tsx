@@ -249,9 +249,11 @@ const JarvisChat = () => {
       if (voiceEnabled) speak("The X-Men. Our neighbours from across the Marvel aisle. Tony's least favourite? Magneto. A man who controls all metal is essentially a walking Destroy Iron Man button. Every suit would crumple like tin foil. Still, their story is rather compelling. Enjoy the edit, sir.");
       setIsLoading(false);
       return;
-      const response = "Captain Rogers confirmed.\n\nMr. Stark's heart rate historically increases when you enter the room.";
-      setMessages(prev => [...prev, { role: "assistant", content: response }]);
-      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+    }
+    if (lowerMsg.includes("im steve rogers") || lowerMsg.includes("i am steve rogers")) {
+      const steveResponse = "Captain Rogers confirmed.\n\nMr. Stark's heart rate historically increases when you enter the room.";
+      setMessages(prev => [...prev, { role: "assistant", content: steveResponse }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: steveResponse }]);
       if (voiceEnabled) speak("Captain Rogers confirmed. Mr. Stark's heart rate historically increases when you enter the room.");
       setIsLoading(false);
       return;
