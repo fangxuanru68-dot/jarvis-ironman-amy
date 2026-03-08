@@ -6,6 +6,7 @@ import FaceHandTracker from "./FaceHandTracker";
 import HudSidePanels from "./HudSidePanels";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 import { CLASSIC_TRIGGERS, GESTURE_RESPONSES } from "@/data/classicDialogues";
+import { useGestureResize } from "@/hooks/useGestureResize";
 
 type MessageContent = string | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
 type Message = { role: "user" | "assistant"; content: MessageContent };
@@ -27,6 +28,7 @@ const JarvisChat = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
   const { speak, stop: stopSpeech, isSpeaking } = useSpeechSynthesis();
+  const gestureResize = useGestureResize();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -184,7 +186,7 @@ const JarvisChat = () => {
     <>
       {/* Full-screen camera background */}
       <FullScreenCamera isActive={cameraOn} onVideoReady={setVideoElement} />
-      <FaceHandTracker videoElement={videoElement} isActive={cameraOn} onGesture={handleGesture} />
+      <FaceHandTracker videoElement={videoElement} isActive={cameraOn} onGesture={handleGesture} onHandData={gestureResize.handleHandData} />
 
       {/* Dark overlay - heavier on sides for readability */}
       {cameraOn && (
@@ -196,7 +198,11 @@ const JarvisChat = () => {
       )}
 
       {/* HUD side panels (left data + right data widgets) */}
-      <HudSidePanels />
+      <HudSidePanels
+        scales={{ chatScale: gestureResize.chatScale, weatherScale: gestureResize.weatherScale, radarScale: gestureResize.radarScale, powerScale: gestureResize.powerScale, storageScale: gestureResize.storageScale }}
+        activePanel={gestureResize.activePanel}
+        isResizing={gestureResize.isResizing}
+      />
 
       {/* Top bar: controls only (logo moved to left panel) */}
       <div className="fixed top-3 right-3 z-20 flex items-center gap-2">
@@ -215,7 +221,7 @@ const JarvisChat = () => {
       </div>
 
       {/* ===== RIGHT SIDE: Chat panel ===== */}
-      <div className="fixed right-3 top-14 bottom-4 z-20 w-[320px] flex flex-col">
+      <div className={`fixed right-3 top-14 bottom-4 z-20 flex flex-col ${gestureResize.activePanel === "chat" ? "ring-1 ring-primary/50 rounded-sm" : ""}`} style={{ width: `${320 * gestureResize.chatScale}px`, transition: gestureResize.isResizing ? "none" : "width 0.3s ease-out" }}>
         {/* Welcome state (compact, in right panel) */}
         {showWelcome && (
           <div className="flex flex-col gap-3 p-3 animate-fade-in-up mb-auto">
