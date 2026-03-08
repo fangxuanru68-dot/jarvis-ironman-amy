@@ -32,7 +32,12 @@ export function useGestureResize() {
     activePanel: null,
     isResizing: false,
     chatVisible: true,
+    globalScale: 1,
   });
+
+  // Track gesture sequence for global scale: OPEN_PALM → FIST
+  const lastGestureForSequence = useRef<string>("");
+  const sequenceCooldown = useRef(false);
 
   const lastHandY = useRef<number | null>(null);
   const resizingRef = useRef(false);
