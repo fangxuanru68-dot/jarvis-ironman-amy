@@ -166,6 +166,18 @@ const JarvisChat = () => {
     setHasGreeted(true);
     stopSpeech();
 
+    // Easter egg: "i miss ironman"
+    const lowerMsg = msg.toLowerCase().replace(/[^a-z\s]/g, "").trim();
+    if (lowerMsg.includes("i miss ironman") || lowerMsg.includes("i miss iron man")) {
+      setEasterEgg(true);
+      const memorial = "I miss him too, sir... Every day.\n\n*\"Part of the journey is the end.\"*\n\n— Tony Stark, 1970–2023\n\nHe was not just a genius, billionaire, playboy, philanthropist... He was the best of us. And I was honored to serve him.";
+      setMessages(prev => [...prev, { role: "assistant", content: memorial }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: memorial }]);
+      if (voiceEnabled) speak("I miss him too, sir. Every day. Part of the journey is the end.");
+      setIsLoading(false);
+      return;
+    }
+
     if (classicResponse) {
       setMessages(prev => [...prev, { role: "assistant", content: classicResponse }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: classicResponse }]);
