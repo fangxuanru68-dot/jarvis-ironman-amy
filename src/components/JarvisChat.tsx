@@ -300,7 +300,7 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
-    if (lowerMsg.includes("我是馋馋")) {
+    if (lowerMsg.includes("我是馋馋") || lowerMsg.includes("i'm chanchan") || lowerMsg.includes("im chanchan") || lowerMsg.includes("i am chanchan")) {
       setEasterEgg("chanchan");
       const response = "Ah, ChanChan! Welcome, ma'am. Mr. Stark always said you were the only person who could wear the armor with as much style as he did — and I must say, sir was rarely wrong about matters of taste.\n\nPlaying your reel now.";
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
