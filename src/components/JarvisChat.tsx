@@ -38,7 +38,7 @@ const JarvisChat = () => {
   const recognitionRef = useRef<any>(null);
   const { speak, stop: stopSpeech, isSpeaking } = useSpeechSynthesis();
   const gestureResize = useGestureResize();
-  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark" | "xman" | "thor">(false);
+  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark" | "xman" | "thor" | "steve">(false);
   const [bodyScanOpen, setBodyScanOpen] = useState(false);
   const [warModeActive, setWarModeActive] = useState(false);
   const [fightModeActive, setFightModeActive] = useState(false);
@@ -323,6 +323,15 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
+    if (lowerMsg === "steve" || (lowerMsg.includes("steve") && !lowerMsg.includes("rogers"))) {
+      setEasterEgg("steve");
+      // 0:10 to 2:20 = 130 seconds
+      tonyMessageTimerRef.current = setTimeout(() => {
+        setEasterEgg(false);
+      }, 130000);
+      setIsLoading(false);
+      return;
+    }
     if (lowerMsg.includes("im steve rogers") || lowerMsg.includes("i am steve rogers")) {
       const steveResponse = "Captain Rogers confirmed.\n\nMr. Stark's heart rate historically increases when you enter the room.";
       setMessages(prev => [...prev, { role: "assistant", content: steveResponse }]);
@@ -389,6 +398,14 @@ const JarvisChat = () => {
           ) : easterEgg === "thor" ? (
             <iframe
               src="https://www.youtube.com/embed/eTZZCvuYxrk?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=68&end=84"
+              className="absolute inset-0 w-full h-full border-0"
+              style={{ transform: "scale(1.2)", transformOrigin: "center" }}
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            />
+          ) : easterEgg === "steve" ? (
+            <iframe
+              src="https://www.youtube.com/embed/wHLX1bYTCtU?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=10&end=140"
               className="absolute inset-0 w-full h-full border-0"
               style={{ transform: "scale(1.2)", transformOrigin: "center" }}
               allow="autoplay; encrypted-media"
