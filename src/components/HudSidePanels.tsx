@@ -1,8 +1,21 @@
 import { useEffect, useState } from "react";
 import ArcReactor from "./ArcReactor";
 import starkLogo from "@/assets/stark-logo.png";
+import type { ResizablePanel } from "@/hooks/useGestureResize";
 
-const HudSidePanels = () => {
+interface HudSidePanelsProps {
+  scales?: {
+    chatScale: number;
+    weatherScale: number;
+    radarScale: number;
+    powerScale: number;
+    storageScale: number;
+  };
+  activePanel?: ResizablePanel | null;
+  isResizing?: boolean;
+}
+
+const HudSidePanels = ({ scales, activePanel, isResizing }: HudSidePanelsProps) => {
   const [time, setTime] = useState(new Date());
   const [powerLevel, setPowerLevel] = useState(97);
   const [cpuUsage, setCpuUsage] = useState(42);
@@ -12,6 +25,8 @@ const HudSidePanels = () => {
   const [diskFree] = useState(Math.floor(150 + Math.random() * 100));
   const [uptimeHours] = useState(Math.floor(Math.random() * 200));
   const [uptimeMins] = useState(Math.floor(Math.random() * 60));
+
+  const s = scales || { chatScale: 1, weatherScale: 1, radarScale: 1, powerScale: 1, storageScale: 1 };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -28,6 +43,15 @@ const HudSidePanels = () => {
   const day = time.getDate().toString().padStart(2, "0");
   const weekday = time.toLocaleDateString("en-US", { weekday: "short" });
   const month = time.toLocaleDateString("en-US", { month: "long" });
+
+  const panelHighlight = (panel: ResizablePanel) =>
+    activePanel === panel ? "ring-1 ring-primary/50 rounded-sm bg-primary/5" : "";
+
+  const scaleStyle = (scale: number) => ({
+    transform: `scale(${scale})`,
+    transformOrigin: "top left",
+    transition: isResizing ? "none" : "transform 0.3s ease-out",
+  });
 
   return (
     <>
@@ -52,7 +76,7 @@ const HudSidePanels = () => {
       </div>
 
       {/* Storage / Capacity */}
-      <div className="fixed left-5 top-[170px] z-10 pointer-events-none animate-fade-in-up w-40">
+      <div className={`fixed left-5 top-[170px] z-10 pointer-events-none animate-fade-in-up w-40 p-1 ${panelHighlight("storage")}`} style={scaleStyle(s.storageScale)}>
         <div className="font-mono text-[7px] text-primary/50 tracking-widest mb-1">PRIMARY STORAGE</div>
         <div className="flex items-center gap-2">
           <div className="font-mono text-[8px] text-muted-foreground">Full Capacity:</div>
@@ -68,7 +92,7 @@ const HudSidePanels = () => {
       </div>
 
       {/* Power circular gauge */}
-      <div className="fixed left-5 top-[255px] z-10 pointer-events-none animate-fade-in-up flex items-center gap-3">
+      <div className={`fixed left-5 top-[255px] z-10 pointer-events-none animate-fade-in-up flex items-center gap-3 p-1 ${panelHighlight("power")}`} style={scaleStyle(s.powerScale)}>
         <div className="relative w-16 h-16">
           <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
             <circle cx="18" cy="18" r="15" fill="none" stroke="hsl(195 100% 50% / 0.1)" strokeWidth="2.5" />
@@ -81,7 +105,6 @@ const HudSidePanels = () => {
             <span className="font-mono text-[5px] text-muted-foreground">High</span>
           </div>
         </div>
-        {/* Mini CPU + MEM gauges */}
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1.5">
             <span className="font-mono text-[7px] text-muted-foreground w-7">CPU</span>
@@ -101,7 +124,7 @@ const HudSidePanels = () => {
       </div>
 
       {/* Radar */}
-      <div className="fixed left-5 top-[350px] z-10 pointer-events-none animate-fade-in-up">
+      <div className={`fixed left-5 top-[350px] z-10 pointer-events-none animate-fade-in-up p-1 ${panelHighlight("radar")}`} style={scaleStyle(s.radarScale)}>
         <div className="relative w-20 h-20">
           <svg viewBox="0 0 100 100" className="w-full h-full">
             <circle cx="50" cy="50" r="45" fill="none" stroke="hsl(195 100% 50% / 0.12)" strokeWidth="0.5" />
@@ -117,7 +140,7 @@ const HudSidePanels = () => {
       </div>
 
       {/* Weather */}
-      <div className="fixed left-5 top-[460px] z-10 pointer-events-none animate-fade-in-up">
+      <div className={`fixed left-5 top-[460px] z-10 pointer-events-none animate-fade-in-up p-1 ${panelHighlight("weather")}`} style={scaleStyle(s.weatherScale)}>
         <div className="font-mono text-[7px] text-primary/50 tracking-widest mb-0.5">WEATHER</div>
         <div className="font-orbitron text-lg text-primary leading-none">{temp}°C</div>
         <div className="font-mono text-[7px] text-muted-foreground mt-0.5">PARTLY CLOUDY</div>
@@ -218,6 +241,21 @@ const HudSidePanels = () => {
           ))}
         </div>
       </div>
+
+      {/* ===== Gesture resize indicator ===== */}
+      {activePanel && (
+        <div className="fixed bottom-16 left-1/2 -translate-x-1/2 z-30 pointer-events-none animate-fade-in">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card/80 backdrop-blur-md border border-primary/30">
+            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            <span className="font-mono text-[9px] text-primary tracking-wider">
+              RESIZE: {activePanel.toUpperCase()} · {Math.round((s[`${activePanel}Scale` as keyof typeof s] as number) * 100)}%
+            </span>
+            <span className="font-mono text-[7px] text-muted-foreground ml-1">
+              👆POINT · 🖐️PALM↕ · 👍+/👊-
+            </span>
+          </div>
+        </div>
+      )}
     </>
   );
 };
