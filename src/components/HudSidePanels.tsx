@@ -88,7 +88,7 @@ const HudSidePanels = () => {
                   className="flex-1 rounded-sm transition-all duration-500"
                   style={{
                     height: `${Math.min(100, (powerLevel / 100) * (i + 1) * 8.5)}%`,
-                    background: i < 9 ? "hsl(195 100% 50% / 0.6)" : i < 11 ? "hsl(35 100% 50% / 0.6)" : "hsl(0 72% 51% / 0.6)",
+                  background: i < 9 ? "hsl(195 100% 50% / 0.6)" : i < 11 ? "hsl(210 80% 55% / 0.6)" : "hsl(220 70% 45% / 0.6)",
                     opacity: (i / 12) < (powerLevel / 100) ? 1 : 0.15,
                   }}
                 />
@@ -130,8 +130,8 @@ const HudSidePanels = () => {
         <div className="flex gap-2 justify-center">
           {[
             { label: "ARC", value: 97, color: "hsl(195 100% 50%)" },
-            { label: "SYS", value: 82, color: "hsl(35 100% 50%)" },
-            { label: "NET", value: 91, color: "hsl(150 80% 50%)" },
+            { label: "SYS", value: 82, color: "hsl(210 80% 55%)" },
+            { label: "NET", value: 91, color: "hsl(220 70% 60%)" },
           ].map((ring) => (
             <div key={ring.label} className="relative w-11 h-11">
               <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
