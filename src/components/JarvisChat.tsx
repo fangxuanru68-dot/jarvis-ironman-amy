@@ -218,7 +218,7 @@ const JarvisChat = () => {
         setMessages(prev => [...prev, { role: "assistant", content: endMsg }]);
         setApiMessages(prev => [...prev, { role: "assistant", content: endMsg }]);
         if (voiceEnabled) speak(endMsg);
-      }, 155000);
+      }, 13000);
       setIsLoading(false);
       return;
     }
