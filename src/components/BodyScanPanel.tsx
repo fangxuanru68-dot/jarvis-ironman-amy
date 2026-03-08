@@ -149,46 +149,43 @@ const BodyScanPanel = ({ isOpen, onClose }: BodyScanPanelProps) => {
                 }}
               />
             )}
-            {/* Highlight points after scan */}
-            {scanPhase === "complete" && (
-              <>
-                {[
-                  { x: "50%", y: "6%", label: "HELMET" },
-                  { x: "50%", y: "28%", label: "ARC REACTOR" },
-                  { x: "18%", y: "35%", label: "R.ARM" },
-                  { x: "82%", y: "35%", label: "L.ARM" },
-                  { x: "50%", y: "42%", label: "CORE" },
-                  { x: "14%", y: "56%", label: "R.REPULSOR" },
-                  { x: "86%", y: "56%", label: "L.REPULSOR" },
-                  { x: "38%", y: "70%", label: "R.LEG" },
-                  { x: "62%", y: "70%", label: "L.LEG" },
-                  { x: "35%", y: "92%", label: "R.BOOT" },
-                  { x: "65%", y: "92%", label: "L.BOOT" },
-                ].map((pt, i) => (
+            {/* Highlight points - appear as scan line passes them */}
+            {[
+              { x: "50%", y: "6%", label: "HELMET", threshold: 6 },
+              { x: "50%", y: "28%", label: "ARC REACTOR", threshold: 28 },
+              { x: "18%", y: "35%", label: "R.ARM", threshold: 35 },
+              { x: "82%", y: "35%", label: "L.ARM", threshold: 35 },
+              { x: "50%", y: "42%", label: "CORE", threshold: 42 },
+              { x: "14%", y: "56%", label: "R.REPULSOR", threshold: 56 },
+              { x: "86%", y: "56%", label: "L.REPULSOR", threshold: 56 },
+              { x: "38%", y: "70%", label: "R.LEG", threshold: 70 },
+              { x: "62%", y: "70%", label: "L.LEG", threshold: 70 },
+              { x: "35%", y: "92%", label: "R.BOOT", threshold: 92 },
+              { x: "65%", y: "92%", label: "L.BOOT", threshold: 92 },
+            ].map((pt, i) => (
+              scanProgress >= pt.threshold && (
+                <div
+                  key={i}
+                  className="absolute animate-fade-in flex items-center gap-1"
+                  style={{
+                    left: pt.x,
+                    top: pt.y,
+                    transform: "translate(-50%, -50%)",
+                  }}
+                >
                   <div
-                    key={i}
-                    className="absolute animate-fade-in flex items-center gap-1"
+                    className="w-2 h-2 rounded-full border border-primary/60"
                     style={{
-                      left: pt.x,
-                      top: pt.y,
-                      transform: "translate(-50%, -50%)",
-                      animationDelay: `${i * 0.12}s`,
+                      boxShadow: "0 0 6px hsl(195 100% 50% / 0.5)",
+                      animation: "pulse 2s ease-in-out infinite",
                     }}
                   >
-                    <div
-                      className="w-2 h-2 rounded-full border border-primary/60"
-                      style={{
-                        boxShadow: "0 0 6px hsl(195 100% 50% / 0.5)",
-                        animation: "pulse 2s ease-in-out infinite",
-                      }}
-                    >
-                      <div className="w-1 h-1 rounded-full bg-primary/80 m-auto mt-[2px]" />
-                    </div>
-                    <span className="font-mono text-[6px] text-primary/50 whitespace-nowrap">{pt.label}</span>
+                    <div className="w-1 h-1 rounded-full bg-primary/80 m-auto mt-[2px]" />
                   </div>
-                ))}
-              </>
-            )}
+                  <span className="font-mono text-[6px] text-primary/50 whitespace-nowrap">{pt.label}</span>
+                </div>
+              )
+            ))}
           </div>
 
           {/* Rotating rings */}
