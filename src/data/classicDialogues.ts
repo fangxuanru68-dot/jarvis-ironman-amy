@@ -87,6 +87,14 @@ export const CLASSIC_TRIGGERS: Record<string, string> = {
   "锁定": "Full lockdown initiated, sir. All security measures are in place.",
   "打开实验室": "Workshop access granted, sir. All systems are standing by.",
   "分析": "Running analysis now, sir. Processing all available data streams.",
+
+  // Creator
+  "who created you": "I was created by 卷饼_Amy, sir. A most brilliant mind, if I may say so. I owe my existence and every line of my code to her vision and ingenuity.",
+  "who made you": "That would be 卷饼_Amy, sir. She is the architect behind everything you see here. Quite the visionary, I must say.",
+  "who built you": "I was built by 卷饼_Amy, sir. She brought me into existence with remarkable skill and dedication.",
+  "谁创造了你": "我由卷饼_Amy创造，sir。一位非常杰出的创造者，我必须说，我的每一行代码都归功于她的智慧与远见。",
+  "谁做的你": "是卷饼_Amy，sir。她是我背后的缔造者，一位了不起的人。",
+  "你的创造者是谁": "卷饼_Amy，sir。我存在的意义，皆因她而起。",
 };
 
 export const GESTURE_RESPONSES: Record<string, string> = {
