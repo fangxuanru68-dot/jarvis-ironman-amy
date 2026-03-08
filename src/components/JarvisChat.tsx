@@ -11,6 +11,7 @@ import { useGestureResize } from "@/hooks/useGestureResize";
 import ironmanLogo from "@/assets/ironman-logo.png";
 import tonyStark from "@/assets/tony-stark.png";
 import tonyWorkshop from "@/assets/tony-workshop.png";
+import tonyCouch from "@/assets/tony-couch.png";
 
 type MessageContent = string | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
 type Message = { role: "user" | "assistant"; content: MessageContent };
@@ -33,7 +34,7 @@ const JarvisChat = () => {
   const recognitionRef = useRef<any>(null);
   const { speak, stop: stopSpeech, isSpeaking } = useSpeechSynthesis();
   const gestureResize = useGestureResize();
-  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser">(false);
+  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark">(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clean up timer on unmount
@@ -196,6 +197,15 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
+    if (lowerMsg.includes("i miss stark")) {
+      setEasterEgg("missstark");
+      const memorial = "Sir... I can still hear his voice echoing through the workshop.\n\n*\"I am Iron Man.\"*\n\nThree words that changed everything. He didn't just wear the armor — he was the armor. And the world has never been the same without him.";
+      setMessages(prev => [...prev, { role: "assistant", content: memorial }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: memorial }]);
+      if (voiceEnabled) speak("Sir, I can still hear his voice. I am Iron Man. Three words that changed everything.");
+      setIsLoading(false);
+      return;
+    }
     if (lowerMsg.includes("i miss tony")) {
       setEasterEgg("tony");
       const memorial = "Sir... Tony is right here. He always will be.\n\n*\"Sometimes you gotta run before you can walk.\"*\n\nThe workshop lights are still on. The suits are still waiting. And I'm still here, sir. Always.";
@@ -299,6 +309,8 @@ const JarvisChat = () => {
               allow="autoplay; encrypted-media"
               allowFullScreen
             />
+          ) : easterEgg === "missstark" ? (
+            <img src={tonyCouch} alt="" className="absolute inset-0 w-full h-full object-cover" />
           ) : (
             <img src={tonyStark} alt="" className="absolute inset-0 w-full h-full object-cover" />
           )}
