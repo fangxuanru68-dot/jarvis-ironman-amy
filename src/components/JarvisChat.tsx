@@ -10,6 +10,7 @@ import { CLASSIC_TRIGGERS, GESTURE_RESPONSES } from "@/data/classicDialogues";
 import { useGestureResize } from "@/hooks/useGestureResize";
 import BodyScanPanel from "./BodyScanPanel";
 import WarModeOverlay from "./WarModeOverlay";
+import FightModeOverlay from "./FightModeOverlay";
 import HudRightPanel from "./HudRightPanel";
 
 import tonyStark from "@/assets/tony-stark.png";
@@ -40,6 +41,7 @@ const JarvisChat = () => {
   const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark" | "xman" | "thor">(false);
   const [bodyScanOpen, setBodyScanOpen] = useState(false);
   const [warModeActive, setWarModeActive] = useState(false);
+  const [fightModeActive, setFightModeActive] = useState(false);
   const [rightEyePos, setRightEyePos] = useState<{ x: number; y: number } | null>(null);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -188,6 +190,28 @@ const JarvisChat = () => {
     if (lowerMsg.includes("war mode") || msg.includes("战斗模式")) {
       setWarModeActive(true);
       const response = "War mode activated, sir. Deploying combat targeting systems. Right-eye HUD reticle online. Tracking all hostiles in visual range.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Fight mode end trigger
+    if (fightModeActive && (lowerMsg.includes("fight mode end") || lowerMsg.includes("fight mode off") || lowerMsg.includes("end fight mode") || msg.includes("结束战斗"))) {
+      setFightModeActive(false);
+      const response = "Fight mode disengaged, sir. Combat targeting systems powering down. Returning to standard HUD configuration.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Fight mode trigger
+    if (lowerMsg.includes("fight mode") && !lowerMsg.includes("end") && !lowerMsg.includes("off")) {
+      setFightModeActive(true);
+      const response = "Fight mode engaged, sir. Full combat targeting reticle deployed on your right eye. Repulsors are charged and weapons systems are hot. I'll maintain lock until you give the stand-down order. Say 'fight mode end' to disengage.";
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
       if (voiceEnabled) speak(response);
@@ -575,6 +599,7 @@ const JarvisChat = () => {
       {/* Body Scan Panel */}
       <BodyScanPanel isOpen={bodyScanOpen} onClose={() => setBodyScanOpen(false)} />
       <WarModeOverlay isActive={warModeActive} onEnd={() => setWarModeActive(false)} rightEyePos={rightEyePos} />
+      <FightModeOverlay isActive={fightModeActive} rightEyePos={rightEyePos} />
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">
