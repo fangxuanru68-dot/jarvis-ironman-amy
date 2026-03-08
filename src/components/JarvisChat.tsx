@@ -37,7 +37,7 @@ const JarvisChat = () => {
   const recognitionRef = useRef<any>(null);
   const { speak, stop: stopSpeech, isSpeaking } = useSpeechSynthesis();
   const gestureResize = useGestureResize();
-  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark" | "xman">(false);
+  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark" | "xman" | "thor">(false);
   const [bodyScanOpen, setBodyScanOpen] = useState(false);
   const [warModeActive, setWarModeActive] = useState(false);
   const [rightEyePos, setRightEyePos] = useState<{ x: number; y: number } | null>(null);
@@ -279,6 +279,22 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
+    if (lowerMsg === "thor" || lowerMsg.includes("play thor")) {
+      setEasterEgg("thor");
+      const response = "Ah, the God of Thunder himself. Bringing up the footage now, sir. I must say, Mr. Stark always found Thor's entrances rather... *dramatic*.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak("Ah, the God of Thunder. Bringing up the footage now, sir.");
+      tonyMessageTimerRef.current = setTimeout(() => {
+        setEasterEgg(false);
+        const endMsg = "Footage complete, sir. Say what you will about Thor — the man knows how to make an entrance.";
+        setMessages(prev => [...prev, { role: "assistant", content: endMsg }]);
+        setApiMessages(prev => [...prev, { role: "assistant", content: endMsg }]);
+        if (voiceEnabled) speak(endMsg);
+      }, 12000);
+      setIsLoading(false);
+      return;
+    }
     if (lowerMsg.includes("im steve rogers") || lowerMsg.includes("i am steve rogers")) {
       const steveResponse = "Captain Rogers confirmed.\n\nMr. Stark's heart rate historically increases when you enter the room.";
       setMessages(prev => [...prev, { role: "assistant", content: steveResponse }]);
@@ -342,12 +358,14 @@ const JarvisChat = () => {
               playsInline
               onEnded={() => setEasterEgg(false)}
             />
-          ) : (easterEgg === "video" || easterEgg === "tony" || easterEgg === "tonymessage") ? (
+          ) : (easterEgg === "video" || easterEgg === "tony" || easterEgg === "tonymessage" || easterEgg === "thor") ? (
             <iframe
               src={easterEgg === "tony"
                 ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&loop=1&mute=0&start=50&playlist=iBC5M69Y6ZE"
                 : easterEgg === "tonymessage"
                 ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=135&end=146"
+                : easterEgg === "thor"
+                ? "https://www.youtube.com/embed/eTZZCvuYxrk?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=68&end=80"
                 : "https://www.youtube.com/embed/yGB8aj1QhIM?autoplay=1&controls=0&showinfo=0&modestbranding=1&loop=1&mute=0&playlist=yGB8aj1QhIM"
               }
               className="absolute inset-0 w-full h-full border-0"
