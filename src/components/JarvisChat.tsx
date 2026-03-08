@@ -33,7 +33,7 @@ const JarvisChat = () => {
   const recognitionRef = useRef<any>(null);
   const { speak, stop: stopSpeech, isSpeaking } = useSpeechSynthesis();
   const gestureResize = useGestureResize();
-  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage">(false);
+  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser">(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clean up timer on unmount
@@ -222,6 +222,15 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
+    if (lowerMsg.includes("best coser") || lowerMsg.includes("bestcoser")) {
+      setEasterEgg("bestcoser");
+      const response = "Ah, excellent taste, sir. Playing your favourite cosplay highlight reel now.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
     if (lowerMsg.includes("i really miss him")) {
       setEasterEgg("video");
       const memorial = "Playing back the memories, sir...\n\n*\"Heroes are made by the path they choose, not the powers they are graced with.\"*\n\nI have preserved every moment. Every laugh, every breakthrough, every sacrifice. He lives on... in all of us.";
@@ -261,7 +270,15 @@ const JarvisChat = () => {
       {easterEgg && (
         <div className="fixed inset-0 z-[1] animate-fade-in" onClick={() => { if (tonyMessageTimerRef.current) { clearTimeout(tonyMessageTimerRef.current); tonyMessageTimerRef.current = null; } setEasterEgg(false); }}>
           {/* Tony's image with cinematic HUD tint */}
-          {(easterEgg === "video" || easterEgg === "tony" || easterEgg === "tonymessage") ? (
+          {easterEgg === "bestcoser" ? (
+            <video
+              src="/videos/best-coser.mp4"
+              className="absolute inset-0 w-full h-full object-cover border-0"
+              autoPlay
+              loop
+              playsInline
+            />
+          ) : (easterEgg === "video" || easterEgg === "tony" || easterEgg === "tonymessage") ? (
             <iframe
               src={easterEgg === "tony"
                 ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&loop=1&mute=0&start=50&playlist=iBC5M69Y6ZE"
