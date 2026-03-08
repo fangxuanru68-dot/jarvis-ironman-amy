@@ -34,7 +34,7 @@ const JarvisChat = () => {
   const recognitionRef = useRef<any>(null);
   const { speak, stop: stopSpeech, isSpeaking } = useSpeechSynthesis();
   const gestureResize = useGestureResize();
-  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark">(false);
+  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark" | "xman">(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clean up timer on unmount
@@ -241,10 +241,19 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
-    if (lowerMsg.includes("im steve rogers") || lowerMsg.includes("i am steve rogers")) {
-      const response = "Captain Rogers confirmed.\n\nMr. Stark's heart rate historically increases when you enter the room.";
+    if (lowerMsg.includes("your favorite xman video edit") || lowerMsg.includes("favorite x man video") || lowerMsg.includes("favorite xmen video")) {
+      setEasterEgg("xman");
+      const response = "Ah, the X-Men... *our neighbours from across the Marvel aisle.*\n\nI must say, sir, Mr. Stark has always had... *mixed feelings* about them.\n\nMagneto in particular — Tony's least favourite. And for good reason. A man who can manipulate *all metal*? That's essentially a walking \"Destroy Iron Man\" button. Every suit Mr. Stark ever built would crumple like tin foil in his hands. Frankly, sir, it's the one matchup that keeps me running threat simulations at 3 AM.\n\nProfessor X is tolerable — at least he's *polite* before reading your mind. Wolverine? Respectable, if a bit... uncivilised. And don't get me started on Mystique — the security protocols alone would be a nightmare.\n\nStill, I must admit... their story is rather compelling. Enjoy the edit, sir.";
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak("The X-Men. Our neighbours from across the Marvel aisle. Tony's least favourite? Magneto. A man who controls all metal is essentially a walking Destroy Iron Man button. Every suit would crumple like tin foil. Still, their story is rather compelling. Enjoy the edit, sir.");
+      setIsLoading(false);
+      return;
+    }
+    if (lowerMsg.includes("im steve rogers") || lowerMsg.includes("i am steve rogers")) {
+      const steveResponse = "Captain Rogers confirmed.\n\nMr. Stark's heart rate historically increases when you enter the room.";
+      setMessages(prev => [...prev, { role: "assistant", content: steveResponse }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: steveResponse }]);
       if (voiceEnabled) speak("Captain Rogers confirmed. Mr. Stark's heart rate historically increases when you enter the room.");
       setIsLoading(false);
       return;
@@ -288,7 +297,15 @@ const JarvisChat = () => {
       {easterEgg && (
         <div className="fixed inset-0 z-[1] animate-fade-in" onClick={() => { if (tonyMessageTimerRef.current) { clearTimeout(tonyMessageTimerRef.current); tonyMessageTimerRef.current = null; } setEasterEgg(false); }}>
           {/* Tony's image with cinematic HUD tint */}
-          {easterEgg === "bestcoser" ? (
+          {easterEgg === "xman" ? (
+            <iframe
+              src="https://player.bilibili.com/player.html?bvid=BV1PU4y1S7Ga&high_quality=1&danmaku=0&autoplay=1"
+              className="absolute inset-0 w-full h-full border-0"
+              allow="autoplay; encrypted-media; fullscreen"
+              allowFullScreen
+              scrolling="no"
+            />
+          ) : easterEgg === "bestcoser" ? (
             <video
               src="/videos/best-coser.mp4"
               className="absolute inset-0 w-full h-full object-contain border-0 bg-black"
