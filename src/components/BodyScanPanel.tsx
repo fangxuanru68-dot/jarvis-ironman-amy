@@ -67,8 +67,9 @@ const BodyScanPanel = ({ isOpen, onClose }: BodyScanPanelProps) => {
       className="fixed top-0 right-0 bottom-0 z-30 flex flex-col overflow-hidden animate-slide-in-right"
       style={{
         width: "380px",
-        background: "transparent",
-        borderLeft: "1px solid hsl(195 100% 50% / 0.1)",
+        background: "linear-gradient(135deg, hsl(220 30% 4% / 0.95), hsl(210 40% 6% / 0.92))",
+        borderLeft: "1px solid hsl(195 100% 50% / 0.2)",
+        backdropFilter: "blur(20px)",
       }}
     >
       {/* Header */}
