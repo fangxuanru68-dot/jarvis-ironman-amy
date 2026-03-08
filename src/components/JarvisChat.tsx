@@ -599,6 +599,7 @@ const JarvisChat = () => {
       {/* Body Scan Panel */}
       <BodyScanPanel isOpen={bodyScanOpen} onClose={() => setBodyScanOpen(false)} />
       <WarModeOverlay isActive={warModeActive} onEnd={() => setWarModeActive(false)} rightEyePos={rightEyePos} />
+      <FightModeOverlay isActive={fightModeActive} rightEyePos={rightEyePos} />
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">
