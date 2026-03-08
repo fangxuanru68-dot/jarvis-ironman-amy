@@ -276,6 +276,10 @@ const JarvisChat = () => {
       setMessages(prev => [...prev, { role: "assistant", content: memorial }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: memorial }]);
       if (voiceEnabled) speak("Sir, Tony is right here. He always will be. The workshop lights are still on.");
+      // Video ~3:12, starting at 50s = ~142s
+      tonyMessageTimerRef.current = setTimeout(() => {
+        setEasterEgg(false);
+      }, 142000);
       setIsLoading(false);
       return;
     }
