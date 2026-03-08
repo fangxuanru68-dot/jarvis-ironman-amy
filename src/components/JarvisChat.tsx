@@ -325,10 +325,10 @@ const JarvisChat = () => {
     }
     if (lowerMsg === "steve") {
       setEasterEgg("stevesolo");
-      // 0:20 to 0:30 = 10 seconds
+      // 0:20 to 0:32 = 12 seconds
       tonyMessageTimerRef.current = setTimeout(() => {
         setEasterEgg(false);
-      }, 10000);
+      }, 12000);
       setIsLoading(false);
       return;
     }
