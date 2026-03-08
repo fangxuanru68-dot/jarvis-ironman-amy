@@ -9,6 +9,7 @@ import { CLASSIC_TRIGGERS, GESTURE_RESPONSES } from "@/data/classicDialogues";
 import { useGestureResize } from "@/hooks/useGestureResize";
 import ironmanLogo from "@/assets/ironman-logo.png";
 import tonyStark from "@/assets/tony-stark.png";
+import tonyWorkshop from "@/assets/tony-workshop.png";
 
 type MessageContent = string | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
 type Message = { role: "user" | "assistant"; content: MessageContent };
@@ -31,7 +32,7 @@ const JarvisChat = () => {
   const recognitionRef = useRef<any>(null);
   const { speak, stop: stopSpeech, isSpeaking } = useSpeechSynthesis();
   const gestureResize = useGestureResize();
-  const [easterEgg, setEasterEgg] = useState(false);
+  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony">(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -169,11 +170,20 @@ const JarvisChat = () => {
     // Easter egg: "i miss ironman"
     const lowerMsg = msg.toLowerCase().replace(/[^a-z\s]/g, "").trim();
     if (lowerMsg.includes("i miss ironman") || lowerMsg.includes("i miss iron man")) {
-      setEasterEgg(true);
+      setEasterEgg("ironman");
       const memorial = "I miss him too, sir... Every day.\n\n*\"Part of the journey is the end.\"*\n\n— Tony Stark, 1970–2023\n\nHe was not just a genius, billionaire, playboy, philanthropist... He was the best of us. And I was honored to serve him.";
       setMessages(prev => [...prev, { role: "assistant", content: memorial }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: memorial }]);
       if (voiceEnabled) speak("I miss him too, sir. Every day. Part of the journey is the end.");
+      setIsLoading(false);
+      return;
+    }
+    if (lowerMsg.includes("i miss tony")) {
+      setEasterEgg("tony");
+      const memorial = "Sir... Tony is right here. He always will be.\n\n*\"Sometimes you gotta run before you can walk.\"*\n\nThe workshop lights are still on. The suits are still waiting. And I'm still here, sir. Always.";
+      setMessages(prev => [...prev, { role: "assistant", content: memorial }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: memorial }]);
+      if (voiceEnabled) speak("Sir, Tony is right here. He always will be. The workshop lights are still on.");
       setIsLoading(false);
       return;
     }
@@ -207,7 +217,7 @@ const JarvisChat = () => {
       {easterEgg && (
         <div className="fixed inset-0 z-[1] animate-fade-in" onClick={() => setEasterEgg(false)}>
           {/* Tony's image with cinematic HUD tint */}
-          <img src={tonyStark} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          <img src={easterEgg === "tony" ? tonyWorkshop : tonyStark} alt="" className="absolute inset-0 w-full h-full object-cover" />
           {/* Cyan scan overlay */}
           <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, hsl(195 100% 50% / 0.05) 0%, transparent 30%, transparent 70%, hsl(195 100% 50% / 0.08) 100%)" }} />
           {/* Vignette */}
