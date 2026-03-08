@@ -106,45 +106,151 @@ const BodyScanPanel = ({ isOpen, onClose }: BodyScanPanelProps) => {
       <div className="flex-1 flex items-center justify-center relative px-4">
         <div className="relative w-full h-full max-h-[500px] flex items-center justify-center">
           {/* Body outline SVG */}
-          <svg viewBox="0 0 200 500" className="h-full max-h-[420px] w-auto" style={{ filter: "drop-shadow(0 0 15px hsl(195 100% 50% / 0.3))" }}>
+          <svg viewBox="0 0 300 600" className="h-full max-h-[420px] w-auto" style={{ filter: "drop-shadow(0 0 15px hsl(195 100% 50% / 0.3))" }}>
             {/* Grid lines behind body */}
-            {Array.from({ length: 25 }).map((_, i) => (
-              <line key={`h${i}`} x1="0" y1={i * 20} x2="200" y2={i * 20} stroke="hsl(195 100% 50% / 0.05)" strokeWidth="0.5" />
+            {Array.from({ length: 30 }).map((_, i) => (
+              <line key={`h${i}`} x1="0" y1={i * 20} x2="300" y2={i * 20} stroke="hsl(195 100% 50% / 0.05)" strokeWidth="0.5" />
             ))}
-            {Array.from({ length: 10 }).map((_, i) => (
-              <line key={`v${i}`} x1={i * 20} y1="0" x2={i * 20} y2="500" stroke="hsl(195 100% 50% / 0.05)" strokeWidth="0.5" />
+            {Array.from({ length: 15 }).map((_, i) => (
+              <line key={`v${i}`} x1={i * 20} y1="0" x2={i * 20} y2="600" stroke="hsl(195 100% 50% / 0.05)" strokeWidth="0.5" />
             ))}
 
-            {/* Body silhouette */}
+            {/* Iron Man Armor Silhouette */}
+            {/* Helmet */}
             <path
-              d="M100,20 C115,20 125,35 125,50 C125,65 115,75 100,75 C85,75 75,65 75,50 C75,35 85,20 100,20 Z
-                 M100,75 L100,80 M70,110 L55,170 L50,175 L40,172 M130,110 L145,170 L150,175 L160,172
-                 M80,80 L70,110 L75,120 L80,115 L85,100 L100,95 L115,100 L120,115 L125,120 L130,110 L120,80
-                 M80,80 L100,85 L120,80
-                 M85,100 L80,180 L75,280 L80,285 L85,280 L90,180 L100,160 L110,180 L115,280 L120,285 L125,280 L120,180 L115,100
-                 M75,280 L70,370 L65,440 L60,445 L55,442 L60,440 L65,370 L70,280
-                 M125,280 L130,370 L135,440 L140,445 L145,442 L140,440 L135,370 L130,280"
-              fill="none"
-              stroke="hsl(195 100% 50% / 0.4)"
-              strokeWidth="1.5"
-              strokeLinejoin="round"
+              d="M150,18 C165,18 178,25 185,38 L188,48 L190,62 L188,75 L185,82 
+                 C183,86 180,90 176,93 L172,95 L168,96 L160,97 L150,98 L140,97 L132,96 L128,95 L124,93
+                 C120,90 117,86 115,82 L112,75 L110,62 L112,48 L115,38 C122,25 135,18 150,18 Z"
+              fill="none" stroke="hsl(195 100% 50% / 0.5)" strokeWidth="1.5"
+            />
+            {/* Helmet face plate */}
+            <path
+              d="M130,45 L132,40 L140,36 L150,34 L160,36 L168,40 L170,45 L170,55 L168,62 L165,68 L160,72 L150,75 L140,72 L135,68 L132,62 L130,55 Z"
+              fill="none" stroke="hsl(195 100% 50% / 0.3)" strokeWidth="0.8"
+            />
+            {/* Eyes */}
+            <path d="M135,50 L140,47 L148,48 L148,52 L140,53 Z" fill="hsl(195 100% 50% / 0.15)" stroke="hsl(195 100% 50% / 0.4)" strokeWidth="0.6" />
+            <path d="M165,50 L160,47 L152,48 L152,52 L160,53 Z" fill="hsl(195 100% 50% / 0.15)" stroke="hsl(195 100% 50% / 0.4)" strokeWidth="0.6" />
+            {/* Mouth slit */}
+            <path d="M140,65 L145,67 L150,68 L155,67 L160,65" fill="none" stroke="hsl(195 100% 50% / 0.25)" strokeWidth="0.6" />
+            {/* Helmet side details */}
+            <path d="M112,55 L108,50 L108,62 L112,68" fill="none" stroke="hsl(195 100% 50% / 0.3)" strokeWidth="0.8" />
+            <path d="M188,55 L192,50 L192,62 L188,68" fill="none" stroke="hsl(195 100% 50% / 0.3)" strokeWidth="0.8" />
+
+            {/* Neck */}
+            <path d="M135,98 L132,105 L130,112 L130,118 L170,118 L170,112 L168,105 L165,98" fill="none" stroke="hsl(195 100% 50% / 0.4)" strokeWidth="1.2" />
+            <path d="M133,103 L167,103 M132,108 L168,108 M131,113 L169,113" fill="none" stroke="hsl(195 100% 50% / 0.15)" strokeWidth="0.5" />
+
+            {/* Shoulders & Upper torso */}
+            <path
+              d="M130,118 L118,120 L100,125 L85,132 L75,140 L70,148 
+                 M170,118 L182,120 L200,125 L215,132 L225,140 L230,148"
+              fill="none" stroke="hsl(195 100% 50% / 0.5)" strokeWidth="1.5"
+            />
+            {/* Shoulder armor plates */}
+            <path d="M85,132 L78,128 L68,135 L65,145 L70,148 L80,142 Z" fill="none" stroke="hsl(195 100% 50% / 0.35)" strokeWidth="1" />
+            <path d="M215,132 L222,128 L232,135 L235,145 L230,148 L220,142 Z" fill="none" stroke="hsl(195 100% 50% / 0.35)" strokeWidth="1" />
+
+            {/* Chest plate */}
+            <path
+              d="M130,118 L125,130 L118,150 L115,170 L118,195 L125,210 L135,220 L150,225 L165,220 L175,210 L182,195 L185,170 L182,150 L175,130 L170,118"
+              fill="none" stroke="hsl(195 100% 50% / 0.5)" strokeWidth="1.5"
+            />
+            {/* Arc reactor */}
+            <circle cx="150" cy="160" r="18" fill="none" stroke="hsl(195 100% 50% / 0.5)" strokeWidth="1.2" />
+            <circle cx="150" cy="160" r="12" fill="none" stroke="hsl(195 100% 50% / 0.35)" strokeWidth="0.8" />
+            <circle cx="150" cy="160" r="6" fill="hsl(195 100% 50% / 0.15)" stroke="hsl(195 100% 50% / 0.6)" strokeWidth="0.8">
+              <animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite" />
+            </circle>
+            {/* Chest plate details */}
+            <path d="M130,135 L135,155 L140,145 L150,142 L160,145 L165,155 L170,135" fill="none" stroke="hsl(195 100% 50% / 0.2)" strokeWidth="0.7" />
+            <path d="M125,180 L135,178 L142,175 M175,180 L165,178 L158,175" fill="none" stroke="hsl(195 100% 50% / 0.2)" strokeWidth="0.7" />
+            <path d="M120,195 L130,200 L140,205 M180,195 L170,200 L160,205" fill="none" stroke="hsl(195 100% 50% / 0.2)" strokeWidth="0.7" />
+
+            {/* Upper arms */}
+            <path
+              d="M70,148 L65,160 L60,180 L58,200 L60,215 L63,225
+                 M230,148 L235,160 L240,180 L242,200 L240,215 L237,225"
+              fill="none" stroke="hsl(195 100% 50% / 0.45)" strokeWidth="1.3"
+            />
+            {/* Upper arm armor segments */}
+            <path d="M68,155 L58,158 L55,170 L58,180 L65,178" fill="none" stroke="hsl(195 100% 50% / 0.25)" strokeWidth="0.7" />
+            <path d="M232,155 L242,158 L245,170 L242,180 L235,178" fill="none" stroke="hsl(195 100% 50% / 0.25)" strokeWidth="0.7" />
+
+            {/* Elbow joints */}
+            <circle cx="62" cy="225" r="8" fill="none" stroke="hsl(195 100% 50% / 0.3)" strokeWidth="0.8" />
+            <circle cx="238" cy="225" r="8" fill="none" stroke="hsl(195 100% 50% / 0.3)" strokeWidth="0.8" />
+
+            {/* Forearms */}
+            <path
+              d="M63,233 L60,250 L55,270 L52,290 L50,305 L50,310
+                 M237,233 L240,250 L245,270 L248,290 L250,305 L250,310"
+              fill="none" stroke="hsl(195 100% 50% / 0.45)" strokeWidth="1.3"
+            />
+            {/* Forearm armor plates */}
+            <path d="M60,245 L50,248 L48,265 L52,275 L58,272" fill="none" stroke="hsl(195 100% 50% / 0.25)" strokeWidth="0.7" />
+            <path d="M240,245 L250,248 L252,265 L248,275 L242,272" fill="none" stroke="hsl(195 100% 50% / 0.25)" strokeWidth="0.7" />
+            {/* Repulsor circles on palms */}
+            <circle cx="48" cy="318" r="5" fill="none" stroke="hsl(195 100% 50% / 0.4)" strokeWidth="0.8" />
+            <circle cx="252" cy="318" r="5" fill="none" stroke="hsl(195 100% 50% / 0.4)" strokeWidth="0.8" />
+
+            {/* Hands */}
+            <path
+              d="M50,310 L48,320 L45,328 L42,325 L44,318 M48,320 L46,330 L43,328 M48,320 L50,330 L48,332 M50,310 L53,322 L55,328 L53,330
+                 M250,310 L252,320 L255,328 L258,325 L256,318 M252,320 L254,330 L257,328 M252,320 L250,330 L252,332 M250,310 L247,322 L245,328 L247,330"
+              fill="none" stroke="hsl(195 100% 50% / 0.35)" strokeWidth="0.8"
             />
 
-            {/* Inner detail lines - skeletal/muscle hints */}
+            {/* Waist / Ab section */}
             <path
-              d="M90,50 L95,48 M105,48 L110,50 M95,55 L100,57 L105,55 M95,62 L105,62
-                 M90,100 L90,150 M110,100 L110,150
-                 M95,120 L105,120 M95,140 L105,140
-                 M85,200 L85,250 M115,200 L115,250
-                 M75,300 L75,350 M125,300 L125,350"
-              fill="none"
-              stroke="hsl(195 100% 50% / 0.15)"
-              strokeWidth="0.8"
+              d="M125,210 L120,225 L118,240 L120,255 L125,260 L150,265 L175,260 L180,255 L182,240 L180,225 L175,210"
+              fill="none" stroke="hsl(195 100% 50% / 0.45)" strokeWidth="1.3"
             />
+            {/* Ab plate lines */}
+            <path d="M140,215 L140,255 M160,215 L160,255 M135,230 L165,230 M135,245 L165,245" fill="none" stroke="hsl(195 100% 50% / 0.15)" strokeWidth="0.5" />
+
+            {/* Hip / Codpiece area */}
+            <path
+              d="M125,260 L118,270 L115,285 L120,295 L135,300 L150,303 L165,300 L180,295 L185,285 L182,270 L175,260"
+              fill="none" stroke="hsl(195 100% 50% / 0.45)" strokeWidth="1.3"
+            />
+
+            {/* Upper legs / Thighs */}
+            <path
+              d="M135,300 L128,320 L122,345 L120,370 L122,385
+                 M165,300 L172,320 L178,345 L180,370 L178,385"
+              fill="none" stroke="hsl(195 100% 50% / 0.45)" strokeWidth="1.3"
+            />
+            {/* Thigh armor plates */}
+            <path d="M130,310 L118,315 L115,335 L120,350 L125,348" fill="none" stroke="hsl(195 100% 50% / 0.25)" strokeWidth="0.7" />
+            <path d="M170,310 L182,315 L185,335 L180,350 L175,348" fill="none" stroke="hsl(195 100% 50% / 0.25)" strokeWidth="0.7" />
+
+            {/* Knee joints */}
+            <path d="M118,378 L115,385 L115,395 L118,400 L128,402 L130,395 L128,385 Z" fill="none" stroke="hsl(195 100% 50% / 0.3)" strokeWidth="0.8" />
+            <path d="M182,378 L185,385 L185,395 L182,400 L172,402 L170,395 L172,385 Z" fill="none" stroke="hsl(195 100% 50% / 0.3)" strokeWidth="0.8" />
+
+            {/* Lower legs / Shins */}
+            <path
+              d="M122,400 L118,420 L115,445 L113,470 L112,485
+                 M178,400 L182,420 L185,445 L187,470 L188,485"
+              fill="none" stroke="hsl(195 100% 50% / 0.45)" strokeWidth="1.3"
+            />
+            {/* Shin armor plates */}
+            <path d="M120,410 L110,415 L108,440 L112,460 L116,455" fill="none" stroke="hsl(195 100% 50% / 0.25)" strokeWidth="0.7" />
+            <path d="M180,410 L190,415 L192,440 L188,460 L184,455" fill="none" stroke="hsl(195 100% 50% / 0.25)" strokeWidth="0.7" />
+
+            {/* Feet / Boots */}
+            <path
+              d="M112,485 L110,495 L108,505 L105,515 L100,520 L95,522 L93,520 L95,515 L100,510 L108,500 L110,490
+                 M188,485 L190,495 L192,505 L195,515 L200,520 L205,522 L207,520 L205,515 L200,510 L192,500 L190,490"
+              fill="none" stroke="hsl(195 100% 50% / 0.4)" strokeWidth="1.2"
+            />
+            {/* Boot sole detail */}
+            <path d="M95,518 L105,518 M205,518 L195,518" fill="none" stroke="hsl(195 100% 50% / 0.2)" strokeWidth="0.5" />
 
             {/* Scanning line */}
             <line
-              x1="30" y1={scanProgress * 4.5} x2="170" y2={scanProgress * 4.5}
+              x1="40" y1={scanProgress * 5.5} x2="260" y2={scanProgress * 5.5}
               stroke="hsl(195 100% 50% / 0.8)"
               strokeWidth="2"
               style={{
@@ -156,7 +262,7 @@ const BodyScanPanel = ({ isOpen, onClose }: BodyScanPanelProps) => {
             {/* Scan glow area */}
             {scanPhase === "scanning" && (
               <rect
-                x="30" y={Math.max(0, scanProgress * 4.5 - 30)} width="140" height="30"
+                x="40" y={Math.max(0, scanProgress * 5.5 - 30)} width="220" height="30"
                 fill="url(#scanGlow)"
                 opacity="0.3"
               />
@@ -166,13 +272,15 @@ const BodyScanPanel = ({ isOpen, onClose }: BodyScanPanelProps) => {
             {scanPhase === "complete" && (
               <>
                 {[
-                  { cx: 100, cy: 50, label: "HEAD" },
-                  { cx: 100, cy: 110, label: "CHEST" },
-                  { cx: 55, cy: 170, label: "R.ARM" },
-                  { cx: 145, cy: 170, label: "L.ARM" },
-                  { cx: 100, cy: 200, label: "CORE" },
-                  { cx: 80, cy: 350, label: "R.LEG" },
-                  { cx: 120, cy: 350, label: "L.LEG" },
+                  { cx: 150, cy: 50, label: "HELMET" },
+                  { cx: 150, cy: 160, label: "ARC REACTOR" },
+                  { cx: 62, cy: 190, label: "R.ARM" },
+                  { cx: 238, cy: 190, label: "L.ARM" },
+                  { cx: 150, cy: 240, label: "CORE" },
+                  { cx: 48, cy: 318, label: "R.REPULSOR" },
+                  { cx: 252, cy: 318, label: "L.REPULSOR" },
+                  { cx: 125, cy: 390, label: "R.LEG" },
+                  { cx: 175, cy: 390, label: "L.LEG" },
                 ].map((pt, i) => (
                   <g key={i} className="animate-fade-in" style={{ animationDelay: `${i * 0.15}s` }}>
                     <circle cx={pt.cx} cy={pt.cy} r="4" fill="none" stroke="hsl(195 100% 50% / 0.6)" strokeWidth="1">
