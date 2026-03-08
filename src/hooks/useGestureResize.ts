@@ -51,10 +51,12 @@ export function useGestureResize() {
     const indexTip = landmarks[8];
     const palmCenter = landmarks[9];
 
-    // --- SWIPE DETECTION (open palm horizontal movement) ---
+    // --- OPEN_PALM: Select chat + resize OR swipe ---
     if (gesture === "OPEN_PALM") {
       const currentX = palmCenter.x;
+      const currentY = palmCenter.y;
 
+      // Swipe detection
       if (swipeStartX.current === null) {
         swipeStartX.current = currentX;
         swipeLastX.current = currentX;
@@ -63,57 +65,37 @@ export function useGestureResize() {
         const frameDelta = currentX - (swipeLastX.current ?? currentX);
         swipeLastX.current = currentX;
 
-        // Detect fast horizontal swipe
         if (!swipeCooldown.current && Math.abs(totalDelta) > SWIPE_THRESHOLD && Math.abs(frameDelta) > SWIPE_SPEED_THRESHOLD) {
           if (totalDelta < 0) {
-            // Swipe left → show chat (pull from right)
             setState(prev => ({ ...prev, chatVisible: true }));
           } else {
-            // Swipe right → hide chat
             setState(prev => ({ ...prev, chatVisible: false }));
           }
           swipeCooldown.current = true;
           swipeStartX.current = null;
           swipeLastX.current = null;
+          lastHandY.current = null;
           setTimeout(() => { swipeCooldown.current = false; }, 1000);
           return;
         }
       }
-    } else {
-      swipeStartX.current = null;
-      swipeLastX.current = null;
-    }
 
-    // --- PANEL SELECTION & RESIZE (existing logic) ---
-    let targetPanel: ResizablePanel | null = null;
-    if (indexTip.x < 0.35) {
-      const y = indexTip.y;
-      if (y < 0.35) targetPanel = "storage";
-      else if (y < 0.5) targetPanel = "power";
-      else if (y < 0.65) targetPanel = "radar";
-      else targetPanel = "weather";
-    } else if (indexTip.x > 0.6) {
-      targetPanel = "chat";
-    }
+      // Auto-select chat panel & resize with vertical movement
+      if (!resizingRef.current) {
+        setState(prev => ({ ...prev, activePanel: "chat" }));
+        resizingRef.current = true;
+        lastHandY.current = currentY;
+        return;
+      }
 
-    if (gesture === "POINTING" && targetPanel) {
-      setState(prev => ({ ...prev, activePanel: targetPanel }));
-      lastHandY.current = null;
-      resizingRef.current = false;
-      return;
-    }
-
-    if (gesture === "OPEN_PALM" && state.activePanel) {
-      resizingRef.current = true;
-      const currentY = palmCenter.y;
       if (lastHandY.current !== null) {
-        const delta = lastHandY.current - currentY;
+        const delta = lastHandY.current - currentY; // up = bigger
         if (Math.abs(delta) > 0.002) {
-          const scaleKey = `${state.activePanel}Scale` as keyof GestureResizeState;
           setState(prev => ({
             ...prev,
+            activePanel: "chat",
             isResizing: true,
-            [scaleKey]: clampScale((prev[scaleKey] as number) + delta * 5),
+            chatScale: clampScale(prev.chatScale + delta * 5),
           }));
         }
       }
@@ -121,13 +103,42 @@ export function useGestureResize() {
       return;
     }
 
-    if ((gesture === "THUMBS_UP" || gesture === "FIST") && state.activePanel) {
+    // Reset when palm is gone
+    swipeStartX.current = null;
+    swipeLastX.current = null;
+    if (resizingRef.current) {
+      resizingRef.current = false;
+      lastHandY.current = null;
+      setState(prev => ({ ...prev, isResizing: false }));
+    }
+
+    // --- POINTING: select left-side panels ---
+    if (gesture === "POINTING") {
+      let targetPanel: ResizablePanel | null = null;
+      if (indexTip.x < 0.35) {
+        const y = indexTip.y;
+        if (y < 0.35) targetPanel = "storage";
+        else if (y < 0.5) targetPanel = "power";
+        else if (y < 0.65) targetPanel = "radar";
+        else targetPanel = "weather";
+      }
+      if (targetPanel) {
+        setState(prev => ({ ...prev, activePanel: targetPanel }));
+      }
+      return;
+    }
+
+    // Thumbs up / Fist: resize active left-side panel
+    if ((gesture === "THUMBS_UP" || gesture === "FIST") && state.activePanel && state.activePanel !== "chat") {
       const scaleKey = `${state.activePanel}Scale` as keyof GestureResizeState;
       const direction = gesture === "THUMBS_UP" ? SCALE_STEP : -SCALE_STEP;
       setState(prev => ({
         ...prev,
         isResizing: true,
         [scaleKey]: clampScale((prev[scaleKey] as number) + direction),
+      }));
+    }
+  }, [state.activePanel]);
       }));
       return;
     }
