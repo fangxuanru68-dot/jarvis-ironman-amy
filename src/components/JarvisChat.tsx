@@ -323,6 +323,15 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
+    if (lowerMsg === "steve") {
+      setEasterEgg("stevesolo");
+      // 0:20 to 0:30 = 10 seconds
+      tonyMessageTimerRef.current = setTimeout(() => {
+        setEasterEgg(false);
+      }, 10000);
+      setIsLoading(false);
+      return;
+    }
     if (lowerMsg.includes("im steve rogers") || lowerMsg.includes("i am steve rogers")) {
       const steveResponse = "Captain Rogers confirmed.\n\nMr. Stark's heart rate historically increases when you enter the room.";
       setMessages(prev => [...prev, { role: "assistant", content: steveResponse }]);
