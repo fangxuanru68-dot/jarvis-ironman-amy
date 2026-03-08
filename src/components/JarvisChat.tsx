@@ -183,7 +183,6 @@ const JarvisChat = () => {
     // Body scan trigger
     if (lowerMsg.includes("check my body") || lowerMsg.includes("body scan") || lowerMsg.includes("scan my body")) {
       setBodyScanOpen(true);
-      if (gestureResize.chatVisible) gestureResize.toggleChatVisible();
       const response = "Initiating full biometric scan, sir. Please remain still... Scanning skeletal structure, cardiovascular system, and neural pathways.";
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
@@ -192,13 +191,9 @@ const JarvisChat = () => {
       return;
     }
 
-    if ((easterEgg || bodyScanOpen) && (lowerMsg.includes("lets go back to work") || lowerMsg.includes("let go back to work") || lowerMsg.includes("back to work"))) {
+    if (easterEgg && (lowerMsg.includes("lets go back to work") || lowerMsg.includes("let go back to work") || lowerMsg.includes("back to work"))) {
       if (tonyMessageTimerRef.current) { clearTimeout(tonyMessageTimerRef.current); tonyMessageTimerRef.current = null; }
       setEasterEgg(false);
-      if (bodyScanOpen) {
-        setBodyScanOpen(false);
-        if (!gestureResize.chatVisible) gestureResize.toggleChatVisible();
-      }
       const response = "Right away, sir. All systems back online. Let's get to work.";
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
@@ -543,16 +538,7 @@ const JarvisChat = () => {
       </div>
 
       {/* Body Scan Panel */}
-      <BodyScanPanel
-        isOpen={bodyScanOpen}
-        onClose={() => {
-          setBodyScanOpen(false);
-          if (!gestureResize.chatVisible) gestureResize.toggleChatVisible();
-        }}
-        onScanComplete={() => {
-          if (!gestureResize.chatVisible) gestureResize.toggleChatVisible();
-        }}
-      />
+      <BodyScanPanel isOpen={bodyScanOpen} onClose={() => setBodyScanOpen(false)} />
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">
