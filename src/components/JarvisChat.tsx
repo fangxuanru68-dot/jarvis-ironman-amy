@@ -424,6 +424,9 @@ const JarvisChat = () => {
         </button>
       </div>
 
+      {/* Right HUD panel (visible when chat is hidden) */}
+      <HudRightPanel visible={!gestureResize.chatVisible} />
+
       {/* ===== RIGHT SIDE: Chat panel with slide animation ===== */}
       <div
         className={`fixed top-14 bottom-4 z-20 flex flex-col rounded-lg overflow-hidden ${gestureResize.activePanel === "chat" ? "ring-1 ring-primary/50" : ""}`}
