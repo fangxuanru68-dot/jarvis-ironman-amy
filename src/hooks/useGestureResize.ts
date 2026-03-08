@@ -118,6 +118,25 @@ export function useGestureResize() {
       setState(prev => ({ ...prev, isResizing: false }));
     }
 
+    // --- FIST after OPEN_PALM: toggle global scale ---
+    if (gesture === "FIST" && lastGestureForSequence.current === "OPEN_PALM" && !sequenceCooldown.current) {
+      sequenceCooldown.current = true;
+      setState(prev => ({
+        ...prev,
+        globalScale: prev.globalScale < 1 ? 1 : 0.6,
+      }));
+      lastGestureForSequence.current = "";
+      setTimeout(() => { sequenceCooldown.current = false; }, 1500);
+      return;
+    }
+
+    // Track last gesture for sequence detection
+    if (gesture === "OPEN_PALM" || gesture === "FIST") {
+      lastGestureForSequence.current = gesture;
+    } else if (gesture && gesture !== "FIST") {
+      lastGestureForSequence.current = "";
+    }
+
     // --- POINTING: select left-side panels ---
     if (gesture === "POINTING") {
       let targetPanel: ResizablePanel | null = null;
