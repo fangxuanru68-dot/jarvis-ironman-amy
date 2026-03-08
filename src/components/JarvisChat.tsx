@@ -222,6 +222,15 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
+    if (lowerMsg.includes("best coser") || lowerMsg.includes("bestcoser")) {
+      setEasterEgg("bestcoser");
+      const response = "Ah, excellent taste, sir. Playing your favourite cosplay highlight reel now.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
     if (lowerMsg.includes("i really miss him")) {
       setEasterEgg("video");
       const memorial = "Playing back the memories, sir...\n\n*\"Heroes are made by the path they choose, not the powers they are graced with.\"*\n\nI have preserved every moment. Every laugh, every breakthrough, every sacrifice. He lives on... in all of us.";
