@@ -365,8 +365,8 @@ const FaceHandTracker = ({ videoElement, isActive, onGesture }: FaceHandTrackerP
       // Gesture label
       if (gestureLabel) {
         ctx.font = "bold 14px 'Orbitron', sans-serif";
-        ctx.fillStyle = "hsl(35, 100%, 50%)";
-        ctx.shadowColor = "hsl(35, 100%, 50%)";
+        ctx.fillStyle = "hsl(195, 100%, 70%)";
+        ctx.shadowColor = "hsl(195, 100%, 50%)";
         ctx.shadowBlur = 10;
         const text = `GESTURE: ${gestureLabel.replace("_", " ")}`;
         const textWidth = ctx.measureText(text).width;
