@@ -231,6 +231,14 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
+    if (lowerMsg.includes("im steve rogers") || lowerMsg.includes("i am steve rogers")) {
+      const response = "Captain Rogers confirmed.\n\nMr. Stark's heart rate historically increases when you enter the room.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak("Captain Rogers confirmed. Mr. Stark's heart rate historically increases when you enter the room.");
+      setIsLoading(false);
+      return;
+    }
     if (lowerMsg.includes("i really miss him")) {
       setEasterEgg("video");
       const memorial = "Playing back the memories, sir...\n\n*\"Heroes are made by the path they choose, not the powers they are graced with.\"*\n\nI have preserved every moment. Every laugh, every breakthrough, every sacrifice. He lives on... in all of us.";
