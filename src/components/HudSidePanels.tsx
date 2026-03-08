@@ -32,24 +32,24 @@ const HudSidePanels = () => {
         <img src={starkLogo} alt="Stark Industries" className="h-8 w-auto opacity-70 invert" />
       </div>
 
-      {/* Left: Date block (large day number like movie) */}
-      <div className="fixed left-5 top-16 z-10 pointer-events-none animate-fade-in-up">
+      {/* Left: JARVIS Arc Reactor (right below Stark logo) */}
+      <div className="fixed left-2 top-14 z-10 pointer-events-none animate-fade-in-up">
+        <ArcReactor size={110} isActive />
+      </div>
+
+      {/* Left: Date block */}
+      <div className="fixed left-5 top-[170px] z-10 pointer-events-none animate-fade-in-up">
         <div className="font-orbitron text-4xl text-primary/90 leading-none">{day}</div>
         <div className="font-mono text-[9px] text-primary/60 tracking-widest">{weekday}</div>
         <div className="font-mono text-[8px] text-muted-foreground">{monthYear}</div>
       </div>
 
       {/* Left: Time */}
-      <div className="fixed left-5 top-[140px] z-10 pointer-events-none animate-fade-in-up">
+      <div className="fixed left-5 top-[240px] z-10 pointer-events-none animate-fade-in-up">
         <div className="font-orbitron text-xl text-primary tracking-wider">{formatTime(time)}</div>
         <div className="font-mono text-[7px] text-muted-foreground tracking-widest mt-0.5">
           {time.toLocaleTimeString("en-US", { hour12: false, second: "2-digit" }).split(":")[2]}s
         </div>
-      </div>
-
-      {/* Left: JARVIS Arc Reactor */}
-      <div className="fixed left-2 top-[200px] z-10 pointer-events-none animate-fade-in-up">
-        <ArcReactor size={100} isActive />
       </div>
 
       {/* Left: CPU/System circular gauge */}
