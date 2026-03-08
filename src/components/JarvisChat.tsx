@@ -297,7 +297,15 @@ const JarvisChat = () => {
       {easterEgg && (
         <div className="fixed inset-0 z-[1] animate-fade-in" onClick={() => { if (tonyMessageTimerRef.current) { clearTimeout(tonyMessageTimerRef.current); tonyMessageTimerRef.current = null; } setEasterEgg(false); }}>
           {/* Tony's image with cinematic HUD tint */}
-          {easterEgg === "bestcoser" ? (
+          {easterEgg === "xman" ? (
+            <iframe
+              src="https://player.bilibili.com/player.html?bvid=BV1sW4y1K7Bw&high_quality=1&danmaku=0&autoplay=1"
+              className="absolute inset-0 w-full h-full border-0"
+              allow="autoplay; encrypted-media; fullscreen"
+              allowFullScreen
+              scrolling="no"
+            />
+          ) : easterEgg === "bestcoser" ? (
             <video
               src="/videos/best-coser.mp4"
               className="absolute inset-0 w-full h-full object-contain border-0 bg-black"
