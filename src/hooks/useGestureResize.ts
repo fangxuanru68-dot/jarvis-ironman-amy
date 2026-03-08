@@ -175,7 +175,7 @@ export function useGestureResize() {
   const resetAll = useCallback(() => {
     setState({
       chatScale: 1, weatherScale: 1, radarScale: 1, powerScale: 1, storageScale: 1,
-      activePanel: null, isResizing: false, chatVisible: true,
+      activePanel: null, isResizing: false, chatVisible: true, globalScale: 1,
     });
   }, []);
 
