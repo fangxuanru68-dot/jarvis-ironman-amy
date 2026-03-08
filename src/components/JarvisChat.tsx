@@ -197,6 +197,28 @@ const JarvisChat = () => {
       return;
     }
 
+    // Fight mode end trigger
+    if (fightModeActive && (lowerMsg.includes("fight mode end") || lowerMsg.includes("fight mode off") || lowerMsg.includes("end fight mode") || msg.includes("结束战斗"))) {
+      setFightModeActive(false);
+      const response = "Fight mode disengaged, sir. Combat targeting systems powering down. Returning to standard HUD configuration.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Fight mode trigger
+    if (lowerMsg.includes("fight mode") && !lowerMsg.includes("end") && !lowerMsg.includes("off")) {
+      setFightModeActive(true);
+      const response = "Fight mode engaged, sir. Full combat targeting reticle deployed on your right eye. Repulsors are charged and weapons systems are hot. I'll maintain lock until you give the stand-down order. Say 'fight mode end' to disengage.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
     // Body scan trigger
     if (lowerMsg.includes("check my body") || lowerMsg.includes("body scan") || lowerMsg.includes("scan my body")) {
       setBodyScanOpen(true);
