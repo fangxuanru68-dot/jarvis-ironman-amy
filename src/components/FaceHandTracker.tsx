@@ -5,6 +5,7 @@ interface FaceHandTrackerProps {
   isActive: boolean;
   onGesture?: (gesture: string) => void;
   onHandData?: (landmarks: Array<{ x: number; y: number; z: number }>, gesture: string) => void;
+  onFaceData?: (faceBox: { x: number; y: number; w: number; h: number } | null, rightEye: { x: number; y: number } | null) => void;
 }
 
 type HandLandmark = { x: number; y: number; z: number };
