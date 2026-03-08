@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import ironmanMk2 from "@/assets/ironman-mk2.png";
 
 interface BodyScanPanelProps {
   isOpen: boolean;
