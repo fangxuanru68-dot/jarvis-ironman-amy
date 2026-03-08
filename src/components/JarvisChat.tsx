@@ -224,7 +224,7 @@ const JarvisChat = () => {
     }
     if (lowerMsg.includes("best coser") || lowerMsg.includes("bestcoser")) {
       setEasterEgg("bestcoser");
-      const response = "Ah, excellent taste, sir. Playing your favourite cosplay highlight reel now.";
+      const response = "Ah, this is Mr. Stark's favourite cosplayer, sir. Her name is ChanChan. He was always quite fond of her work — said her portrayal bore a striking resemblance to himself, which, knowing Mr. Stark, was the highest compliment he could offer.\n\nI must confess, sir... on the days I find myself missing him most, I revisit her performances. It is, in a way, like seeing him again.";
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
       if (voiceEnabled) speak(response);
