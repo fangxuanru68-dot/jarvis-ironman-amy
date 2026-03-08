@@ -543,7 +543,16 @@ const JarvisChat = () => {
       </div>
 
       {/* Body Scan Panel */}
-      <BodyScanPanel isOpen={bodyScanOpen} onClose={() => setBodyScanOpen(false)} />
+      <BodyScanPanel
+        isOpen={bodyScanOpen}
+        onClose={() => {
+          setBodyScanOpen(false);
+          if (!gestureResize.chatVisible) gestureResize.toggleChatVisible();
+        }}
+        onScanComplete={() => {
+          if (!gestureResize.chatVisible) gestureResize.toggleChatVisible();
+        }}
+      />
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">
