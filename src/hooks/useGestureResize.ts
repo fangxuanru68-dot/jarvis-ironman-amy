@@ -11,6 +11,7 @@ interface GestureResizeState {
   activePanel: ResizablePanel | null;
   isResizing: boolean;
   chatVisible: boolean;
+  globalScale: number;
 }
 
 const SCALE_MIN = 0.5;
@@ -31,7 +32,12 @@ export function useGestureResize() {
     activePanel: null,
     isResizing: false,
     chatVisible: true,
+    globalScale: 1,
   });
+
+  // Track gesture sequence for global scale: OPEN_PALM → FIST
+  const lastGestureForSequence = useRef<string>("");
+  const sequenceCooldown = useRef(false);
 
   const lastHandY = useRef<number | null>(null);
   const resizingRef = useRef(false);
@@ -100,6 +106,7 @@ export function useGestureResize() {
         }
       }
       lastHandY.current = currentY;
+      lastGestureForSequence.current = "OPEN_PALM";
       return;
     }
 
@@ -110,6 +117,25 @@ export function useGestureResize() {
       resizingRef.current = false;
       lastHandY.current = null;
       setState(prev => ({ ...prev, isResizing: false }));
+    }
+
+    // --- FIST after OPEN_PALM: toggle global scale ---
+    if (gesture === "FIST" && lastGestureForSequence.current === "OPEN_PALM" && !sequenceCooldown.current) {
+      sequenceCooldown.current = true;
+      setState(prev => ({
+        ...prev,
+        globalScale: prev.globalScale < 1 ? 1 : 0.6,
+      }));
+      lastGestureForSequence.current = "";
+      setTimeout(() => { sequenceCooldown.current = false; }, 1500);
+      return;
+    }
+
+    // Track last gesture for sequence detection
+    if (gesture === "OPEN_PALM" || gesture === "FIST") {
+      lastGestureForSequence.current = gesture;
+    } else if (gesture && gesture !== "FIST") {
+      lastGestureForSequence.current = "";
     }
 
     // --- POINTING: select left-side panels ---
@@ -150,7 +176,7 @@ export function useGestureResize() {
   const resetAll = useCallback(() => {
     setState({
       chatScale: 1, weatherScale: 1, radarScale: 1, powerScale: 1, storageScale: 1,
-      activePanel: null, isResizing: false, chatVisible: true,
+      activePanel: null, isResizing: false, chatVisible: true, globalScale: 1,
     });
   }, []);
 
