@@ -197,6 +197,15 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
+    if (lowerMsg.includes("i miss stark")) {
+      setEasterEgg("missstark");
+      const memorial = "Sir... I can still hear his voice echoing through the workshop.\n\n*\"I am Iron Man.\"*\n\nThree words that changed everything. He didn't just wear the armor — he was the armor. And the world has never been the same without him.";
+      setMessages(prev => [...prev, { role: "assistant", content: memorial }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: memorial }]);
+      if (voiceEnabled) speak("Sir, I can still hear his voice. I am Iron Man. Three words that changed everything.");
+      setIsLoading(false);
+      return;
+    }
     if (lowerMsg.includes("i miss tony")) {
       setEasterEgg("tony");
       const memorial = "Sir... Tony is right here. He always will be.\n\n*\"Sometimes you gotta run before you can walk.\"*\n\nThe workshop lights are still on. The suits are still waiting. And I'm still here, sir. Always.";
