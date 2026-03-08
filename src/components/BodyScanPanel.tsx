@@ -113,16 +113,47 @@ const BodyScanPanel = ({ isOpen, onClose }: BodyScanPanelProps) => {
               alt="Iron Man Mark II"
               className="h-full max-h-[440px] w-auto object-contain"
               style={{
-                filter: "drop-shadow(0 0 20px hsl(195 100% 50% / 0.3)) brightness(0.7) contrast(1.1)",
+                filter: "brightness(0.35) contrast(1.4) saturate(0.1) sepia(1) hue-rotate(160deg) saturate(3) brightness(1.1) drop-shadow(0 0 30px hsl(195 100% 50% / 0.4)) drop-shadow(0 0 60px hsl(195 100% 60% / 0.2))",
+                opacity: 0.7,
                 mixBlendMode: "screen",
+              }}
+            />
+            {/* Inner glow / holographic edge highlight */}
+            <img
+              src={ironmanMk2}
+              alt=""
+              className="absolute inset-0 h-full max-h-[440px] w-auto object-contain pointer-events-none"
+              style={{
+                filter: "brightness(0.2) contrast(2) saturate(0) invert(1) sepia(1) hue-rotate(160deg) saturate(5) brightness(0.8) blur(1px) drop-shadow(0 0 8px hsl(195 100% 50% / 0.8))",
+                opacity: 0.3,
+                mixBlendMode: "screen",
+              }}
+            />
+            {/* Pulsing holographic glow layer */}
+            <img
+              src={ironmanMk2}
+              alt=""
+              className="absolute inset-0 h-full max-h-[440px] w-auto object-contain pointer-events-none"
+              style={{
+                filter: "brightness(0.1) contrast(1.5) saturate(0) sepia(1) hue-rotate(160deg) saturate(4) brightness(1.5) blur(6px)",
+                opacity: 0.15,
+                mixBlendMode: "screen",
+                animation: "pulse 3s ease-in-out infinite",
               }}
             />
             {/* Blue holographic tint overlay */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
-                background: "linear-gradient(180deg, hsl(195 100% 50% / 0.08), hsl(195 100% 50% / 0.15))",
-                mixBlendMode: "color",
+                background: "linear-gradient(180deg, hsl(195 100% 50% / 0.06), hsl(200 100% 40% / 0.12), hsl(195 100% 50% / 0.06))",
+                mixBlendMode: "screen",
+              }}
+            />
+            {/* Grid / wireframe overlay */}
+            <div
+              className="absolute inset-0 pointer-events-none opacity-[0.04]"
+              style={{
+                backgroundImage: "repeating-linear-gradient(0deg, hsl(195 100% 50% / 0.5) 0px, transparent 1px, transparent 8px), repeating-linear-gradient(90deg, hsl(195 100% 50% / 0.5) 0px, transparent 1px, transparent 8px)",
               }}
             />
             {/* Scanning line */}
