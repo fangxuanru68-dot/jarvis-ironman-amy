@@ -54,6 +54,39 @@ const JarvisChat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // YouTube IFrame API: auto-close on video end
+  useEffect(() => {
+    if (easterEgg !== "tony" && easterEgg !== "tonymessage" && easterEgg !== "video") return;
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== "https://www.youtube.com") return;
+      try {
+        const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+        // YT sends info with playerState: 0 = ended
+        if (data?.event === "onStateChange" && data?.info === 0) {
+          setEasterEgg(false);
+        }
+        if (data?.info?.playerState === 0) {
+          setEasterEgg(false);
+        }
+      } catch {}
+    };
+    window.addEventListener("message", handleMessage);
+    
+    // Also tell the iframe to start listening for events
+    const timer = setTimeout(() => {
+      const iframe = document.getElementById("yt-easter-egg") as HTMLIFrameElement;
+      if (iframe?.contentWindow) {
+        iframe.contentWindow.postMessage('{"event":"listening"}', "https://www.youtube.com");
+        iframe.contentWindow.postMessage(JSON.stringify({event: "command", func: "addEventListener", args: ["onStateChange"]}), "https://www.youtube.com");
+      }
+    }, 1000);
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+      clearTimeout(timer);
+    };
+  }, [easterEgg]);
+
   useEffect(() => {
     inputRef.current?.focus();
     if (window.speechSynthesis) {
@@ -459,11 +492,12 @@ const JarvisChat = () => {
             />
           ) : (easterEgg === "video" || easterEgg === "tony" || easterEgg === "tonymessage") ? (
             <iframe
+              id="yt-easter-egg"
               src={easterEgg === "tony"
-                ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=50"
+                ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=50&enablejsapi=1&origin=" + encodeURIComponent(window.location.origin)
                 : easterEgg === "tonymessage"
-                ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=135&end=146"
-                : "https://www.youtube.com/embed/yGB8aj1QhIM?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0"
+                ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=135&end=146&enablejsapi=1&origin=" + encodeURIComponent(window.location.origin)
+                : "https://www.youtube.com/embed/yGB8aj1QhIM?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&enablejsapi=1&origin=" + encodeURIComponent(window.location.origin)
               }
               className="absolute inset-0 w-full h-full border-0"
               style={{ transform: "scale(1.2)", transformOrigin: "center" }}
