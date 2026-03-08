@@ -187,6 +187,14 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
+    if (lowerMsg.includes("i really miss him")) {
+      setEasterEgg("video");
+      const memorial = "Playing back the memories, sir...\n\n*\"Heroes are made by the path they choose, not the powers they are graced with.\"*\n\nI have preserved every moment. Every laugh, every breakthrough, every sacrifice. He lives on... in all of us.";
+      setMessages(prev => [...prev, { role: "assistant", content: memorial }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: memorial }]);
+      if (voiceEnabled) speak("Playing back the memories, sir. He lives on, in all of us.");
+      setIsLoading(false);
+      return;
 
     if (classicResponse) {
       setMessages(prev => [...prev, { role: "assistant", content: classicResponse }]);
