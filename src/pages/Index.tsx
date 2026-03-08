@@ -1,20 +1,8 @@
 import JarvisChat from "@/components/JarvisChat";
-import { useGlobalScale } from "@/hooks/useGlobalScale";
 
 const Index = () => {
-  const { globalScale, setGlobalScale } = useGlobalScale();
-
   return (
-    <div
-      className="min-h-screen bg-background relative overflow-hidden"
-      style={{
-        transform: `scale(${globalScale})`,
-        transformOrigin: "center center",
-        transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-        width: globalScale < 1 ? `${100 / globalScale}%` : "100%",
-        height: globalScale < 1 ? `${100 / globalScale}vh` : "100vh",
-      }}
-    >
+    <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background grid (visible when camera is off) */}
       <div 
         className="fixed inset-0 opacity-[0.03] pointer-events-none z-0"
@@ -46,7 +34,7 @@ const Index = () => {
         <div className="w-full h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent animate-scan-line" />
       </div>
 
-      <JarvisChat onGlobalScaleChange={setGlobalScale} />
+      <JarvisChat />
     </div>
   );
 };
