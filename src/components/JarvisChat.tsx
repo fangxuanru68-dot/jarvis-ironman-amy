@@ -276,6 +276,10 @@ const JarvisChat = () => {
       setMessages(prev => [...prev, { role: "assistant", content: memorial }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: memorial }]);
       if (voiceEnabled) speak("Sir, Tony is right here. He always will be. The workshop lights are still on.");
+      // Video ~3:12, starting at 50s = ~142s
+      tonyMessageTimerRef.current = setTimeout(() => {
+        setEasterEgg(false);
+      }, 142000);
       setIsLoading(false);
       return;
     }
@@ -311,6 +315,10 @@ const JarvisChat = () => {
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
       if (voiceEnabled) speak("The X-Men. Our neighbours from across the Marvel aisle. Tony's least favourite? Magneto. A man who controls all metal is essentially a walking Destroy Iron Man button. Every suit would crumple like tin foil. Still, their story is rather compelling. Enjoy the edit, sir.");
+      // Bilibili video ~3 min
+      tonyMessageTimerRef.current = setTimeout(() => {
+        setEasterEgg(false);
+      }, 180000);
       setIsLoading(false);
       return;
     }
@@ -355,6 +363,10 @@ const JarvisChat = () => {
       setMessages(prev => [...prev, { role: "assistant", content: memorial }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: memorial }]);
       if (voiceEnabled) speak("Playing back the memories, sir. He lives on, in all of us.");
+      // Video ~4 min
+      tonyMessageTimerRef.current = setTimeout(() => {
+        setEasterEgg(false);
+      }, 240000);
       setIsLoading(false);
       return;
     }
@@ -431,10 +443,10 @@ const JarvisChat = () => {
           ) : (easterEgg === "video" || easterEgg === "tony" || easterEgg === "tonymessage") ? (
             <iframe
               src={easterEgg === "tony"
-                ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&loop=1&mute=0&start=50&playlist=iBC5M69Y6ZE"
+                ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=50"
                 : easterEgg === "tonymessage"
                 ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=135&end=146"
-                : "https://www.youtube.com/embed/yGB8aj1QhIM?autoplay=1&controls=0&showinfo=0&modestbranding=1&loop=1&mute=0&playlist=yGB8aj1QhIM"
+                : "https://www.youtube.com/embed/yGB8aj1QhIM?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0"
               }
               className="absolute inset-0 w-full h-full border-0"
               style={{ transform: "scale(1.2)", transformOrigin: "center" }}
