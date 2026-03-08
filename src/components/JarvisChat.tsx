@@ -288,15 +288,7 @@ const JarvisChat = () => {
   const showWelcome = !hasGreeted && messages.length === 0;
 
   return (
-    <div
-      style={{
-        transform: `scale(${gestureResize.pageScale})`,
-        transformOrigin: "center center",
-        transition: "transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
-        width: "100vw",
-        height: "100vh",
-      }}
-    >
+    <>
       {/* Full-screen camera background */}
       <FullScreenCamera isActive={cameraOn} onVideoReady={setVideoElement} />
       <FaceHandTracker videoElement={videoElement} isActive={cameraOn} onGesture={handleGesture} onHandData={gestureResize.handleHandData} />
@@ -535,7 +527,7 @@ const JarvisChat = () => {
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">
         made by 卷饼_Amy
       </div>
-    </div>
+    </>
   );
 };
 

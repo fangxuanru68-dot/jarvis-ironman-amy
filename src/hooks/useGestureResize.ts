@@ -11,7 +11,6 @@ interface GestureResizeState {
   activePanel: ResizablePanel | null;
   isResizing: boolean;
   chatVisible: boolean;
-  pageScale: number;
 }
 
 const SCALE_MIN = 0.5;
@@ -32,13 +31,7 @@ export function useGestureResize() {
     activePanel: null,
     isResizing: false,
     chatVisible: true,
-    pageScale: 1,
   });
-
-  // Track gesture sequence: OPEN_PALM → FIST
-  const lastGestureRef = useRef<string | null>(null);
-  const gestureTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pageShrinkCooldown = useRef(false);
 
   const lastHandY = useRef<number | null>(null);
   const resizingRef = useRef(false);
@@ -119,23 +112,6 @@ export function useGestureResize() {
       setState(prev => ({ ...prev, isResizing: false }));
     }
 
-    // --- Track gesture sequence for OPEN_PALM → FIST page shrink ---
-    if (gesture === "FIST" && lastGestureRef.current === "OPEN_PALM" && !pageShrinkCooldown.current) {
-      pageShrinkCooldown.current = true;
-      setState(prev => ({
-        ...prev,
-        pageScale: prev.pageScale < 1 ? 1 : 0.6,
-      }));
-      setTimeout(() => { pageShrinkCooldown.current = false; }, 1500);
-      lastGestureRef.current = gesture;
-      return;
-    }
-    lastGestureRef.current = gesture;
-
-    // Clear sequence after timeout
-    if (gestureTimerRef.current) clearTimeout(gestureTimerRef.current);
-    gestureTimerRef.current = setTimeout(() => { lastGestureRef.current = null; }, 2000);
-
     // --- POINTING: select left-side panels ---
     if (gesture === "POINTING") {
       let targetPanel: ResizablePanel | null = null;
@@ -174,7 +150,7 @@ export function useGestureResize() {
   const resetAll = useCallback(() => {
     setState({
       chatScale: 1, weatherScale: 1, radarScale: 1, powerScale: 1, storageScale: 1,
-      activePanel: null, isResizing: false, chatVisible: true, pageScale: 1,
+      activePanel: null, isResizing: false, chatVisible: true,
     });
   }, []);
 
