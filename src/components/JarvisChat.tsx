@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import { Send, Mic, MicOff, Video, VideoOff, Volume2, VolumeX, PanelRightOpen, PanelRightClose } from "lucide-react";
 import FullScreenCamera from "./FullScreenCamera";
+import ArcReactor from "./ArcReactor";
 import FaceHandTracker from "./FaceHandTracker";
 import HudSidePanels from "./HudSidePanels";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
@@ -269,10 +270,10 @@ const JarvisChat = () => {
         </div>
       )}
 
-      {/* Camera off: Iron Man logo background */}
+      {/* Camera off: JARVIS Arc Reactor logo in center */}
       {!cameraOn && !easterEgg && (
         <div className="fixed inset-0 z-[1] flex items-center justify-center bg-background">
-          <img src={ironmanLogo} alt="Iron Man" className="w-64 h-64 opacity-20 invert" />
+          <ArcReactor size={280} isActive={true} />
         </div>
       )}
 
