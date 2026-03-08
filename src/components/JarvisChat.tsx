@@ -225,7 +225,17 @@ const JarvisChat = () => {
       {easterEgg && (
         <div className="fixed inset-0 z-[1] animate-fade-in" onClick={() => setEasterEgg(false)}>
           {/* Tony's image with cinematic HUD tint */}
-          <img src={easterEgg === "tony" ? tonyWorkshop : tonyStark} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          {easterEgg === "video" ? (
+            <iframe
+              src="https://www.youtube.com/embed/yGB8aj1QhIM?autoplay=1&controls=0&showinfo=0&modestbranding=1&loop=1&mute=0&playlist=yGB8aj1QhIM"
+              className="absolute inset-0 w-full h-full border-0"
+              style={{ transform: "scale(1.2)", transformOrigin: "center" }}
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+            />
+          ) : (
+            <img src={easterEgg === "tony" ? tonyWorkshop : tonyStark} alt="" className="absolute inset-0 w-full h-full object-cover" />
+          )}
           {/* Cyan scan overlay */}
           <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, hsl(195 100% 50% / 0.05) 0%, transparent 30%, transparent 70%, hsl(195 100% 50% / 0.08) 100%)" }} />
           {/* Vignette */}
