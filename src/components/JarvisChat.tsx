@@ -8,6 +8,7 @@ import HudSidePanels from "./HudSidePanels";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 import { CLASSIC_TRIGGERS, GESTURE_RESPONSES } from "@/data/classicDialogues";
 import { useGestureResize } from "@/hooks/useGestureResize";
+import BodyScanPanel from "./BodyScanPanel";
 
 import tonyStark from "@/assets/tony-stark.png";
 import tonyWorkshop from "@/assets/tony-workshop.png";
@@ -35,6 +36,7 @@ const JarvisChat = () => {
   const { speak, stop: stopSpeech, isSpeaking } = useSpeechSynthesis();
   const gestureResize = useGestureResize();
   const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark" | "xman">(false);
+  const [bodyScanOpen, setBodyScanOpen] = useState(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clean up timer on unmount
@@ -177,6 +179,18 @@ const JarvisChat = () => {
 
     // Easter egg close
     const lowerMsg = msg.toLowerCase().replace(/[^a-z\s]/g, "").trim();
+
+    // Body scan trigger
+    if (lowerMsg.includes("check my body") || lowerMsg.includes("body scan") || lowerMsg.includes("scan my body")) {
+      setBodyScanOpen(true);
+      const response = "Initiating full biometric scan, sir. Please remain still... Scanning skeletal structure, cardiovascular system, and neural pathways.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
     if (easterEgg && (lowerMsg.includes("lets go back to work") || lowerMsg.includes("let go back to work") || lowerMsg.includes("back to work"))) {
       if (tonyMessageTimerRef.current) { clearTimeout(tonyMessageTimerRef.current); tonyMessageTimerRef.current = null; }
       setEasterEgg(false);
@@ -522,6 +536,9 @@ const JarvisChat = () => {
           </div>
         </div>
       </div>
+
+      {/* Body Scan Panel */}
+      <BodyScanPanel isOpen={bodyScanOpen} onClose={() => setBodyScanOpen(false)} />
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">
