@@ -283,8 +283,8 @@ const JarvisChat = () => {
               src="/videos/best-coser.mp4"
               className="absolute inset-0 w-full h-full object-contain border-0 bg-black"
               autoPlay
-              loop
               playsInline
+              onEnded={() => setEasterEgg(false)}
             />
           ) : (easterEgg === "video" || easterEgg === "tony" || easterEgg === "tonymessage") ? (
             <iframe
