@@ -1,13 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import { Send, Mic, MicOff, Video, VideoOff, Volume2, VolumeX } from "lucide-react";
-import ArcReactor from "./ArcReactor";
 import FullScreenCamera from "./FullScreenCamera";
 import FaceHandTracker from "./FaceHandTracker";
 import HudSidePanels from "./HudSidePanels";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 import { CLASSIC_TRIGGERS, GESTURE_RESPONSES } from "@/data/classicDialogues";
-import starkLogo from "@/assets/stark-logo.png";
 
 type MessageContent = string | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
 type Message = { role: "user" | "assistant"; content: MessageContent };
@@ -44,45 +42,25 @@ const JarvisChat = () => {
 
   const toggleVoice = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert("Speech recognition not supported.");
-      return;
-    }
-
-    if (isListening) {
-      recognitionRef.current?.stop();
-      setIsListening(false);
-      return;
-    }
+    if (!SpeechRecognition) { alert("Speech recognition not supported."); return; }
+    if (isListening) { recognitionRef.current?.stop(); setIsListening(false); return; }
 
     const recognition = new SpeechRecognition();
     recognition.continuous = false;
     recognition.interimResults = true;
     recognition.lang = "zh-CN";
-
     let finalTranscript = "";
 
     recognition.onresult = (event: any) => {
       let interim = "";
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
-        } else {
-          interim += event.results[i][0].transcript;
-        }
+        if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript;
+        else interim += event.results[i][0].transcript;
       }
       setInput(finalTranscript + interim);
     };
-
-    recognition.onend = () => {
-      setIsListening(false);
-      if (finalTranscript.trim()) {
-        setTimeout(() => sendMessage(finalTranscript.trim()), 100);
-      }
-    };
-
+    recognition.onend = () => { setIsListening(false); if (finalTranscript.trim()) setTimeout(() => sendMessage(finalTranscript.trim()), 100); };
     recognition.onerror = () => setIsListening(false);
-
     recognitionRef.current = recognition;
     recognition.start();
     setIsListening(true);
@@ -109,17 +87,10 @@ const JarvisChat = () => {
   const streamChat = async (allMessages: Message[]) => {
     const resp = await fetch(CHAT_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-      },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
       body: JSON.stringify({ messages: allMessages }),
     });
-
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({ error: "Connection failed" }));
-      throw new Error(err.error || "Systems offline");
-    }
+    if (!resp.ok) { const err = await resp.json().catch(() => ({ error: "Connection failed" })); throw new Error(err.error || "Systems offline"); }
     if (!resp.body) throw new Error("No stream");
 
     const reader = resp.body.getReader();
@@ -131,7 +102,6 @@ const JarvisChat = () => {
       const { done, value } = await reader.read();
       if (done) break;
       buffer += decoder.decode(value, { stream: true });
-
       let nl: number;
       while ((nl = buffer.indexOf("\n")) !== -1) {
         let line = buffer.slice(0, nl);
@@ -147,16 +117,13 @@ const JarvisChat = () => {
             assistantContent += content;
             setMessages(prev => {
               const last = prev[prev.length - 1];
-              if (last?.role === "assistant") {
-                return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantContent } : m);
-              }
+              if (last?.role === "assistant") return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantContent } : m);
               return [...prev, { role: "assistant", content: assistantContent }];
             });
           }
         } catch { /* partial */ }
       }
     }
-
     if (assistantContent) {
       setApiMessages(prev => [...prev, { role: "assistant", content: assistantContent }]);
       if (voiceEnabled) speak(assistantContent);
@@ -170,14 +137,10 @@ const JarvisChat = () => {
     const images: string[] = [];
     if (cameraOn) {
       const captureFrame = (window as any).__jarvisCaptureFrame;
-      if (captureFrame) {
-        const frame = captureFrame();
-        if (frame) images.push(frame);
-      }
+      if (captureFrame) { const frame = captureFrame(); if (frame) images.push(frame); }
     }
 
     const classicResponse = checkClassicTrigger(msg);
-
     let apiContent: MessageContent;
     if (images.length > 0) {
       const parts: Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }> = [];
@@ -190,7 +153,6 @@ const JarvisChat = () => {
 
     const userApiMsg: Message = { role: "user", content: apiContent };
     const newApiMessages = [...apiMessages, userApiMsg];
-
     const displayMsg: DisplayMessage = { role: "user", content: msg, images: images.length > 0 ? images : undefined };
     setMessages(prev => [...prev, displayMsg]);
     setApiMessages(newApiMessages);
@@ -207,15 +169,12 @@ const JarvisChat = () => {
       return;
     }
 
-    try {
-      await streamChat(newApiMessages);
-    } catch (e) {
+    try { await streamChat(newApiMessages); }
+    catch (e) {
       const errMsg = `⚠ ${e instanceof Error ? e.message : "Systems offline."}`;
       setMessages(prev => [...prev, { role: "assistant", content: errMsg }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: errMsg }]);
-    } finally {
-      setIsLoading(false);
-    }
+    } finally { setIsLoading(false); }
   };
 
   const send = () => sendMessage();
@@ -225,73 +184,56 @@ const JarvisChat = () => {
     <>
       {/* Full-screen camera background */}
       <FullScreenCamera isActive={cameraOn} onVideoReady={setVideoElement} />
+      <FaceHandTracker videoElement={videoElement} isActive={cameraOn} onGesture={handleGesture} />
 
-      {/* Face & Hand tracking overlay */}
-      <FaceHandTracker
-        videoElement={videoElement}
-        isActive={cameraOn}
-        onGesture={handleGesture}
-      />
-
-      {/* Dark overlay for readability */}
+      {/* Dark overlay - heavier on sides for readability */}
       {cameraOn && (
-        <div className="fixed inset-0 z-[1] bg-gradient-to-t from-background via-background/60 to-transparent" />
+        <>
+          <div className="fixed inset-0 z-[1]" style={{ background: "linear-gradient(to right, hsl(220 30% 6% / 0.85) 0%, hsl(220 30% 6% / 0.3) 25%, transparent 40%, transparent 60%, hsl(220 30% 6% / 0.3) 75%, hsl(220 30% 6% / 0.85) 100%)" }} />
+          <div className="fixed inset-0 z-[1]" style={{ background: "linear-gradient(to top, hsl(220 30% 6% / 0.6) 0%, transparent 30%)" }} />
+        </>
       )}
 
-      {/* HUD side panels */}
+      {/* HUD side panels (left data + right data widgets) */}
       <HudSidePanels />
 
-      {/* Top HUD bar */}
-      <div className="fixed top-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3">
-          <img src={starkLogo} alt="Stark Industries" className="h-8 w-auto opacity-80" />
-          <div>
-            <div className="font-orbitron text-[10px] tracking-[0.3em] text-primary">J.A.R.V.I.S</div>
-            <div className="font-mono text-[8px] text-muted-foreground">ONLINE · ALL SYSTEMS NOMINAL</div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setCameraOn(!cameraOn)}
-            className={`p-2 rounded-sm border transition-all ${cameraOn ? "border-primary/50 text-primary bg-primary/10" : "border-border/30 text-muted-foreground hover:text-primary"}`}
-            title={cameraOn ? "关闭摄像头" : "开启摄像头"}
-          >
-            {cameraOn ? <Video size={14} /> : <VideoOff size={14} />}
-          </button>
-          <button
-            onClick={() => { setVoiceEnabled(!voiceEnabled); if (isSpeaking) stopSpeech(); }}
-            className={`p-2 rounded-sm border transition-all ${voiceEnabled ? "border-primary/50 text-primary bg-primary/10" : "border-border/30 text-muted-foreground hover:text-primary"}`}
-            title={voiceEnabled ? "关闭语音" : "开启语音"}
-          >
-            {voiceEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
-          </button>
-        </div>
+      {/* Top bar: controls only (logo moved to left panel) */}
+      <div className="fixed top-3 right-3 z-20 flex items-center gap-2">
+        <button
+          onClick={() => setCameraOn(!cameraOn)}
+          className={`p-2 rounded-sm border transition-all ${cameraOn ? "border-primary/50 text-primary bg-primary/10" : "border-border/30 text-muted-foreground hover:text-primary"}`}
+        >
+          {cameraOn ? <Video size={14} /> : <VideoOff size={14} />}
+        </button>
+        <button
+          onClick={() => { setVoiceEnabled(!voiceEnabled); if (isSpeaking) stopSpeech(); }}
+          className={`p-2 rounded-sm border transition-all ${voiceEnabled ? "border-primary/50 text-primary bg-primary/10" : "border-border/30 text-muted-foreground hover:text-primary"}`}
+        >
+          {voiceEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
+        </button>
       </div>
 
-      {/* Main content - bottom area */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 max-w-3xl mx-auto">
-        {/* Welcome state */}
+      {/* ===== RIGHT SIDE: Chat panel ===== */}
+      <div className="fixed right-3 top-14 bottom-4 z-20 w-[320px] flex flex-col">
+        {/* Welcome state (compact, in right panel) */}
         {showWelcome && (
-          <div className="flex flex-col items-center gap-4 pb-4 px-4 animate-fade-in-up">
-            <ArcReactor size={120} isActive />
-            <h1 className="font-orbitron text-xl tracking-[0.2em] text-primary">J.A.R.V.I.S</h1>
-            <p className="font-rajdhani text-xs text-muted-foreground tracking-wider text-center">
-              Just A Rather Very Intelligent System · At your service, sir.
+          <div className="flex flex-col gap-3 p-3 animate-fade-in-up mb-auto">
+            <div className="font-orbitron text-[10px] tracking-[0.2em] text-primary/60">COMMUNICATION</div>
+            <p className="font-rajdhani text-xs text-muted-foreground">
+              At your service, sir. Select a command or speak.
             </p>
-            <div className="flex gap-2 flex-wrap justify-center">
+            <div className="flex gap-1.5 flex-wrap">
               {[
                 "Good morning",
                 "Status report",
                 "Run diagnostics",
                 "Suit up",
                 "Threat analysis",
-                "Activate defense protocol",
               ].map(q => (
                 <button
                   key={q}
                   onClick={() => sendMessage(q)}
-                  className="px-3 py-1.5 text-[10px] font-mono border border-border/50 rounded-sm bg-card/60 backdrop-blur-sm text-secondary-foreground hover:bg-primary/10 hover:border-primary/50 transition-all duration-300"
+                  className="px-2 py-1 text-[9px] font-mono border border-border/50 rounded-sm bg-card/40 backdrop-blur-sm text-secondary-foreground hover:bg-primary/10 hover:border-primary/50 transition-all duration-300"
                 >
                   {q}
                 </button>
@@ -300,28 +242,28 @@ const JarvisChat = () => {
           </div>
         )}
 
-        {/* Messages */}
+        {/* Messages area */}
         {messages.length > 0 && (
-          <div className="max-h-[35vh] overflow-y-auto px-4 pb-2 space-y-2">
+          <div className="flex-1 overflow-y-auto space-y-2 pr-1 mb-2">
             {messages.map((msg, i) => (
               <div key={i} className={`animate-fade-in-up ${msg.role === "user" ? "flex justify-end" : ""}`}>
                 {msg.role === "assistant" && (
-                  <div className="flex items-start gap-2">
+                  <div className="flex items-start gap-1.5">
                     <div className="shrink-0 mt-0.5">
-                      <div className="w-5 h-5 rounded-full border border-primary/50 flex items-center justify-center">
-                        <div className={`w-1.5 h-1.5 rounded-full bg-primary ${isSpeaking ? "animate-pulse" : "animate-pulse-glow"}`} />
+                      <div className="w-4 h-4 rounded-full border border-primary/50 flex items-center justify-center">
+                        <div className={`w-1 h-1 rounded-full bg-primary ${isSpeaking ? "animate-pulse" : "animate-pulse-glow"}`} />
                       </div>
                     </div>
-                    <div className="bg-card/60 backdrop-blur-md border border-border/30 rounded-lg px-3 py-2 max-w-[85%]">
-                      <div className="prose prose-sm prose-invert max-w-none font-rajdhani text-sm text-foreground/90 leading-relaxed [&_code]:font-mono [&_code]:text-primary [&_code]:bg-secondary/50 [&_code]:px-1 [&_code]:rounded [&_pre]:bg-secondary/30 [&_pre]:border [&_pre]:border-border/30 [&_strong]:text-primary [&_p]:my-1">
+                    <div className="bg-card/50 backdrop-blur-md border border-border/30 rounded-lg px-2.5 py-1.5 max-w-[95%]">
+                      <div className="prose prose-sm prose-invert max-w-none font-rajdhani text-[13px] text-foreground/90 leading-relaxed [&_code]:font-mono [&_code]:text-primary [&_code]:bg-secondary/50 [&_code]:px-1 [&_code]:rounded [&_strong]:text-primary [&_p]:my-0.5">
                         <ReactMarkdown>{msg.content}</ReactMarkdown>
                       </div>
                     </div>
                   </div>
                 )}
                 {msg.role === "user" && (
-                  <div className="px-3 py-2 rounded-lg bg-primary/15 backdrop-blur-md border border-primary/20 max-w-[75%]">
-                    <p className="font-rajdhani text-sm text-foreground">{msg.content}</p>
+                  <div className="px-2.5 py-1.5 rounded-lg bg-primary/15 backdrop-blur-md border border-primary/20 max-w-[85%]">
+                    <p className="font-rajdhani text-[13px] text-foreground">{msg.content}</p>
                   </div>
                 )}
               </div>
@@ -329,8 +271,8 @@ const JarvisChat = () => {
 
             {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full border border-primary/50 flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-glow" />
+                <div className="w-4 h-4 rounded-full border border-primary/50 flex items-center justify-center">
+                  <div className="w-1 h-1 rounded-full bg-primary animate-pulse-glow" />
                 </div>
                 <div className="flex gap-1">
                   {[0, 1, 2].map(i => (
@@ -343,69 +285,51 @@ const JarvisChat = () => {
           </div>
         )}
 
-        {/* Voice activity indicator */}
+        {/* Voice activity */}
         {(isListening || isSpeaking) && (
-          <div className="flex justify-center pb-2">
+          <div className="flex justify-center pb-1.5">
             <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-card/60 backdrop-blur-md border border-primary/30">
               {isListening && (
                 <>
                   <div className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
-                  <span className="font-mono text-[9px] text-destructive tracking-wider">LISTENING</span>
-                  <div className="flex gap-0.5 ml-1">
-                    {[0,1,2,3].map(i => (
-                      <div key={i} className="w-0.5 bg-destructive rounded-full animate-pulse" style={{ height: `${6+Math.random()*8}px`, animationDelay: `${i*0.1}s` }} />
-                    ))}
-                  </div>
+                  <span className="font-mono text-[8px] text-destructive tracking-wider">LISTENING</span>
                 </>
               )}
               {isSpeaking && !isListening && (
                 <>
                   <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  <span className="font-mono text-[9px] text-primary tracking-wider">J.A.R.V.I.S SPEAKING</span>
-                  <div className="flex gap-0.5 ml-1">
-                    {[0,1,2,3,4].map(i => (
-                      <div key={i} className="w-0.5 bg-primary rounded-full animate-pulse-glow" style={{ height: `${4+Math.random()*10}px`, animationDelay: `${i*0.12}s` }} />
-                    ))}
-                  </div>
+                  <span className="font-mono text-[8px] text-primary tracking-wider">SPEAKING</span>
                 </>
               )}
             </div>
           </div>
         )}
 
-        {/* Input area */}
-        <div className="px-4 pb-4">
-          <div className="relative border border-border/50 rounded-lg bg-card/60 backdrop-blur-md overflow-hidden focus-within:border-primary/50 transition-colors duration-300">
+        {/* Input */}
+        <div className="mt-auto">
+          <div className="relative border border-border/50 rounded-lg bg-card/50 backdrop-blur-md overflow-hidden focus-within:border-primary/50 transition-colors duration-300">
             <input
               ref={inputRef}
               type="text"
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === "Enter" && send()}
-              placeholder="与 J.A.R.V.I.S 对话... 或点击麦克风语音输入"
+              placeholder="对 J.A.R.V.I.S 说..."
               disabled={isLoading}
-              className="w-full bg-transparent px-4 py-3 pr-24 font-rajdhani text-sm text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50"
+              className="w-full bg-transparent px-3 py-2.5 pr-20 font-rajdhani text-sm text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50"
             />
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+            <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
               <button
                 onClick={toggleVoice}
-                className={`p-2 rounded-full transition-all ${isListening ? "text-destructive bg-destructive/10 animate-pulse" : "text-muted-foreground hover:text-primary hover:bg-primary/10"}`}
-                title={isListening ? "停止录音" : "语音输入"}
+                className={`p-1.5 rounded-full transition-all ${isListening ? "text-destructive bg-destructive/10 animate-pulse" : "text-muted-foreground hover:text-primary hover:bg-primary/10"}`}
               >
-                {isListening ? <MicOff size={16} /> : <Mic size={16} />}
+                {isListening ? <MicOff size={14} /> : <Mic size={14} />}
               </button>
-              <button
-                onClick={send}
-                disabled={isLoading || !input.trim()}
-                className="p-2 text-primary hover:text-primary/80 disabled:text-muted-foreground transition-colors"
-              >
-                <Send size={16} />
+              <button onClick={send} disabled={isLoading || !input.trim()} className="p-1.5 text-primary hover:text-primary/80 disabled:text-muted-foreground transition-colors">
+                <Send size={14} />
               </button>
             </div>
           </div>
-          <p className="text-center font-mono text-[9px] text-muted-foreground/40 mt-1.5 tracking-wider">
-            STARK INDUSTRIES · ENCRYPTED CHANNEL · {cameraOn ? "📹 VISION ACTIVE" : "STANDBY"}
-          </p>
         </div>
       </div>
     </>
