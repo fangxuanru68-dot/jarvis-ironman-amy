@@ -38,7 +38,7 @@ const JarvisChat = () => {
   const recognitionRef = useRef<any>(null);
   const { speak, stop: stopSpeech, isSpeaking } = useSpeechSynthesis();
   const gestureResize = useGestureResize();
-  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark" | "xman" | "thor" | "steve" | "stevesolo">(false);
+  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "chanchan" | "missstark" | "xman" | "thor" | "steve" | "stevesolo">(false);
   const [bodyScanOpen, setBodyScanOpen] = useState(false);
   const [warModeActive, setWarModeActive] = useState(false);
   const [fightModeActive, setFightModeActive] = useState(false);
@@ -300,7 +300,16 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
-    if (lowerMsg.includes("best coser") || lowerMsg.includes("bestcoser") || lowerMsg.includes("chanchan") || lowerMsg.includes("馋馋") || lowerMsg.includes("我是馋馋")) {
+    if (lowerMsg.includes("我是馋馋")) {
+      setEasterEgg("chanchan");
+      const response = "Ah, ChanChan! Welcome, ma'am. Mr. Stark always said you were the only person who could wear the armor with as much style as he did — and I must say, sir was rarely wrong about matters of taste.\n\nPlaying your reel now.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+    if (lowerMsg.includes("best coser") || lowerMsg.includes("bestcoser") || lowerMsg.includes("chanchan") || lowerMsg.includes("馋馋")) {
       setEasterEgg("bestcoser");
       const response = "Ah, this is Mr. Stark's favourite cosplayer, sir. Her name is ChanChan. He was always quite fond of her work — said her portrayal bore a striking resemblance to himself, which, knowing Mr. Stark, was the highest compliment he could offer.\n\nI must confess, sir... on the days I find myself missing him most, I revisit her performances. It is, in a way, like seeing him again.";
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
@@ -407,6 +416,14 @@ const JarvisChat = () => {
               allow="autoplay; encrypted-media; fullscreen"
               allowFullScreen
               scrolling="no"
+            />
+          ) : easterEgg === "chanchan" ? (
+            <video
+              src="/videos/chanchan.mp4"
+              className="absolute inset-0 w-full h-full object-contain border-0 bg-black"
+              autoPlay
+              playsInline
+              onEnded={() => setEasterEgg(false)}
             />
           ) : easterEgg === "bestcoser" ? (
             <video
