@@ -195,6 +195,7 @@ const JarvisChat = () => {
       if (voiceEnabled) speak("Playing back the memories, sir. He lives on, in all of us.");
       setIsLoading(false);
       return;
+    }
 
     if (classicResponse) {
       setMessages(prev => [...prev, { role: "assistant", content: classicResponse }]);
