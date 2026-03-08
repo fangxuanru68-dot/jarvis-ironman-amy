@@ -14,10 +14,10 @@ interface GestureResizeState {
 }
 
 const SCALE_MIN = 0.5;
-const SCALE_MAX = 2.0;
-const SCALE_STEP = 0.08;
-const SWIPE_THRESHOLD = 0.12;
-const SWIPE_SPEED_THRESHOLD = 0.008;
+const SCALE_MAX = 2.5;
+const SCALE_STEP = 0.12;
+const SWIPE_THRESHOLD = 0.08;
+const SWIPE_SPEED_THRESHOLD = 0.004;
 
 const clampScale = (s: number) => Math.max(SCALE_MIN, Math.min(SCALE_MAX, s));
 
