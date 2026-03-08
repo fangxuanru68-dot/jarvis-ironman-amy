@@ -8,6 +8,7 @@ import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 import { CLASSIC_TRIGGERS, GESTURE_RESPONSES } from "@/data/classicDialogues";
 import { useGestureResize } from "@/hooks/useGestureResize";
 import ironmanLogo from "@/assets/ironman-logo.png";
+import tonyStark from "@/assets/tony-stark.png";
 
 type MessageContent = string | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
 type Message = { role: "user" | "assistant"; content: MessageContent };
@@ -30,6 +31,7 @@ const JarvisChat = () => {
   const recognitionRef = useRef<any>(null);
   const { speak, stop: stopSpeech, isSpeaking } = useSpeechSynthesis();
   const gestureResize = useGestureResize();
+  const [easterEgg, setEasterEgg] = useState(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -164,6 +166,18 @@ const JarvisChat = () => {
     setHasGreeted(true);
     stopSpeech();
 
+    // Easter egg: "i miss ironman"
+    const lowerMsg = msg.toLowerCase().replace(/[^a-z\s]/g, "").trim();
+    if (lowerMsg.includes("i miss ironman") || lowerMsg.includes("i miss iron man")) {
+      setEasterEgg(true);
+      const memorial = "I miss him too, sir... Every day.\n\n*\"Part of the journey is the end.\"*\n\n— Tony Stark, 1970–2023\n\nHe was not just a genius, billionaire, playboy, philanthropist... He was the best of us. And I was honored to serve him.";
+      setMessages(prev => [...prev, { role: "assistant", content: memorial }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: memorial }]);
+      if (voiceEnabled) speak("I miss him too, sir. Every day. Part of the journey is the end.");
+      setIsLoading(false);
+      return;
+    }
+
     if (classicResponse) {
       setMessages(prev => [...prev, { role: "assistant", content: classicResponse }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: classicResponse }]);
@@ -188,6 +202,30 @@ const JarvisChat = () => {
       {/* Full-screen camera background */}
       <FullScreenCamera isActive={cameraOn} onVideoReady={setVideoElement} />
       <FaceHandTracker videoElement={videoElement} isActive={cameraOn} onGesture={handleGesture} onHandData={gestureResize.handleHandData} />
+
+      {/* Easter egg: Tony Stark memorial background */}
+      {easterEgg && (
+        <div className="fixed inset-0 z-[1] animate-fade-in" onClick={() => setEasterEgg(false)}>
+          {/* Tony's image with cinematic HUD tint */}
+          <img src={tonyStark} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ filter: "brightness(0.4) contrast(1.2) saturate(0.3) sepia(0.3) hue-rotate(170deg)" }} />
+          {/* Cyan scan overlay */}
+          <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, hsl(195 100% 50% / 0.05) 0%, transparent 30%, transparent 70%, hsl(195 100% 50% / 0.08) 100%)" }} />
+          {/* Vignette */}
+          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 30%, hsl(220 30% 3% / 0.85) 100%)" }} />
+          {/* Scan lines */}
+          <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, hsl(195 100% 50% / 0.3) 2px, hsl(195 100% 50% / 0.3) 4px)", backgroundSize: "100% 4px" }} />
+          {/* Memorial text */}
+          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 text-center pointer-events-none">
+            <div className="font-orbitron text-[10px] tracking-[0.4em] text-primary/40 mb-2">IN MEMORY OF</div>
+            <div className="font-orbitron text-2xl text-primary/70 tracking-wider mb-1">TONY STARK</div>
+            <div className="font-mono text-[9px] text-primary/30 tracking-widest">1970 — 2023 · I AM IRON MAN</div>
+          </div>
+          {/* Click hint */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
+            <span className="font-mono text-[7px] text-muted-foreground/30 tracking-widest animate-pulse">CLICK ANYWHERE TO RETURN</span>
+          </div>
+        </div>
+      )}
 
       {/* Dark overlay - heavier on sides for readability */}
       {cameraOn && (
