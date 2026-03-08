@@ -10,7 +10,7 @@ interface FaceHandTrackerProps {
 
 type HandLandmark = { x: number; y: number; z: number };
 
-const FaceHandTracker = ({ videoElement, isActive, onGesture, onHandData }: FaceHandTrackerProps) => {
+const FaceHandTracker = ({ videoElement, isActive, onGesture, onHandData, onFaceData }: FaceHandTrackerProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animFrameRef = useRef<number>(0);
   const [faceBox, setFaceBox] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
