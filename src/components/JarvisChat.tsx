@@ -37,7 +37,7 @@ const JarvisChat = () => {
   const recognitionRef = useRef<any>(null);
   const { speak, stop: stopSpeech, isSpeaking } = useSpeechSynthesis();
   const gestureResize = useGestureResize();
-  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark" | "xman">(false);
+  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark" | "xman" | "thor">(false);
   const [bodyScanOpen, setBodyScanOpen] = useState(false);
   const [warModeActive, setWarModeActive] = useState(false);
   const [rightEyePos, setRightEyePos] = useState<{ x: number; y: number } | null>(null);
