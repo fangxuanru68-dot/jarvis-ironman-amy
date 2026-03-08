@@ -37,7 +37,7 @@ const JarvisChat = () => {
   const recognitionRef = useRef<any>(null);
   const { speak, stop: stopSpeech, isSpeaking } = useSpeechSynthesis();
   const gestureResize = useGestureResize();
-  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark" | "xman">(false);
+  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark" | "xman" | "thor">(false);
   const [bodyScanOpen, setBodyScanOpen] = useState(false);
   const [warModeActive, setWarModeActive] = useState(false);
   const [rightEyePos, setRightEyePos] = useState<{ x: number; y: number } | null>(null);
@@ -279,6 +279,15 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
+    if (lowerMsg === "thor" || lowerMsg.includes("thor")) {
+      setEasterEgg("thor");
+      // 1:08 to 1:28 = 20 seconds, auto exit
+      tonyMessageTimerRef.current = setTimeout(() => {
+        setEasterEgg(false);
+      }, 20000);
+      setIsLoading(false);
+      return;
+    }
     if (lowerMsg.includes("im steve rogers") || lowerMsg.includes("i am steve rogers")) {
       const steveResponse = "Captain Rogers confirmed.\n\nMr. Stark's heart rate historically increases when you enter the room.";
       setMessages(prev => [...prev, { role: "assistant", content: steveResponse }]);
@@ -341,6 +350,14 @@ const JarvisChat = () => {
               autoPlay
               playsInline
               onEnded={() => setEasterEgg(false)}
+            />
+          ) : easterEgg === "thor" ? (
+            <iframe
+              src="https://www.youtube.com/embed/eTZZCvuYxrk?autoplay=1&controls=0&showinfo=0&modestbranding=1&mute=0&start=68&end=88"
+              className="absolute inset-0 w-full h-full border-0"
+              style={{ transform: "scale(1.2)", transformOrigin: "center" }}
+              allow="autoplay; encrypted-media"
+              allowFullScreen
             />
           ) : (easterEgg === "video" || easterEgg === "tony" || easterEgg === "tonymessage") ? (
             <iframe
