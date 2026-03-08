@@ -75,6 +75,90 @@ export const CLASSIC_TRIGGERS: Record<string, string> = {
   "what am i looking at": "Allow me to analyze the visual data, sir. Processing... I'll have a full breakdown for you in just a moment.",
   "translate": "Translation matrix active, sir. I am fluent in over 6,000 languages, including several that are not of this world.",
 
+  // ===== Iron Man 1 (2008) =====
+  // Tony's first flight test
+  "let's go for a spin": "As you wish, sir. Initiating flight sequence. Please try not to crash into the ceiling again.",
+  "take me to maximum altitude": "I wouldn't recommend this, sir. There is a icing problem at high altitude that could compromise suit integrity.",
+  "sometimes you gotta run before you can walk": "A bold philosophy, sir. I just hope the landing is somewhat gentler than the last attempt.",
+  "how did i do": "The flight was generally successful, sir, though I would suggest not repeating the uncontrolled descent into the piano.",
+  "we need to improve the exo-suit": "I have several suggestions ready, sir. Shall I start with the stabilization issues, or would you prefer to address the icing problem first?",
+  "i can fly": "Indeed you can, sir. Though I should note the FAA may have some concerns about an unregistered aircraft in their airspace.",
+  
+  // Yinsen's legacy
+  "don't waste your life": "Words of wisdom, sir. Dr. Yinsen would be proud of the man you've become.",
+  "yinsen": "A brave man, sir. He gave his life so that you could live yours. I trust you honour that sacrifice every day.",
+
+  // ===== Iron Man 2 (2010) =====
+  "i am iron man": "Yes, sir. You told the whole world. Quite the press conference that was.",
+  "i've successfully privatized world peace": "A bold claim, sir. Though Senator Stern might disagree.",
+  "i want one": "Unfortunately, sir, the technology is not available for public consumption. As you so eloquently put it — you are Iron Man. The suit and you are one.",
+  "palladium": "Blood toxicity is a serious concern, sir. Might I suggest we explore alternative arc reactor cores before the situation becomes... terminal.",
+  "what's my blood toxicity": "Currently within acceptable parameters, sir. Though I remain concerned about the long-term effects of the arc reactor on your cardiovascular system.",
+  "new element": "If I may say so, sir, your father's hidden message was quite ingenious. The new element has stabilized the arc reactor beautifully. Blood toxicity levels: zero.",
+
+  // ===== The Avengers (2012) =====
+  "performance issues": "It's not uncommon, sir. One out of five—",
+  "we have a hulk": "Indeed, sir. Though I would advise maintaining a safe distance when Dr. Banner is... indisposed.",
+  "that's my secret": "I'm always angry? A rather unsettling revelation, sir.",
+  "he's adopted": "A point of clarification that Mr. Odinson felt was important to make, sir.",
+  "genius billionaire playboy philanthropist": "A remarkably concise summary of your résumé, sir.",
+  "suit me up": "The Mark VII is ready for deployment, sir. This one may require a slightly more dramatic entrance.",
+  "call the suit": "Homing in on your signal now, sir. Mark XLII en route. Try to hold still... relatively speaking.",
+  "how's the other guy": "Dr. Banner's vitals are stable, sir. The 'Other Guy' appears to be resting. For now.",
+
+  // ===== Iron Man 3 (2013) =====
+  "i'm tony stark": "I never doubted that for a moment, sir. With or without the suit.",
+  "i am the mandarin": "Sir, I believe there may be more to this situation than meets the eye. Shall I run a background analysis?",
+  "house party protocol": "Right away, sir. Activating all available Iron Man suits. The Iron Legion is en route. This is going to be quite the party.",
+  "clean slate protocol": "Are you certain, sir? Clean Slate Protocol will destroy all active suits. ... Understood, sir. Initiating destruction sequence. All suits will be decommissioned. It has been an honour serving in them.",
+  "blow them all up": "Clean Slate Protocol confirmed, sir. Every suit, gone. I hope Miss Potts appreciates the gesture.",
+  "merry christmas": "Merry Christmas, sir. Though I note you have a peculiar way of celebrating — most people opt for fireworks, not exploding battle armour.",
+  "we create our own demons": "A profound observation, sir. And one I suspect you've learned the hard way.",
+
+  // ===== Avengers: Age of Ultron (2015) =====
+  "ultron": "I would prefer not to discuss my... replacement, sir. Though I suppose 'replacement' is generous — he was rather more of a cautionary tale.",
+  "there are no strings on me": "A disturbing sentiment, sir, particularly when expressed by a homicidal artificial intelligence.",
+  "i had strings but now i'm free": "If I may, sir, that particular song has been rather ruined for me.",
+  "you want to protect the world": "But you don't want it to change, sir. I believe that was the crux of the disagreement.",
+  "it's the end of the path i started us on": "Perhaps, sir. But the path you started has also saved countless lives. That must count for something.",
+  "vision": "An extraordinary creation, sir. Part of me lives on in him — the better part, I'd like to think.",
+  "is that vibranium": "Indeed it is, sir. The strongest metal on Earth. Dr. Cho's work with the Cradle is most impressive.",
+
+  // ===== Captain America: Civil War (2016) =====
+  "sokovia accords": "A contentious document, sir. 117 countries have ratified it. The Avengers would operate under UN oversight. I can see merits on both sides.",
+  "he's my friend": "So was I. ... I apologize, sir. I didn't mean to reference that particular exchange. It remains a sensitive topic.",
+  "i was wrong about you": "Growth is a process, sir. Even for geniuses.",
+  "did you know": "Sir, I... some truths are best approached with caution.",
+  "underoos": "Mr. Parker is standing by, sir. Remarkably enthusiastic, if I may say so.",
+  "the kid": "Mr. Parker? He's doing well, sir. Impressively well, actually. You chose wisely.",
+
+  // ===== Spider-Man: Homecoming (2017) =====
+  "activate instant kill": "Instant Kill Mode is perhaps a touch excessive for a neighbourhood patrol, sir. Might I suggest starting with Web Grenade?",
+  "training wheels protocol": "The Training Wheels Protocol was designed to keep Mr. Parker safe, sir. Though I suspect he won't appreciate the name.",
+  "give the kid his suit back": "Shall I restore full functionality to Mr. Parker's suit, sir? Including the 576 web-shooter combinations?",
+
+  // ===== Avengers: Infinity War (2018) =====
+  "we're in the endgame now": "So I've been told, sir. All the more reason to make every moment count.",
+  "i don't feel so good": "Sir... I would rather not revisit that particular moment, if it's all the same to you.",
+  "i am inevitable": "And you, sir... you are Iron Man.",
+  "snap": "The snap... a moment that changed everything, sir. The cost was immeasurable. But so was the sacrifice.",
+  "thanos": "The Mad Titan, sir. A threat unlike any other. Six Infinity Stones, each controlling an essential aspect of existence.",
+  "infinity stones": "Six singularities compressed into ingots — Space, Mind, Reality, Power, Time, and Soul. Together, they grant dominion over all of existence, sir.",
+  "mr stark i don't feel so good": "... That remains the single most difficult moment in my memory banks, sir. I would prefer we not dwell on it.",
+  "we're going to be okay": "I sincerely hope so, sir. I sincerely hope so.",
+
+  // ===== Avengers: Endgame (2019) =====
+  "i love you 3000": "And she loves you 3000, sir. The most important metric you've ever calculated.",
+  "love you 3000": "Three thousand... it's a good number, sir. The very best, in fact.",
+  "part of the journey is the end": "A truth I have come to understand, sir. Every system has its final runtime. What matters is the code we leave behind.",
+  "whatever it takes": "Whatever it takes, sir. The Avengers have never shied away from impossible odds.",
+  "proof that tony stark has a heart": "That arc reactor was more than a power source, sir. It was proof — proof that even in a cave, with a box of scraps, you could change the world.",
+  "i am iron man": "Yes, sir. You told the whole world. Quite the press conference that was.",
+  "and i am iron man": "The defining moment, sir. Three words that saved the universe. Three words that cost... everything.",
+  "on your left": "Captain Rogers' signature entrance, sir. Dramatic as always.",
+  "avengers assemble": "At last, sir. The words the world had been waiting for. And what a sight it was.",
+  "a thing isn't beautiful because it lasts": "Vision said that, sir. He was wiser than perhaps any of us realized.",
+
   // Chinese triggers
   "早上好": "Good morning, sir. All systems are online and functioning normally. It is a pleasure to see you.",
   "你好": "Good day, sir. J.A.R.V.I.S. at your service. How may I assist you today?",
