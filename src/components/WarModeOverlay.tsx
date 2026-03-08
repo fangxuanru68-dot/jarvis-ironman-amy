@@ -11,13 +11,11 @@ const WarModeOverlay = ({ isActive, onEnd, rightEyePos }: WarModeOverlayProps) =
   const [rotation, setRotation] = useState(0);
   const [pulseCount, setPulseCount] = useState(0);
 
-  // Auto-end after 10 seconds
+  // Reset pulse count on activation
   useEffect(() => {
     if (!isActive) return;
     setPulseCount(0);
-    const timer = setTimeout(() => onEnd(), 10000);
-    return () => clearTimeout(timer);
-  }, [isActive, onEnd]);
+  }, [isActive]);
 
   // Show reticle every 3 seconds
   useEffect(() => {
