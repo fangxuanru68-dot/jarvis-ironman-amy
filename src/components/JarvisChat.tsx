@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
-import { Send, Mic, MicOff, Video, VideoOff, Volume2, VolumeX } from "lucide-react";
+import { Send, Mic, MicOff, Video, VideoOff, Volume2, VolumeX, PanelRightOpen, PanelRightClose } from "lucide-react";
 import FullScreenCamera from "./FullScreenCamera";
 import FaceHandTracker from "./FaceHandTracker";
 import HudSidePanels from "./HudSidePanels";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
 import { CLASSIC_TRIGGERS, GESTURE_RESPONSES } from "@/data/classicDialogues";
 import { useGestureResize } from "@/hooks/useGestureResize";
+import ironmanLogo from "@/assets/ironman-logo.png";
 
 type MessageContent = string | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
 type Message = { role: "user" | "assistant"; content: MessageContent };
@@ -207,6 +208,13 @@ const JarvisChat = () => {
       {/* Top bar: controls only (logo moved to left panel) */}
       <div className="fixed top-3 right-3 z-20 flex items-center gap-2">
         <button
+          onClick={gestureResize.toggleChatVisible}
+          className={`p-2 rounded-sm border transition-all ${gestureResize.chatVisible ? "border-primary/50 text-primary bg-primary/10" : "border-border/30 text-muted-foreground hover:text-primary"}`}
+          title={gestureResize.chatVisible ? "Hide chat (swipe right)" : "Show chat (swipe left)"}
+        >
+          {gestureResize.chatVisible ? <PanelRightClose size={14} /> : <PanelRightOpen size={14} />}
+        </button>
+        <button
           onClick={() => setCameraOn(!cameraOn)}
           className={`p-2 rounded-sm border transition-all ${cameraOn ? "border-primary/50 text-primary bg-primary/10" : "border-border/30 text-muted-foreground hover:text-primary"}`}
         >
@@ -220,8 +228,19 @@ const JarvisChat = () => {
         </button>
       </div>
 
-      {/* ===== RIGHT SIDE: Chat panel ===== */}
-      <div className={`fixed right-3 top-14 bottom-4 z-20 flex flex-col ${gestureResize.activePanel === "chat" ? "ring-1 ring-primary/50 rounded-sm" : ""}`} style={{ width: `${320 * gestureResize.chatScale}px`, transition: gestureResize.isResizing ? "none" : "width 0.3s ease-out" }}>
+      {/* ===== RIGHT SIDE: Chat panel with slide animation ===== */}
+      <div
+        className={`fixed top-14 bottom-4 z-20 flex flex-col rounded-lg overflow-hidden ${gestureResize.activePanel === "chat" ? "ring-1 ring-primary/50" : ""}`}
+        style={{
+          width: `${320 * gestureResize.chatScale}px`,
+          right: gestureResize.chatVisible ? "12px" : `-${320 * gestureResize.chatScale + 20}px`,
+          transition: "right 0.4s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease-out",
+        }}
+      >
+        {/* Iron Man logo background */}
+        <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center">
+          <img src={ironmanLogo} alt="" className="w-40 h-40 opacity-[0.04] invert" />
+        </div>
         {/* Welcome state (compact, in right panel) */}
         {showWelcome && (
           <div className="flex flex-col gap-3 p-3 animate-fade-in-up mb-auto">
