@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
-import { Send, Mic, MicOff, Video, VideoOff, Volume2, VolumeX } from "lucide-react";
+import { Send, Mic, MicOff, Video, VideoOff, Volume2, VolumeX, PanelRightOpen, PanelRightClose } from "lucide-react";
 import FullScreenCamera from "./FullScreenCamera";
 import FaceHandTracker from "./FaceHandTracker";
 import HudSidePanels from "./HudSidePanels";
