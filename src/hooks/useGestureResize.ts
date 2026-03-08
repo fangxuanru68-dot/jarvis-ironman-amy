@@ -86,13 +86,13 @@ export function useGestureResize() {
 
     // --- PANEL SELECTION & RESIZE (existing logic) ---
     let targetPanel: ResizablePanel | null = null;
-    if (indexTip.x < 0.25) {
+    if (indexTip.x < 0.35) {
       const y = indexTip.y;
-      if (y < 0.3) targetPanel = "storage";
-      else if (y < 0.45) targetPanel = "power";
-      else if (y < 0.6) targetPanel = "radar";
+      if (y < 0.35) targetPanel = "storage";
+      else if (y < 0.5) targetPanel = "power";
+      else if (y < 0.65) targetPanel = "radar";
       else targetPanel = "weather";
-    } else if (indexTip.x > 0.7) {
+    } else if (indexTip.x > 0.6) {
       targetPanel = "chat";
     }
 
