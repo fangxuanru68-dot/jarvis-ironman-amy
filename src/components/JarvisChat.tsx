@@ -211,14 +211,14 @@ const JarvisChat = () => {
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
       if (voiceEnabled) speak(response);
-      // Video is ~4:46 (286s), starting at 2:15 (135s), so ~151s remaining
+      // Play from 2:15 to 2:24 (9 seconds)
       tonyMessageTimerRef.current = setTimeout(() => {
         setEasterEgg(false);
         const endMsg = "Message complete, sir. He wanted you to hear that.";
         setMessages(prev => [...prev, { role: "assistant", content: endMsg }]);
         setApiMessages(prev => [...prev, { role: "assistant", content: endMsg }]);
         if (voiceEnabled) speak(endMsg);
-      }, 155000);
+      }, 9000);
       setIsLoading(false);
       return;
     }
