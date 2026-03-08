@@ -299,7 +299,7 @@ const JarvisChat = () => {
           {/* Tony's image with cinematic HUD tint */}
           {easterEgg === "xman" ? (
             <iframe
-              src="https://player.bilibili.com/player.html?aid=2479604&high_quality=1&danmaku=0&autoplay=1"
+              src="https://player.bilibili.com/player.html?bvid=BV1PU4y1S7Ga&high_quality=1&danmaku=0&autoplay=1"
               className="absolute inset-0 w-full h-full border-0"
               allow="autoplay; encrypted-media; fullscreen"
               allowFullScreen
