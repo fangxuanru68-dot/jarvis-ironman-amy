@@ -170,11 +170,20 @@ const JarvisChat = () => {
     // Easter egg: "i miss ironman"
     const lowerMsg = msg.toLowerCase().replace(/[^a-z\s]/g, "").trim();
     if (lowerMsg.includes("i miss ironman") || lowerMsg.includes("i miss iron man")) {
-      setEasterEgg(true);
+      setEasterEgg("ironman");
       const memorial = "I miss him too, sir... Every day.\n\n*\"Part of the journey is the end.\"*\n\n— Tony Stark, 1970–2023\n\nHe was not just a genius, billionaire, playboy, philanthropist... He was the best of us. And I was honored to serve him.";
       setMessages(prev => [...prev, { role: "assistant", content: memorial }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: memorial }]);
       if (voiceEnabled) speak("I miss him too, sir. Every day. Part of the journey is the end.");
+      setIsLoading(false);
+      return;
+    }
+    if (lowerMsg.includes("i miss tony")) {
+      setEasterEgg("tony");
+      const memorial = "Sir... Tony is right here. He always will be.\n\n*\"Sometimes you gotta run before you can walk.\"*\n\nThe workshop lights are still on. The suits are still waiting. And I'm still here, sir. Always.";
+      setMessages(prev => [...prev, { role: "assistant", content: memorial }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: memorial }]);
+      if (voiceEnabled) speak("Sir, Tony is right here. He always will be. The workshop lights are still on.");
       setIsLoading(false);
       return;
     }
