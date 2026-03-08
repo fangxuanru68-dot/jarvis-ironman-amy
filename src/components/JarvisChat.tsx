@@ -489,6 +489,11 @@ const JarvisChat = () => {
           </div>
         </div>
       </div>
+
+      {/* Watermark */}
+      <div className="fixed top-3 right-3 z-[100] font-mono text-[10px] text-primary/25 tracking-wider pointer-events-none select-none">
+        made by 卷饼_Amy
+      </div>
     </>
   );
 };
