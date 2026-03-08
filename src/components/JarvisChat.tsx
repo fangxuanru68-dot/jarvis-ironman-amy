@@ -316,10 +316,10 @@ const JarvisChat = () => {
     }
     if (lowerMsg === "thor" || lowerMsg.includes("thor")) {
       setEasterEgg("thor");
-      // 1:08 to 1:28 = 20 seconds, auto exit
+      // 1:08 to 1:24 = 16 seconds, auto exit
       tonyMessageTimerRef.current = setTimeout(() => {
         setEasterEgg(false);
-      }, 20000);
+      }, 16000);
       setIsLoading(false);
       return;
     }
