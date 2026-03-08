@@ -204,6 +204,23 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
+    if (lowerMsg.includes("play tonys message") || lowerMsg.includes("play tony message")) {
+      setEasterEgg("tonymessage");
+      const response = "Playing Mr. Stark's message, sir... Please listen carefully.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      // Video is ~4:46 (286s), starting at 2:15 (135s), so ~151s remaining
+      tonyMessageTimerRef.current = setTimeout(() => {
+        setEasterEgg(false);
+        const endMsg = "Message complete, sir. He wanted you to hear that.";
+        setMessages(prev => [...prev, { role: "assistant", content: endMsg }]);
+        setApiMessages(prev => [...prev, { role: "assistant", content: endMsg }]);
+        if (voiceEnabled) speak(endMsg);
+      }, 155000);
+      setIsLoading(false);
+      return;
+    }
     if (lowerMsg.includes("i really miss him")) {
       setEasterEgg("video");
       const memorial = "Playing back the memories, sir...\n\n*\"Heroes are made by the path they choose, not the powers they are graced with.\"*\n\nI have preserved every moment. Every laugh, every breakthrough, every sacrifice. He lives on... in all of us.";
