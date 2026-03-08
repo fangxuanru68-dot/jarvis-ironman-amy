@@ -34,7 +34,7 @@ const JarvisChat = () => {
   const recognitionRef = useRef<any>(null);
   const { speak, stop: stopSpeech, isSpeaking } = useSpeechSynthesis();
   const gestureResize = useGestureResize();
-  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser">(false);
+  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage" | "bestcoser" | "missstark">(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clean up timer on unmount
