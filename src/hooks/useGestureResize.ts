@@ -119,6 +119,23 @@ export function useGestureResize() {
       setState(prev => ({ ...prev, isResizing: false }));
     }
 
+    // --- Track gesture sequence for OPEN_PALM → FIST page shrink ---
+    if (gesture === "FIST" && lastGestureRef.current === "OPEN_PALM" && !pageShrinkCooldown.current) {
+      pageShrinkCooldown.current = true;
+      setState(prev => ({
+        ...prev,
+        pageScale: prev.pageScale < 1 ? 1 : 0.6,
+      }));
+      setTimeout(() => { pageShrinkCooldown.current = false; }, 1500);
+      lastGestureRef.current = gesture;
+      return;
+    }
+    lastGestureRef.current = gesture;
+
+    // Clear sequence after timeout
+    if (gestureTimerRef.current) clearTimeout(gestureTimerRef.current);
+    gestureTimerRef.current = setTimeout(() => { lastGestureRef.current = null; }, 2000);
+
     // --- POINTING: select left-side panels ---
     if (gesture === "POINTING") {
       let targetPanel: ResizablePanel | null = null;
