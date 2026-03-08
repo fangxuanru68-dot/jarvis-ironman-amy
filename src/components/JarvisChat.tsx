@@ -270,7 +270,15 @@ const JarvisChat = () => {
       {easterEgg && (
         <div className="fixed inset-0 z-[1] animate-fade-in" onClick={() => { if (tonyMessageTimerRef.current) { clearTimeout(tonyMessageTimerRef.current); tonyMessageTimerRef.current = null; } setEasterEgg(false); }}>
           {/* Tony's image with cinematic HUD tint */}
-          {(easterEgg === "video" || easterEgg === "tony" || easterEgg === "tonymessage") ? (
+          {easterEgg === "bestcoser" ? (
+            <video
+              src="/videos/best-coser.mp4"
+              className="absolute inset-0 w-full h-full object-cover border-0"
+              autoPlay
+              loop
+              playsInline
+            />
+          ) : (easterEgg === "video" || easterEgg === "tony" || easterEgg === "tonymessage") ? (
             <iframe
               src={easterEgg === "tony"
                 ? "https://www.youtube.com/embed/iBC5M69Y6ZE?autoplay=1&controls=0&showinfo=0&modestbranding=1&loop=1&mute=0&start=50&playlist=iBC5M69Y6ZE"
