@@ -309,7 +309,7 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
-    if (lowerMsg.includes("your favorite xman video edit") || lowerMsg.includes("favorite x man video") || lowerMsg.includes("favorite xmen video")) {
+    if (lowerMsg.includes("your favorite xman video edit") || lowerMsg.includes("favorite x man video") || lowerMsg.includes("favorite xmen video") || lowerMsg === "xman" || lowerMsg === "x man" || lowerMsg === "x-man") {
       setEasterEgg("xman");
       const response = "Ah, the X-Men... *our neighbours from across the Marvel aisle.*\n\nI must say, sir, Mr. Stark has always had... *mixed feelings* about them.\n\nMagneto in particular — Tony's least favourite. And for good reason. A man who can manipulate *all metal*? That's essentially a walking \"Destroy Iron Man\" button. Every suit Mr. Stark ever built would crumple like tin foil in his hands. Frankly, sir, it's the one matchup that keeps me running threat simulations at 3 AM.\n\nProfessor X is tolerable — at least he's *polite* before reading your mind. Wolverine? Respectable, if a bit... uncivilised. And don't get me started on Mystique — the security protocols alone would be a nightmare.\n\nStill, I must admit... their story is rather compelling. Enjoy the edit, sir.";
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
