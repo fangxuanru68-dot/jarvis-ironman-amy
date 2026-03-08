@@ -3,35 +3,17 @@ import ReactMarkdown from "react-markdown";
 import { Send, Mic, MicOff, Video, VideoOff, Volume2, VolumeX } from "lucide-react";
 import ArcReactor from "./ArcReactor";
 import FullScreenCamera from "./FullScreenCamera";
+import FaceHandTracker from "./FaceHandTracker";
+import HudSidePanels from "./HudSidePanels";
 import { useSpeechSynthesis } from "@/hooks/useSpeechSynthesis";
+import { CLASSIC_TRIGGERS, GESTURE_RESPONSES } from "@/data/classicDialogues";
+import starkLogo from "@/assets/stark-logo.png";
 
 type MessageContent = string | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
 type Message = { role: "user" | "assistant"; content: MessageContent };
 type DisplayMessage = { role: "user" | "assistant"; content: string; images?: string[] };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/jarvis-chat`;
-
-// Classic JARVIS movie lines
-const CLASSIC_TRIGGERS: Record<string, string> = {
-  "good morning": "Good morning, sir. It's a beautiful day. The weather in Malibu is 72 degrees with scattered clouds. The surf conditions are fair with waist to shoulder high lines.",
-  "早上好": "Good morning, sir. All systems are online and functioning normally.",
-  "status report": "All systems nominal, sir. Mark suits are fully charged and operational. No security threats detected in the perimeter.",
-  "状态报告": "All systems nominal, sir. No threats detected. Arc reactor output is steady at 3 gigajoules per second.",
-  "run diagnostics": "Running full diagnostics now, sir... All primary systems are online. Repulsor efficiency at 97%. Flight stabilizers calibrated. Weapons systems on standby. You are good to go, sir.",
-  "运行诊断": "Running diagnostics, sir... All systems are functioning within normal parameters. You are cleared for all operations.",
-  "suit up": "Right away, sir. Initializing suit assembly sequence. Mark XLII is standing by for deployment.",
-  "准备战甲": "Suit assembly initiated, sir. All components are in position. Shall I proceed with full deployment?",
-  "what's my schedule": "You have a board meeting at 10 AM, followed by a weapons demo at the proving grounds. Miss Potts would also like to remind you about dinner tonight.",
-  "power levels": "Arc reactor output holding steady at 3 gigajoules per second, sir. All auxiliary power systems are green.",
-  "threat analysis": "Scanning perimeter now, sir. No immediate threats detected. Satellite feeds show clear skies. S.H.I.E.L.D. channels are quiet.",
-  "威胁分析": "Scanning all frequencies, sir. No hostile activity detected in your vicinity. You are clear.",
-  "play some music": "Shall I put on some AC/DC, sir? I believe 'Shoot to Thrill' is your current favorite.",
-  "放点音乐": "Right away, sir. I have your playlist queued. Shall I start with your usual preference?",
-  "hello jarvis": "At your service, sir. All systems are online and awaiting your command.",
-  "你好": "Good day, sir. J.A.R.V.I.S. at your service. How may I assist you today?",
-  "thank you jarvis": "Always a pleasure, sir.",
-  "谢谢": "You're most welcome, sir. Is there anything else you require?",
-};
 
 const JarvisChat = () => {
   const [messages, setMessages] = useState<DisplayMessage[]>([]);
@@ -42,6 +24,7 @@ const JarvisChat = () => {
   const [isListening, setIsListening] = useState(false);
   const [cameraOn, setCameraOn] = useState(true);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
@@ -53,7 +36,6 @@ const JarvisChat = () => {
 
   useEffect(() => {
     inputRef.current?.focus();
-    // Preload voices
     if (window.speechSynthesis) {
       window.speechSynthesis.getVoices();
       window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
@@ -114,6 +96,16 @@ const JarvisChat = () => {
     return null;
   };
 
+  const handleGesture = useCallback((gesture: string) => {
+    const response = GESTURE_RESPONSES[gesture];
+    if (response) {
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setHasGreeted(true);
+    }
+  }, [voiceEnabled, speak]);
+
   const streamChat = async (allMessages: Message[]) => {
     const resp = await fetch(CHAT_URL, {
       method: "POST",
@@ -173,7 +165,7 @@ const JarvisChat = () => {
 
   const sendMessage = async (text?: string) => {
     const msg = typeof text === "string" ? text : input.trim();
-    if ((!msg) || isLoading) return;
+    if (!msg || isLoading) return;
 
     const images: string[] = [];
     if (cameraOn) {
@@ -184,7 +176,6 @@ const JarvisChat = () => {
       }
     }
 
-    // Check for classic movie triggers first
     const classicResponse = checkClassicTrigger(msg);
 
     let apiContent: MessageContent;
@@ -209,7 +200,6 @@ const JarvisChat = () => {
     stopSpeech();
 
     if (classicResponse) {
-      // Use classic movie response
       setMessages(prev => [...prev, { role: "assistant", content: classicResponse }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: classicResponse }]);
       if (voiceEnabled) speak(classicResponse);
@@ -234,17 +224,27 @@ const JarvisChat = () => {
   return (
     <>
       {/* Full-screen camera background */}
-      <FullScreenCamera isActive={cameraOn} />
+      <FullScreenCamera isActive={cameraOn} onVideoReady={setVideoElement} />
 
-      {/* Dark overlay on camera for readability */}
+      {/* Face & Hand tracking overlay */}
+      <FaceHandTracker
+        videoElement={videoElement}
+        isActive={cameraOn}
+        onGesture={handleGesture}
+      />
+
+      {/* Dark overlay for readability */}
       {cameraOn && (
-        <div className="fixed inset-0 z-[1] bg-gradient-to-t from-background via-background/70 to-transparent" />
+        <div className="fixed inset-0 z-[1] bg-gradient-to-t from-background via-background/60 to-transparent" />
       )}
+
+      {/* HUD side panels */}
+      <HudSidePanels />
 
       {/* Top HUD bar */}
       <div className="fixed top-0 left-0 right-0 z-20 flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
-          <ArcReactor size={32} isActive />
+          <img src={starkLogo} alt="Stark Industries" className="h-8 w-auto opacity-80" />
           <div>
             <div className="font-orbitron text-[10px] tracking-[0.3em] text-primary">J.A.R.V.I.S</div>
             <div className="font-mono text-[8px] text-muted-foreground">ONLINE · ALL SYSTEMS NOMINAL</div>
@@ -252,7 +252,6 @@ const JarvisChat = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Camera toggle */}
           <button
             onClick={() => setCameraOn(!cameraOn)}
             className={`p-2 rounded-sm border transition-all ${cameraOn ? "border-primary/50 text-primary bg-primary/10" : "border-border/30 text-muted-foreground hover:text-primary"}`}
@@ -260,7 +259,6 @@ const JarvisChat = () => {
           >
             {cameraOn ? <Video size={14} /> : <VideoOff size={14} />}
           </button>
-          {/* Voice toggle */}
           <button
             onClick={() => { setVoiceEnabled(!voiceEnabled); if (isSpeaking) stopSpeech(); }}
             className={`p-2 rounded-sm border transition-all ${voiceEnabled ? "border-primary/50 text-primary bg-primary/10" : "border-border/30 text-muted-foreground hover:text-primary"}`}
@@ -271,7 +269,7 @@ const JarvisChat = () => {
         </div>
       </div>
 
-      {/* Main content - bottom area only */}
+      {/* Main content - bottom area */}
       <div className="fixed bottom-0 left-0 right-0 z-20 max-w-3xl mx-auto">
         {/* Welcome state */}
         {showWelcome && (
@@ -288,6 +286,7 @@ const JarvisChat = () => {
                 "Run diagnostics",
                 "Suit up",
                 "Threat analysis",
+                "Activate defense protocol",
               ].map(q => (
                 <button
                   key={q}
@@ -301,9 +300,9 @@ const JarvisChat = () => {
           </div>
         )}
 
-        {/* Messages - compact, bottom-aligned */}
+        {/* Messages */}
         {messages.length > 0 && (
-          <div className="max-h-[40vh] overflow-y-auto px-4 pb-2 space-y-2">
+          <div className="max-h-[35vh] overflow-y-auto px-4 pb-2 space-y-2">
             {messages.map((msg, i) => (
               <div key={i} className={`animate-fade-in-up ${msg.role === "user" ? "flex justify-end" : ""}`}>
                 {msg.role === "assistant" && (
@@ -405,7 +404,7 @@ const JarvisChat = () => {
             </div>
           </div>
           <p className="text-center font-mono text-[9px] text-muted-foreground/40 mt-1.5 tracking-wider">
-            STARK INDUSTRIES · ENCRYPTED CHANNEL · {cameraOn ? "📹 VISION" : "STANDBY"}
+            STARK INDUSTRIES · ENCRYPTED CHANNEL · {cameraOn ? "📹 VISION ACTIVE" : "STANDBY"}
           </p>
         </div>
       </div>
