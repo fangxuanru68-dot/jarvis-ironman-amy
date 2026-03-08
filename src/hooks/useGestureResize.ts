@@ -106,6 +106,7 @@ export function useGestureResize() {
         }
       }
       lastHandY.current = currentY;
+      lastGestureForSequence.current = "OPEN_PALM";
       return;
     }
 
