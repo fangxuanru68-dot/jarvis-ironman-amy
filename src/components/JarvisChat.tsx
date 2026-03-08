@@ -355,6 +355,10 @@ const JarvisChat = () => {
       setMessages(prev => [...prev, { role: "assistant", content: memorial }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: memorial }]);
       if (voiceEnabled) speak("Playing back the memories, sir. He lives on, in all of us.");
+      // Video ~4 min
+      tonyMessageTimerRef.current = setTimeout(() => {
+        setEasterEgg(false);
+      }, 240000);
       setIsLoading(false);
       return;
     }
