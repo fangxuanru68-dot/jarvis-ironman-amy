@@ -14,10 +14,10 @@ interface GestureResizeState {
 }
 
 const SCALE_MIN = 0.5;
-const SCALE_MAX = 2.0;
-const SCALE_STEP = 0.08;
-const SWIPE_THRESHOLD = 0.12;
-const SWIPE_SPEED_THRESHOLD = 0.008;
+const SCALE_MAX = 2.5;
+const SCALE_STEP = 0.12;
+const SWIPE_THRESHOLD = 0.08;
+const SWIPE_SPEED_THRESHOLD = 0.004;
 
 const clampScale = (s: number) => Math.max(SCALE_MIN, Math.min(SCALE_MAX, s));
 
@@ -86,13 +86,13 @@ export function useGestureResize() {
 
     // --- PANEL SELECTION & RESIZE (existing logic) ---
     let targetPanel: ResizablePanel | null = null;
-    if (indexTip.x < 0.25) {
+    if (indexTip.x < 0.35) {
       const y = indexTip.y;
-      if (y < 0.3) targetPanel = "storage";
-      else if (y < 0.45) targetPanel = "power";
-      else if (y < 0.6) targetPanel = "radar";
+      if (y < 0.35) targetPanel = "storage";
+      else if (y < 0.5) targetPanel = "power";
+      else if (y < 0.65) targetPanel = "radar";
       else targetPanel = "weather";
-    } else if (indexTip.x > 0.7) {
+    } else if (indexTip.x > 0.6) {
       targetPanel = "chat";
     }
 
@@ -108,12 +108,12 @@ export function useGestureResize() {
       const currentY = palmCenter.y;
       if (lastHandY.current !== null) {
         const delta = lastHandY.current - currentY;
-        if (Math.abs(delta) > 0.005) {
+        if (Math.abs(delta) > 0.002) {
           const scaleKey = `${state.activePanel}Scale` as keyof GestureResizeState;
           setState(prev => ({
             ...prev,
             isResizing: true,
-            [scaleKey]: clampScale((prev[scaleKey] as number) + delta * 3),
+            [scaleKey]: clampScale((prev[scaleKey] as number) + delta * 5),
           }));
         }
       }
