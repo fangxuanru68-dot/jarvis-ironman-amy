@@ -33,7 +33,13 @@ const JarvisChat = () => {
   const recognitionRef = useRef<any>(null);
   const { speak, stop: stopSpeech, isSpeaking } = useSpeechSynthesis();
   const gestureResize = useGestureResize();
-  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video">(false);
+  const [easterEgg, setEasterEgg] = useState<false | "ironman" | "tony" | "video" | "tonymessage">(false);
+  const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => { if (tonyMessageTimerRef.current) clearTimeout(tonyMessageTimerRef.current); };
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
