@@ -7,7 +7,8 @@ export const CLASSIC_TRIGGERS: Record<string, string> = {
   "good night": "Good night, sir. I shall keep watch while you rest. All defense protocols are active.",
   "hello jarvis": "At your service, sir. All systems are online and awaiting your command.",
   "hey jarvis": "Hello, sir. How may I assist you today? All systems are standing by.",
-  "wake up jarvis": "Systems online. All primary and secondary systems are functioning at full capacity. Good to see you, sir.",
+  "wake up": "Welcome home, sir. All systems are online and ready for your command.",
+  "wake up jarvis": "Welcome home, sir. All primary and secondary systems are functioning at full capacity. It's good to have you back.",
 
   // Status & Systems
   "status report": "All systems nominal, sir. The arc reactor is functioning at peak efficiency. Suit diagnostics show green across the board. No security threats detected in the immediate perimeter. Shall I run a full sweep?",
