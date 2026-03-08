@@ -207,7 +207,7 @@ const JarvisChat = () => {
       {easterEgg && (
         <div className="fixed inset-0 z-[1] animate-fade-in" onClick={() => setEasterEgg(false)}>
           {/* Tony's image with cinematic HUD tint */}
-          <img src={tonyStark} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ filter: "brightness(0.75) contrast(1.05) saturate(0.7) sepia(0.08) hue-rotate(170deg)" }} />
+          <img src={tonyStark} alt="" className="absolute inset-0 w-full h-full object-cover" />
           {/* Cyan scan overlay */}
           <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, hsl(195 100% 50% / 0.05) 0%, transparent 30%, transparent 70%, hsl(195 100% 50% / 0.08) 100%)" }} />
           {/* Vignette */}
