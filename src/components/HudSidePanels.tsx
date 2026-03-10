@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import ArcReactor from "./ArcReactor";
-import FlightHud from "./FlightHud";
 import starkLogo from "@/assets/stark-logo.png";
 import type { ResizablePanel } from "@/hooks/useGestureResize";
 
@@ -124,9 +123,20 @@ const HudSidePanels = ({ scales, activePanel, isResizing }: HudSidePanelsProps) 
         </div>
       </div>
 
-      {/* Flight HUD (replaces Radar) */}
-      <div className={`fixed left-2 top-[340px] z-10 pointer-events-none animate-fade-in-up p-1 ${panelHighlight("radar")}`} style={scaleStyle(s.radarScale)}>
-        <FlightHud size={110} />
+      {/* Radar */}
+      <div className={`fixed left-5 top-[350px] z-10 pointer-events-none animate-fade-in-up p-1 ${panelHighlight("radar")}`} style={scaleStyle(s.radarScale)}>
+        <div className="relative w-20 h-20">
+          <svg viewBox="0 0 100 100" className="w-full h-full">
+            <circle cx="50" cy="50" r="45" fill="none" stroke="hsl(195 100% 50% / 0.12)" strokeWidth="0.5" />
+            <circle cx="50" cy="50" r="35" fill="none" stroke="hsl(195 100% 50% / 0.08)" strokeWidth="0.5" />
+            <circle cx="50" cy="50" r="25" fill="none" stroke="hsl(195 100% 50% / 0.08)" strokeWidth="0.5" />
+            <line x1="50" y1="5" x2="50" y2="95" stroke="hsl(195 100% 50% / 0.06)" strokeWidth="0.5" />
+            <line x1="5" y1="50" x2="95" y2="50" stroke="hsl(195 100% 50% / 0.06)" strokeWidth="0.5" />
+            <line x1="50" y1="50" x2="50" y2="5" stroke="hsl(195 100% 50% / 0.5)" strokeWidth="1" className="origin-center animate-rotate-slow" />
+            <circle cx="62" cy="35" r="2" fill="hsl(195 100% 50% / 0.8)" className="animate-pulse-glow" />
+            <circle cx="38" cy="58" r="1.5" fill="hsl(195 100% 50% / 0.4)" className="animate-pulse-glow" />
+          </svg>
+        </div>
       </div>
 
       {/* Weather */}
