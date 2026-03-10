@@ -275,6 +275,20 @@ const JarvisChat = () => {
       return;
     }
 
+    // Active check function trigger - show right panel animations on left side of chat
+    if (lowerMsg.includes("active check function") || lowerMsg.includes("activate check function")) {
+      setCheckFunctionActive(prev => !prev);
+      const isActivating = !checkFunctionActive;
+      const response = isActivating
+        ? "Check function activated, sir. Deploying diagnostic HUD alongside communication panel. All systems telemetry now visible."
+        : "Check function deactivated, sir. Diagnostic overlay dismissed.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
     if (easterEgg && (lowerMsg.includes("lets go back to work") || lowerMsg.includes("let go back to work") || lowerMsg.includes("back to work"))) {
       if (tonyMessageTimerRef.current) { clearTimeout(tonyMessageTimerRef.current); tonyMessageTimerRef.current = null; }
       setEasterEgg(false);
