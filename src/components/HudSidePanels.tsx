@@ -124,13 +124,8 @@ const HudSidePanels = ({ scales, activePanel, isResizing }: HudSidePanelsProps) 
         </div>
       </div>
 
-      {/* Flight HUD (replaces Radar) */}
-      <div className={`fixed left-2 top-[340px] z-10 pointer-events-none animate-fade-in-up p-1 ${panelHighlight("radar")}`} style={scaleStyle(s.radarScale)}>
-        <FlightHud size={110} />
-      </div>
-
       {/* Weather */}
-      <div className={`fixed left-5 top-[460px] z-10 pointer-events-none animate-fade-in-up p-1 ${panelHighlight("weather")}`} style={scaleStyle(s.weatherScale)}>
+      <div className={`fixed left-5 top-[340px] z-10 pointer-events-none animate-fade-in-up p-1 ${panelHighlight("weather")}`} style={scaleStyle(s.weatherScale)}>
         <div className="font-mono text-[7px] text-primary/50 tracking-widest mb-0.5">WEATHER</div>
         <div className="font-orbitron text-lg text-primary leading-none">{temp}°C</div>
         <div className="font-mono text-[7px] text-muted-foreground mt-0.5">PARTLY CLOUDY</div>
@@ -138,13 +133,13 @@ const HudSidePanels = ({ scales, activePanel, isResizing }: HudSidePanelsProps) 
       </div>
 
       {/* Uptime */}
-      <div className="fixed left-5 top-[540px] z-10 pointer-events-none animate-fade-in-up">
+      <div className="fixed left-5 top-[420px] z-10 pointer-events-none animate-fade-in-up">
         <div className="font-mono text-[7px] text-primary/50 tracking-widest mb-0.5">UPTIME</div>
         <div className="font-mono text-[9px] text-primary">{uptimeHours}h {uptimeMins}m</div>
       </div>
 
       {/* Communication */}
-      <div className="fixed left-5 top-[580px] z-10 pointer-events-none animate-fade-in-up">
+      <div className="fixed left-5 top-[455px] z-10 pointer-events-none animate-fade-in-up">
         <div className="font-mono text-[7px] text-primary/50 tracking-widest mb-0.5">COMMUNICATION</div>
         <div className="flex flex-col gap-0.5">
           {["S.H.I.E.L.D. NET", "STARK SAT-7", "LOCAL MESH"].map((ch, i) => (
@@ -157,8 +152,8 @@ const HudSidePanels = ({ scales, activePanel, isResizing }: HudSidePanelsProps) 
         </div>
       </div>
 
-      {/* Bottom left: System status */}
-      <div className="fixed left-5 bottom-12 z-10 pointer-events-none animate-fade-in-up w-40">
+      {/* System status */}
+      <div className="fixed left-5 top-[530px] z-10 pointer-events-none animate-fade-in-up w-40">
         {[
           { label: "ARC REACTOR", value: "ONLINE" },
           { label: "REPULSOR", value: "STANDBY" },
@@ -172,6 +167,11 @@ const HudSidePanels = ({ scales, activePanel, isResizing }: HudSidePanelsProps) 
             <span className="font-mono text-[6px] text-primary/70">{item.value}</span>
           </div>
         ))}
+      </div>
+
+      {/* Flight HUD - bottom left */}
+      <div className={`fixed left-2 bottom-14 z-10 pointer-events-none animate-fade-in-up p-1 ${panelHighlight("radar")}`} style={scaleStyle(s.radarScale)}>
+        <FlightHud size={110} />
       </div>
 
       <div className="fixed left-5 bottom-4 z-10 pointer-events-none">
