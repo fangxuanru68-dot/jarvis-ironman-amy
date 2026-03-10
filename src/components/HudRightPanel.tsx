@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const HudRightPanel = ({ visible }: { visible: boolean }) => {
+const HudRightPanel = ({ visible, side = "right" }: { visible: boolean; side?: "right" | "left" }) => {
   const [heartRate, setHeartRate] = useState(72);
   const [scanAngle, setScanAngle] = useState(0);
   const [dataStream, setDataStream] = useState<string[]>([]);
