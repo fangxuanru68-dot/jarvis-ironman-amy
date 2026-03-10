@@ -44,6 +44,7 @@ const JarvisChat = () => {
   const [fightModeActive, setFightModeActive] = useState(false);
   const [rightEyePos, setRightEyePos] = useState<{ x: number; y: number } | null>(null);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [checkFunctionActive, setCheckFunctionActive] = useState(false);
 
   // Clean up timer on unmount
   useEffect(() => {
