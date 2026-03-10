@@ -47,7 +47,7 @@ const HudRightPanel = ({ visible, side = "right" }: { visible: boolean; side?: "
   if (!visible) return null;
 
   return (
-    <div className="fixed right-3 top-14 bottom-16 z-10 pointer-events-none animate-fade-in flex flex-col gap-4 w-[200px]">
+    <div className={`fixed ${side === "right" ? "right-3" : "left-[170px]"} top-14 bottom-16 z-10 pointer-events-none animate-fade-in flex flex-col gap-4 w-[200px]`}>
       
       {/* CT HEART SCAN */}
       <div className="flex flex-col items-end">
