@@ -44,6 +44,7 @@ const JarvisChat = () => {
   const [fightModeActive, setFightModeActive] = useState(false);
   const [rightEyePos, setRightEyePos] = useState<{ x: number; y: number } | null>(null);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [checkFunctionActive, setCheckFunctionActive] = useState(false);
 
   // Clean up timer on unmount
   useEffect(() => {
@@ -267,6 +268,20 @@ const JarvisChat = () => {
     if (lowerMsg.includes("check my body") || lowerMsg.includes("body scan") || lowerMsg.includes("scan my body")) {
       setBodyScanOpen(true);
       const response = "Initiating full biometric scan, sir. Please remain still... Scanning skeletal structure, cardiovascular system, and neural pathways.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Active check function trigger - show right panel animations on left side of chat
+    if (lowerMsg.includes("active check function") || lowerMsg.includes("activate check function")) {
+      setCheckFunctionActive(prev => !prev);
+      const isActivating = !checkFunctionActive;
+      const response = isActivating
+        ? "Check function activated, sir. Deploying diagnostic HUD alongside communication panel. All systems telemetry now visible."
+        : "Check function deactivated, sir. Diagnostic overlay dismissed.";
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
       if (voiceEnabled) speak(response);
@@ -576,6 +591,9 @@ const JarvisChat = () => {
 
       {/* Right HUD panel (visible when chat is hidden) */}
       <HudRightPanel visible={!gestureResize.chatVisible} />
+
+      {/* Left HUD panel (visible when chat is open + check function active) */}
+      <HudRightPanel visible={gestureResize.chatVisible && checkFunctionActive} side="left" />
 
       {/* ===== RIGHT SIDE: Chat panel with slide animation ===== */}
       <div
