@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 
-const HudRightPanel = ({ visible }: { visible: boolean }) => {
+interface HudRightPanelProps {
+  visible: boolean;
+  adjacentToChat?: boolean;
+  chatWidth?: number;
+}
+
+const HudRightPanel = ({ visible, adjacentToChat, chatWidth }: HudRightPanelProps) => {
   const [heartRate, setHeartRate] = useState(72);
   const [scanAngle, setScanAngle] = useState(0);
   const [dataStream, setDataStream] = useState<string[]>([]);
@@ -46,8 +52,14 @@ const HudRightPanel = ({ visible }: { visible: boolean }) => {
 
   if (!visible) return null;
 
+  // When adjacent to chat, position to the left of the chat panel
+  const rightOffset = adjacentToChat && chatWidth ? `${chatWidth + 24}px` : "12px";
+
   return (
-    <div className="fixed right-3 top-14 bottom-16 z-10 pointer-events-none animate-fade-in flex flex-col gap-4 w-[200px]">
+    <div
+      className="fixed top-14 bottom-16 z-10 pointer-events-none animate-fade-in flex flex-col gap-4 w-[200px]"
+      style={{ right: rightOffset, transition: "right 0.4s cubic-bezier(0.4, 0, 0.2, 1)" }}
+    >
       
       {/* CT HEART SCAN */}
       <div className="flex flex-col items-end">
