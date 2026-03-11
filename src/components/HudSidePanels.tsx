@@ -123,24 +123,8 @@ const HudSidePanels = ({ scales, activePanel, isResizing }: HudSidePanelsProps) 
         </div>
       </div>
 
-      {/* Radar */}
-      <div className={`fixed left-5 top-[350px] z-10 pointer-events-none animate-fade-in-up p-1 ${panelHighlight("radar")}`} style={scaleStyle(s.radarScale)}>
-        <div className="relative w-20 h-20">
-          <svg viewBox="0 0 100 100" className="w-full h-full">
-            <circle cx="50" cy="50" r="45" fill="none" stroke="hsl(195 100% 50% / 0.12)" strokeWidth="0.5" />
-            <circle cx="50" cy="50" r="35" fill="none" stroke="hsl(195 100% 50% / 0.08)" strokeWidth="0.5" />
-            <circle cx="50" cy="50" r="25" fill="none" stroke="hsl(195 100% 50% / 0.08)" strokeWidth="0.5" />
-            <line x1="50" y1="5" x2="50" y2="95" stroke="hsl(195 100% 50% / 0.06)" strokeWidth="0.5" />
-            <line x1="5" y1="50" x2="95" y2="50" stroke="hsl(195 100% 50% / 0.06)" strokeWidth="0.5" />
-            <line x1="50" y1="50" x2="50" y2="5" stroke="hsl(195 100% 50% / 0.5)" strokeWidth="1" className="origin-center animate-rotate-slow" />
-            <circle cx="62" cy="35" r="2" fill="hsl(195 100% 50% / 0.8)" className="animate-pulse-glow" />
-            <circle cx="38" cy="58" r="1.5" fill="hsl(195 100% 50% / 0.4)" className="animate-pulse-glow" />
-          </svg>
-        </div>
-      </div>
-
       {/* Weather */}
-      <div className={`fixed left-5 top-[460px] z-10 pointer-events-none animate-fade-in-up p-1 ${panelHighlight("weather")}`} style={scaleStyle(s.weatherScale)}>
+      <div className={`fixed left-5 top-[350px] z-10 pointer-events-none animate-fade-in-up p-1 ${panelHighlight("weather")}`} style={scaleStyle(s.weatherScale)}>
         <div className="font-mono text-[7px] text-primary/50 tracking-widest mb-0.5">WEATHER</div>
         <div className="font-orbitron text-lg text-primary leading-none">{temp}°C</div>
         <div className="font-mono text-[7px] text-muted-foreground mt-0.5">PARTLY CLOUDY</div>
@@ -148,13 +132,13 @@ const HudSidePanels = ({ scales, activePanel, isResizing }: HudSidePanelsProps) 
       </div>
 
       {/* Uptime */}
-      <div className="fixed left-5 top-[540px] z-10 pointer-events-none animate-fade-in-up">
+      <div className="fixed left-5 top-[420px] z-10 pointer-events-none animate-fade-in-up">
         <div className="font-mono text-[7px] text-primary/50 tracking-widest mb-0.5">UPTIME</div>
         <div className="font-mono text-[9px] text-primary">{uptimeHours}h {uptimeMins}m</div>
       </div>
 
       {/* Communication */}
-      <div className="fixed left-5 top-[580px] z-10 pointer-events-none animate-fade-in-up">
+      <div className="fixed left-5 top-[460px] z-10 pointer-events-none animate-fade-in-up">
         <div className="font-mono text-[7px] text-primary/50 tracking-widest mb-0.5">COMMUNICATION</div>
         <div className="flex flex-col gap-0.5">
           {["S.H.I.E.L.D. NET", "STARK SAT-7", "LOCAL MESH"].map((ch, i) => (
@@ -167,8 +151,8 @@ const HudSidePanels = ({ scales, activePanel, isResizing }: HudSidePanelsProps) 
         </div>
       </div>
 
-      {/* Bottom left: System status */}
-      <div className="fixed left-5 bottom-12 z-10 pointer-events-none animate-fade-in-up w-40">
+      {/* System status */}
+      <div className="fixed left-5 top-[540px] z-10 pointer-events-none animate-fade-in-up w-40">
         {[
           { label: "ARC REACTOR", value: "ONLINE" },
           { label: "REPULSOR", value: "STANDBY" },
@@ -182,6 +166,22 @@ const HudSidePanels = ({ scales, activePanel, isResizing }: HudSidePanelsProps) 
             <span className="font-mono text-[6px] text-primary/70">{item.value}</span>
           </div>
         ))}
+      </div>
+
+      {/* Radar - moved to bottom left */}
+      <div className={`fixed left-5 bottom-12 z-10 pointer-events-none animate-fade-in-up p-1 ${panelHighlight("radar")}`} style={scaleStyle(s.radarScale)}>
+        <div className="relative w-20 h-20">
+          <svg viewBox="0 0 100 100" className="w-full h-full">
+            <circle cx="50" cy="50" r="45" fill="none" stroke="hsl(195 100% 50% / 0.12)" strokeWidth="0.5" />
+            <circle cx="50" cy="50" r="35" fill="none" stroke="hsl(195 100% 50% / 0.08)" strokeWidth="0.5" />
+            <circle cx="50" cy="50" r="25" fill="none" stroke="hsl(195 100% 50% / 0.08)" strokeWidth="0.5" />
+            <line x1="50" y1="5" x2="50" y2="95" stroke="hsl(195 100% 50% / 0.06)" strokeWidth="0.5" />
+            <line x1="5" y1="50" x2="95" y2="50" stroke="hsl(195 100% 50% / 0.06)" strokeWidth="0.5" />
+            <line x1="50" y1="50" x2="50" y2="5" stroke="hsl(195 100% 50% / 0.5)" strokeWidth="1" className="origin-center animate-rotate-slow" />
+            <circle cx="62" cy="35" r="2" fill="hsl(195 100% 50% / 0.8)" className="animate-pulse-glow" />
+            <circle cx="38" cy="58" r="1.5" fill="hsl(195 100% 50% / 0.4)" className="animate-pulse-glow" />
+          </svg>
+        </div>
       </div>
 
       <div className="fixed left-5 bottom-4 z-10 pointer-events-none">

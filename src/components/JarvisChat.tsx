@@ -42,6 +42,7 @@ const JarvisChat = () => {
   const [bodyScanOpen, setBodyScanOpen] = useState(false);
   const [warModeActive, setWarModeActive] = useState(false);
   const [fightModeActive, setFightModeActive] = useState(false);
+  const [fullModeActive, setFullModeActive] = useState(false);
   const [rightEyePos, setRightEyePos] = useState<{ x: number; y: number } | null>(null);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -256,6 +257,26 @@ const JarvisChat = () => {
     if (lowerMsg.includes("fight mode") && !lowerMsg.includes("end") && !lowerMsg.includes("off")) {
       setFightModeActive(true);
       const response = "Fight mode engaged, sir. Full combat targeting reticle deployed on your right eye. Repulsors are charged and weapons systems are hot. I'll maintain lock until you give the stand-down order. Say 'fight mode end' to disengage.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Full mode toggle
+    if (lowerMsg.includes("turn on full mode") || lowerMsg.includes("full mode on")) {
+      setFullModeActive(true);
+      const response = "Full HUD mode activated, sir. All auxiliary displays are now online alongside communications.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+    if (lowerMsg.includes("turn off full mode") || lowerMsg.includes("full mode off")) {
+      setFullModeActive(false);
+      const response = "Full HUD mode disengaged, sir. Returning to standard display configuration.";
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
       if (voiceEnabled) speak(response);
@@ -574,8 +595,8 @@ const JarvisChat = () => {
         </button>
       </div>
 
-      {/* Right HUD panel (visible when chat is hidden) */}
-      <HudRightPanel visible={!gestureResize.chatVisible} />
+      {/* Right HUD panel (visible when chat is hidden OR full mode is on) */}
+      <HudRightPanel visible={!gestureResize.chatVisible || fullModeActive} adjacentToChat={fullModeActive && gestureResize.chatVisible} chatWidth={320 * gestureResize.chatScale} />
 
       {/* ===== RIGHT SIDE: Chat panel with slide animation ===== */}
       <div
