@@ -595,8 +595,8 @@ const JarvisChat = () => {
         </button>
       </div>
 
-      {/* Right HUD panel (visible when chat is hidden) */}
-      <HudRightPanel visible={!gestureResize.chatVisible} />
+      {/* Right HUD panel (visible when chat is hidden OR full mode is on) */}
+      <HudRightPanel visible={!gestureResize.chatVisible || fullModeActive} adjacentToChat={fullModeActive && gestureResize.chatVisible} chatWidth={320 * gestureResize.chatScale} />
 
       {/* ===== RIGHT SIDE: Chat panel with slide animation ===== */}
       <div
