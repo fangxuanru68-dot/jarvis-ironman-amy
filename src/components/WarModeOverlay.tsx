@@ -11,13 +11,11 @@ const WarModeOverlay = ({ isActive, onEnd, rightEyePos }: WarModeOverlayProps) =
   const [rotation, setRotation] = useState(0);
   const [pulseCount, setPulseCount] = useState(0);
 
-  // Reset pulse count on activation
   useEffect(() => {
     if (!isActive) return;
     setPulseCount(0);
   }, [isActive]);
 
-  // Show reticle every 3 seconds
   useEffect(() => {
     if (!isActive) return;
     setVisible(true);
@@ -37,7 +35,6 @@ const WarModeOverlay = ({ isActive, onEnd, rightEyePos }: WarModeOverlayProps) =
     };
   }, [isActive]);
 
-  // Continuous rotation
   useEffect(() => {
     if (!isActive) return;
     const anim = setInterval(() => {
@@ -48,72 +45,85 @@ const WarModeOverlay = ({ isActive, onEnd, rightEyePos }: WarModeOverlayProps) =
 
   if (!isActive) return null;
 
-  // Calculate position: use right eye tracking or fallback
   const eyeX = rightEyePos ? rightEyePos.x * 100 : 68;
   const eyeY = rightEyePos ? rightEyePos.y * 100 : 28;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[25]">
-      {/* Right eye targeting reticle - follows face */}
       {visible && (
         <div
           className="absolute animate-scale-in"
           style={{
             left: `${eyeX}%`,
             top: `${eyeY}%`,
-            width: "160px",
-            height: "160px",
+            width: "220px",
+            height: "220px",
             transform: "translate(-50%, -50%)",
             transition: "left 0.1s ease-out, top 0.1s ease-out",
           }}
         >
-          {/* Outer rotating ring */}
+          {/* Outer rotating ring - thicker, more prominent */}
           <svg
             viewBox="0 0 200 200"
             className="w-full h-full"
             style={{ transform: `rotate(${rotation}deg)` }}
           >
+            {/* Outer glow ring */}
+            <circle cx="100" cy="100" r="95" fill="none"
+              stroke="hsl(195 100% 50% / 0.2)" strokeWidth="1" />
+            {/* Main outer ring - thick dashed */}
             <circle cx="100" cy="100" r="90" fill="none"
-              stroke="hsl(195 100% 50% / 0.6)" strokeWidth="1.5" strokeDasharray="12 8" />
-            <circle cx="100" cy="100" r="70" fill="none"
-              stroke="hsl(195 100% 50% / 0.4)" strokeWidth="1" />
+              stroke="hsl(195 100% 50% / 0.8)" strokeWidth="3" strokeDasharray="16 6" />
+            {/* Secondary ring */}
+            <circle cx="100" cy="100" r="75" fill="none"
+              stroke="hsl(195 100% 50% / 0.5)" strokeWidth="2" />
+            {/* Inner detail ring */}
+            <circle cx="100" cy="100" r="60" fill="none"
+              stroke="hsl(195 100% 50% / 0.3)" strokeWidth="1.5" strokeDasharray="8 4" />
+            {/* Tick marks - thicker */}
             {[0, 45, 90, 135, 180, 225, 270, 315].map(angle => (
-              <line key={angle} x1="100" y1="18" x2="100" y2="28"
-                stroke="hsl(195 100% 50% / 0.7)" strokeWidth="1.5"
+              <line key={angle} x1="100" y1="12" x2="100" y2="28"
+                stroke="hsl(195 100% 50% / 0.9)" strokeWidth="3"
                 transform={`rotate(${angle} 100 100)`} />
             ))}
-            <path d="M 55 40 L 40 40 L 40 55" fill="none" stroke="hsl(195 100% 50% / 0.8)" strokeWidth="2" />
-            <path d="M 145 40 L 160 40 L 160 55" fill="none" stroke="hsl(195 100% 50% / 0.8)" strokeWidth="2" />
-            <path d="M 55 160 L 40 160 L 40 145" fill="none" stroke="hsl(195 100% 50% / 0.8)" strokeWidth="2" />
-            <path d="M 145 160 L 160 160 L 160 145" fill="none" stroke="hsl(195 100% 50% / 0.8)" strokeWidth="2" />
+            {/* Corner brackets - thicker, more cinematic */}
+            <path d="M 45 30 L 25 30 L 25 50" fill="none" stroke="hsl(195 100% 50% / 0.9)" strokeWidth="3.5" />
+            <path d="M 155 30 L 175 30 L 175 50" fill="none" stroke="hsl(195 100% 50% / 0.9)" strokeWidth="3.5" />
+            <path d="M 45 170 L 25 170 L 25 150" fill="none" stroke="hsl(195 100% 50% / 0.9)" strokeWidth="3.5" />
+            <path d="M 155 170 L 175 170 L 175 150" fill="none" stroke="hsl(195 100% 50% / 0.9)" strokeWidth="3.5" />
+            {/* Crosshair lines */}
+            <line x1="100" y1="35" x2="100" y2="55" stroke="hsl(195 100% 50% / 0.6)" strokeWidth="2" />
+            <line x1="100" y1="145" x2="100" y2="165" stroke="hsl(195 100% 50% / 0.6)" strokeWidth="2" />
+            <line x1="35" y1="100" x2="55" y2="100" stroke="hsl(195 100% 50% / 0.6)" strokeWidth="2" />
+            <line x1="145" y1="100" x2="165" y2="100" stroke="hsl(195 100% 50% / 0.6)" strokeWidth="2" />
           </svg>
 
           {/* Counter-rotating inner ring */}
           <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full"
             style={{ transform: `rotate(${-rotation * 1.5}deg)` }}>
-            <circle cx="100" cy="100" r="50" fill="none"
-              stroke="hsl(195 100% 50% / 0.3)" strokeWidth="1" strokeDasharray="6 6" />
-            <path d="M 100 55 A 45 45 0 0 1 140 85" fill="none"
-              stroke="hsl(195 100% 50% / 0.6)" strokeWidth="2" />
-            <path d="M 100 145 A 45 45 0 0 1 60 115" fill="none"
-              stroke="hsl(195 100% 50% / 0.6)" strokeWidth="2" />
+            <circle cx="100" cy="100" r="45" fill="none"
+              stroke="hsl(195 100% 50% / 0.4)" strokeWidth="2" strokeDasharray="8 4" />
+            <path d="M 100 60 A 40 40 0 0 1 135 85" fill="none"
+              stroke="hsl(195 100% 50% / 0.8)" strokeWidth="3" />
+            <path d="M 100 140 A 40 40 0 0 1 65 115" fill="none"
+              stroke="hsl(195 100% 50% / 0.8)" strokeWidth="3" />
           </svg>
 
-          {/* Center crosshair */}
+          {/* Center crosshair - bigger, glowing */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-1.5 h-1.5 rounded-full border border-primary/80"
-              style={{ boxShadow: "0 0 8px hsl(195 100% 50% / 0.6)" }} />
+            <div className="w-3 h-3 rounded-full border-2 border-primary"
+              style={{ boxShadow: "0 0 12px hsl(195 100% 50% / 0.8), 0 0 24px hsl(195 100% 50% / 0.3)" }} />
           </div>
 
           {/* Data labels */}
-          <div className="absolute -right-20 top-1/2 -translate-y-1/2">
-            <div className="font-mono text-[7px] text-primary/60 tracking-wider">
+          <div className="absolute -right-24 top-1/2 -translate-y-1/2">
+            <div className="font-mono text-[8px] text-primary/80 tracking-wider">
               <div>LOCK: {pulseCount}</div>
-              <div>TRK: {rightEyePos ? "LOCKED" : "SEARCHING"}</div>
+              <div className="font-orbitron text-[9px]">{rightEyePos ? "LOCKED" : "SEARCHING"}</div>
             </div>
           </div>
-          <div className="absolute -bottom-5 left-1/2 -translate-x-1/2">
-            <div className="font-mono text-[6px] text-primary/40 tracking-widest">TARGETING</div>
+          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2">
+            <div className="font-orbitron text-[7px] text-primary/60 tracking-[0.3em]">TARGETING</div>
           </div>
         </div>
       )}

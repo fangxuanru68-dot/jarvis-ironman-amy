@@ -264,6 +264,26 @@ const JarvisChat = () => {
       return;
     }
 
+    // Full mode toggle
+    if (lowerMsg.includes("turn on full mode") || lowerMsg.includes("full mode on")) {
+      setFullModeActive(true);
+      const response = "Full HUD mode activated, sir. All auxiliary displays are now online alongside communications.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+    if (lowerMsg.includes("turn off full mode") || lowerMsg.includes("full mode off")) {
+      setFullModeActive(false);
+      const response = "Full HUD mode disengaged, sir. Returning to standard display configuration.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
     // Body scan trigger
     if (lowerMsg.includes("check my body") || lowerMsg.includes("body scan") || lowerMsg.includes("scan my body")) {
       setBodyScanOpen(true);
