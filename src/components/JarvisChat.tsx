@@ -286,6 +286,26 @@ const JarvisChat = () => {
       return;
     }
 
+    // Arc Reactor Diagnostic Mode
+    if (lowerMsg.includes("check the heart") || lowerMsg.includes("check heart")) {
+      setArcReactorMode(true);
+      const response = "Initiating Arc Reactor diagnostic, sir. Core scan in progress.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+    if (arcReactorMode && (lowerMsg.includes("mode end") || lowerMsg.includes("end mode"))) {
+      setArcReactorMode(false);
+      const response = "Reactor diagnostics complete. All readings nominal. Returning to standard interface.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
     // Body scan trigger
     if (lowerMsg.includes("check my body") || lowerMsg.includes("body scan") || lowerMsg.includes("scan my body")) {
       setBodyScanOpen(true);
