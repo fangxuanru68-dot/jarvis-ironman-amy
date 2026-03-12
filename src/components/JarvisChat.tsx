@@ -12,6 +12,7 @@ import BodyScanPanel from "./BodyScanPanel";
 import WarModeOverlay from "./WarModeOverlay";
 import FightModeOverlay from "./FightModeOverlay";
 import HudRightPanel from "./HudRightPanel";
+import ArcReactorDiagnosticMode from "./ArcReactorDiagnosticMode";
 
 import tonyStark from "@/assets/tony-stark.png";
 import tonyWorkshop from "@/assets/tony-workshop.png";
@@ -43,6 +44,7 @@ const JarvisChat = () => {
   const [warModeActive, setWarModeActive] = useState(false);
   const [fightModeActive, setFightModeActive] = useState(false);
   const [fullModeActive, setFullModeActive] = useState(false);
+  const [arcReactorMode, setArcReactorMode] = useState(false);
   const [rightEyePos, setRightEyePos] = useState<{ x: number; y: number } | null>(null);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -277,6 +279,26 @@ const JarvisChat = () => {
     if (lowerMsg.includes("turn off full mode") || lowerMsg.includes("full mode off")) {
       setFullModeActive(false);
       const response = "Full HUD mode disengaged, sir. Returning to standard display configuration.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Arc Reactor Diagnostic Mode
+    if (lowerMsg.includes("check the heart") || lowerMsg.includes("check heart")) {
+      setArcReactorMode(true);
+      const response = "Initiating Arc Reactor diagnostic, sir. Core scan in progress.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+    if (arcReactorMode && (lowerMsg.includes("mode end") || lowerMsg.includes("end mode"))) {
+      setArcReactorMode(false);
+      const response = "Reactor diagnostics complete. All readings nominal. Returning to standard interface.";
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
       if (voiceEnabled) speak(response);
@@ -729,6 +751,7 @@ const JarvisChat = () => {
       <BodyScanPanel isOpen={bodyScanOpen} onClose={() => setBodyScanOpen(false)} />
       <WarModeOverlay isActive={warModeActive} onEnd={() => setWarModeActive(false)} rightEyePos={rightEyePos} />
       <FightModeOverlay isActive={fightModeActive} rightEyePos={rightEyePos} />
+      <ArcReactorDiagnosticMode isActive={arcReactorMode} onExit={() => setArcReactorMode(false)} />
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">
