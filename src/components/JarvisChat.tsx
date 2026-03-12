@@ -44,6 +44,7 @@ const JarvisChat = () => {
   const [warModeActive, setWarModeActive] = useState(false);
   const [fightModeActive, setFightModeActive] = useState(false);
   const [fullModeActive, setFullModeActive] = useState(false);
+  const [arcReactorMode, setArcReactorMode] = useState(false);
   const [rightEyePos, setRightEyePos] = useState<{ x: number; y: number } | null>(null);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
