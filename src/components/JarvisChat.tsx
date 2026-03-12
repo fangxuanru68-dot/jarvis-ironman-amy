@@ -12,6 +12,7 @@ import BodyScanPanel from "./BodyScanPanel";
 import WarModeOverlay from "./WarModeOverlay";
 import FightModeOverlay from "./FightModeOverlay";
 import HudRightPanel from "./HudRightPanel";
+import ArcReactorDiagnosticMode from "./ArcReactorDiagnosticMode";
 
 import tonyStark from "@/assets/tony-stark.png";
 import tonyWorkshop from "@/assets/tony-workshop.png";
