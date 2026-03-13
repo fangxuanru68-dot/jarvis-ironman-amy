@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ArcReactor from "./ArcReactor";
+import BottomLeftHudRadar from "./BottomLeftHudRadar";
 import starkLogo from "@/assets/stark-logo.png";
 import type { ResizablePanel } from "@/hooks/useGestureResize";
 
@@ -168,66 +169,9 @@ const HudSidePanels = ({ scales, activePanel, isResizing }: HudSidePanelsProps) 
         ))}
       </div>
 
-      {/* Radar - bottom left, cinematic style */}
-      <div className={`fixed left-3 bottom-14 z-10 pointer-events-none animate-fade-in-up p-1 ${panelHighlight("radar")}`} style={scaleStyle(s.radarScale)}>
-        <div className="relative w-28 h-28">
-          {/* Outer glow */}
-          <div className="absolute inset-0 rounded-full" style={{
-            background: "radial-gradient(circle, hsl(195 100% 50% / 0.08) 0%, transparent 70%)",
-          }} />
-          <svg viewBox="0 0 120 120" className="w-full h-full">
-            {/* Background fill */}
-            <circle cx="60" cy="60" r="55" fill="hsl(195 100% 10% / 0.3)" />
-            {/* Concentric rings */}
-            <circle cx="60" cy="60" r="55" fill="none" stroke="hsl(195 100% 50% / 0.25)" strokeWidth="1.5" />
-            <circle cx="60" cy="60" r="44" fill="none" stroke="hsl(195 100% 50% / 0.15)" strokeWidth="0.8" />
-            <circle cx="60" cy="60" r="33" fill="none" stroke="hsl(195 100% 50% / 0.15)" strokeWidth="0.8" />
-            <circle cx="60" cy="60" r="22" fill="none" stroke="hsl(195 100% 50% / 0.12)" strokeWidth="0.5" />
-            <circle cx="60" cy="60" r="11" fill="none" stroke="hsl(195 100% 50% / 0.1)" strokeWidth="0.5" />
-            {/* Cross lines */}
-            <line x1="60" y1="5" x2="60" y2="115" stroke="hsl(195 100% 50% / 0.08)" strokeWidth="0.5" />
-            <line x1="5" y1="60" x2="115" y2="60" stroke="hsl(195 100% 50% / 0.08)" strokeWidth="0.5" />
-            <line x1="21" y1="21" x2="99" y2="99" stroke="hsl(195 100% 50% / 0.05)" strokeWidth="0.5" />
-            <line x1="99" y1="21" x2="21" y2="99" stroke="hsl(195 100% 50% / 0.05)" strokeWidth="0.5" />
-            {/* Degree tick marks */}
-            {Array.from({ length: 36 }).map((_, i) => {
-              const a = (i * 10) * Math.PI / 180;
-              const inner = i % 3 === 0 ? 50 : 53;
-              return (
-                <line key={i}
-                  x1={60 + Math.cos(a) * inner} y1={60 + Math.sin(a) * inner}
-                  x2={60 + Math.cos(a) * 55} y2={60 + Math.sin(a) * 55}
-                  stroke={`hsl(195 100% 50% / ${i % 3 === 0 ? 0.4 : 0.15})`}
-                  strokeWidth={i % 3 === 0 ? 1 : 0.5}
-                />
-              );
-            })}
-            {/* Sweep line with gradient */}
-            <defs>
-              <linearGradient id="sweepGrad" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="hsl(195 100% 50% / 0)" />
-                <stop offset="100%" stopColor="hsl(195 100% 50% / 0.8)" />
-              </linearGradient>
-            </defs>
-            <line x1="60" y1="60" x2="60" y2="5" stroke="url(#sweepGrad)" strokeWidth="2" className="origin-center animate-rotate-slow" />
-            {/* Sweep cone / trail */}
-            <path d={`M 60 60 L 60 5 A 55 55 0 0 0 ${60 - 55 * Math.sin(30 * Math.PI / 180)} ${60 - 55 * Math.cos(30 * Math.PI / 180)} Z`}
-              fill="hsl(195 100% 50% / 0.06)" className="origin-center animate-rotate-slow" />
-            {/* Blips */}
-            <circle cx="72" cy="38" r="2.5" fill="hsl(195 100% 60% / 0.9)" className="animate-pulse-glow" />
-            <circle cx="72" cy="38" r="5" fill="none" stroke="hsl(195 100% 50% / 0.3)" strokeWidth="0.5" className="animate-pulse-glow" />
-            <circle cx="42" cy="70" r="2" fill="hsl(195 100% 50% / 0.6)" className="animate-pulse-glow" style={{ animationDelay: "0.5s" }} />
-            <circle cx="42" cy="70" r="4" fill="none" stroke="hsl(195 100% 50% / 0.2)" strokeWidth="0.5" className="animate-pulse-glow" style={{ animationDelay: "0.5s" }} />
-            <circle cx="80" cy="65" r="1.5" fill="hsl(195 100% 50% / 0.4)" className="animate-pulse-glow" style={{ animationDelay: "1s" }} />
-            {/* Center dot */}
-            <circle cx="60" cy="60" r="2" fill="hsl(195 100% 70% / 0.8)" />
-            <circle cx="60" cy="60" r="4" fill="none" stroke="hsl(195 100% 50% / 0.3)" strokeWidth="0.5" />
-          </svg>
-          {/* Labels */}
-          <div className="absolute -right-8 top-1 font-mono text-[5px] text-primary/40">N</div>
-          <div className="absolute -right-8 bottom-1 font-mono text-[5px] text-primary/40">S</div>
-        </div>
-        <div className="font-mono text-[6px] text-primary/40 tracking-widest mt-0.5 text-center">PROXIMITY SCAN</div>
+      {/* HUD Control Disc - bottom left */}
+      <div className={`fixed left-2 bottom-8 z-10 pointer-events-none animate-fade-in-up ${panelHighlight("radar")}`} style={scaleStyle(s.radarScale)}>
+        <BottomLeftHudRadar size={130} />
       </div>
 
       <div className="fixed left-5 bottom-2 z-10 pointer-events-none">
