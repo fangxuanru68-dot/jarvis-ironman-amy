@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ArcReactor from "./ArcReactor";
+import BottomLeftHudRadar from "./BottomLeftHudRadar";
 import starkLogo from "@/assets/stark-logo.png";
 import type { ResizablePanel } from "@/hooks/useGestureResize";
 
