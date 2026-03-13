@@ -169,7 +169,7 @@ const HudSidePanels = ({ scales, activePanel, isResizing }: HudSidePanelsProps) 
       </div>
 
       {/* Radar - bottom left, cinematic style */}
-      <div className={`fixed left-3 bottom-10 z-10 pointer-events-none animate-fade-in-up p-1 ${panelHighlight("radar")}`} style={scaleStyle(s.radarScale)}>
+      <div className={`fixed left-3 bottom-14 z-10 pointer-events-none animate-fade-in-up p-1 ${panelHighlight("radar")}`} style={scaleStyle(s.radarScale)}>
         <div className="relative w-28 h-28">
           {/* Outer glow */}
           <div className="absolute inset-0 rounded-full" style={{
