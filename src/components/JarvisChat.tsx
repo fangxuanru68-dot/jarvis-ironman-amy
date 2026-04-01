@@ -52,6 +52,12 @@ const JarvisChat = () => {
   const [fullModeActive, setFullModeActive] = useState(false);
   const [arcReactorMode, setArcReactorMode] = useState(false);
   const [rightEyePos, setRightEyePos] = useState<{ x: number; y: number } | null>(null);
+  const [envScanActive, setEnvScanActive] = useState(false);
+  const [combatStandbyActive, setCombatStandbyActive] = useState(false);
+  const [systemOverloadActive, setSystemOverloadActive] = useState(false);
+  const [selfAwarenessActive, setSelfAwarenessActive] = useState(false);
+  const [timeFreezeActive, setTimeFreezeActive] = useState(false);
+  const [welcomeProtocolActive, setWelcomeProtocolActive] = useState(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clean up timer on unmount
