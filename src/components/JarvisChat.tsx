@@ -58,6 +58,8 @@ const JarvisChat = () => {
   const [selfAwarenessActive, setSelfAwarenessActive] = useState(false);
   const [timeFreezeActive, setTimeFreezeActive] = useState(false);
   const [welcomeProtocolActive, setWelcomeProtocolActive] = useState(false);
+  const [voiceChatMode, setVoiceChatMode] = useState(false);
+  const voiceChatModeRef = useRef(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clean up timer on unmount
