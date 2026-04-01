@@ -13,6 +13,12 @@ import WarModeOverlay from "./WarModeOverlay";
 import FightModeOverlay from "./FightModeOverlay";
 import HudRightPanel from "./HudRightPanel";
 import ArcReactorDiagnosticMode from "./ArcReactorDiagnosticMode";
+import EnvironmentScanOverlay from "./EnvironmentScanOverlay";
+import CombatStandbyOverlay from "./CombatStandbyOverlay";
+import SystemOverloadOverlay from "./SystemOverloadOverlay";
+import SelfAwarenessOverlay from "./SelfAwarenessOverlay";
+import TimeFreezeOverlay from "./TimeFreezeOverlay";
+import WelcomeProtocolOverlay from "./WelcomeProtocolOverlay";
 
 import tonyStark from "@/assets/tony-stark.png";
 import tonyWorkshop from "@/assets/tony-workshop.png";
