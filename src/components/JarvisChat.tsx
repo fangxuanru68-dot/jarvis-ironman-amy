@@ -112,10 +112,10 @@ const JarvisChat = () => {
     }
   }, []);
 
-  const toggleVoice = useCallback(() => {
+  const startListening = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) { alert("Speech recognition not supported."); return; }
-    if (isListening) { recognitionRef.current?.stop(); setIsListening(false); return; }
+    if (!SpeechRecognition) return;
+    if (recognitionRef.current) { try { recognitionRef.current.stop(); } catch {} }
 
     const recognition = new SpeechRecognition();
     recognition.continuous = false;
@@ -131,12 +131,34 @@ const JarvisChat = () => {
       }
       setInput(finalTranscript + interim);
     };
-    recognition.onend = () => { setIsListening(false); if (finalTranscript.trim()) setTimeout(() => sendMessage(finalTranscript.trim()), 100); };
+    recognition.onend = () => {
+      setIsListening(false);
+      if (finalTranscript.trim()) setTimeout(() => sendMessage(finalTranscript.trim()), 100);
+    };
     recognition.onerror = () => setIsListening(false);
     recognitionRef.current = recognition;
     recognition.start();
     setIsListening(true);
-  }, [isListening]);
+  }, []);
+
+  const toggleVoice = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) { alert("Speech recognition not supported."); return; }
+    if (isListening) { recognitionRef.current?.stop(); setIsListening(false); return; }
+    startListening();
+  }, [isListening, startListening]);
+
+  // Auto-restart listening after TTS finishes in voice chat mode
+  const prevIsSpeakingRef = useRef(false);
+  useEffect(() => {
+    if (prevIsSpeakingRef.current && !isSpeaking && voiceChatModeRef.current) {
+      // TTS just finished, restart listening after a short delay
+      setTimeout(() => {
+        if (voiceChatModeRef.current) startListening();
+      }, 500);
+    }
+    prevIsSpeakingRef.current = isSpeaking;
+  }, [isSpeaking, startListening]);
 
   const checkClassicTrigger = (text: string): string | null => {
     const lower = text.toLowerCase().trim();
