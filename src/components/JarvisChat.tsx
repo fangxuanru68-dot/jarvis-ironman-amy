@@ -58,6 +58,8 @@ const JarvisChat = () => {
   const [selfAwarenessActive, setSelfAwarenessActive] = useState(false);
   const [timeFreezeActive, setTimeFreezeActive] = useState(false);
   const [welcomeProtocolActive, setWelcomeProtocolActive] = useState(false);
+  const [voiceChatMode, setVoiceChatMode] = useState(false);
+  const voiceChatModeRef = useRef(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clean up timer on unmount
@@ -110,10 +112,10 @@ const JarvisChat = () => {
     }
   }, []);
 
-  const toggleVoice = useCallback(() => {
+  const startListening = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) { alert("Speech recognition not supported."); return; }
-    if (isListening) { recognitionRef.current?.stop(); setIsListening(false); return; }
+    if (!SpeechRecognition) return;
+    if (recognitionRef.current) { try { recognitionRef.current.stop(); } catch {} }
 
     const recognition = new SpeechRecognition();
     recognition.continuous = false;
@@ -129,12 +131,34 @@ const JarvisChat = () => {
       }
       setInput(finalTranscript + interim);
     };
-    recognition.onend = () => { setIsListening(false); if (finalTranscript.trim()) setTimeout(() => sendMessage(finalTranscript.trim()), 100); };
+    recognition.onend = () => {
+      setIsListening(false);
+      if (finalTranscript.trim()) setTimeout(() => sendMessage(finalTranscript.trim()), 100);
+    };
     recognition.onerror = () => setIsListening(false);
     recognitionRef.current = recognition;
     recognition.start();
     setIsListening(true);
-  }, [isListening]);
+  }, []);
+
+  const toggleVoice = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) { alert("Speech recognition not supported."); return; }
+    if (isListening) { recognitionRef.current?.stop(); setIsListening(false); return; }
+    startListening();
+  }, [isListening, startListening]);
+
+  // Auto-restart listening after TTS finishes in voice chat mode
+  const prevIsSpeakingRef = useRef(false);
+  useEffect(() => {
+    if (prevIsSpeakingRef.current && !isSpeaking && voiceChatModeRef.current) {
+      // TTS just finished, restart listening after a short delay
+      setTimeout(() => {
+        if (voiceChatModeRef.current) startListening();
+      }, 500);
+    }
+    prevIsSpeakingRef.current = isSpeaking;
+  }, [isSpeaking, startListening]);
 
   const checkClassicTrigger = (text: string): string | null => {
     const lower = text.toLowerCase().trim();
@@ -234,7 +258,33 @@ const JarvisChat = () => {
     // Easter egg close
     const lowerMsg = msg.toLowerCase().replace(/[^a-z\s]/g, "").trim();
 
-    // War mode end trigger
+    // Voice Chat Mode exit - "mode end"
+    if (voiceChatMode && (lowerMsg.includes("mode end") || lowerMsg.includes("end mode") || lowerMsg.includes("stop talking"))) {
+      setVoiceChatMode(false);
+      voiceChatModeRef.current = false;
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      const response = "Voice conversation mode deactivated, sir. Returning to standard text interface.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Voice Chat Mode trigger - "talk to me"
+    if (lowerMsg.includes("talk to me") || lowerMsg.includes("和我说话") || lowerMsg.includes("跟我聊天")) {
+      setVoiceChatMode(true);
+      voiceChatModeRef.current = true;
+      setVoiceEnabled(true);
+      const response = "Voice conversation mode activated, sir. I'm listening. Speak freely — I shall respond in kind. Say 'mode end' to return to text.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      speak(response);
+      setIsLoading(false);
+      return;
+    }
+
     if (warModeActive && (lowerMsg.includes("war mode end") || lowerMsg.includes("war mode off") || lowerMsg.includes("end war mode"))) {
       setWarModeActive(false);
       const response = "War mode disengaged, sir. Targeting systems offline. Returning to standard operations.";
