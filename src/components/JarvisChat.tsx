@@ -258,7 +258,33 @@ const JarvisChat = () => {
     // Easter egg close
     const lowerMsg = msg.toLowerCase().replace(/[^a-z\s]/g, "").trim();
 
-    // War mode end trigger
+    // Voice Chat Mode exit - "mode end"
+    if (voiceChatMode && (lowerMsg.includes("mode end") || lowerMsg.includes("end mode") || lowerMsg.includes("stop talking"))) {
+      setVoiceChatMode(false);
+      voiceChatModeRef.current = false;
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      const response = "Voice conversation mode deactivated, sir. Returning to standard text interface.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Voice Chat Mode trigger - "talk to me"
+    if (lowerMsg.includes("talk to me") || lowerMsg.includes("和我说话") || lowerMsg.includes("跟我聊天")) {
+      setVoiceChatMode(true);
+      voiceChatModeRef.current = true;
+      setVoiceEnabled(true);
+      const response = "Voice conversation mode activated, sir. I'm listening. Speak freely — I shall respond in kind. Say 'mode end' to return to text.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      speak(response);
+      setIsLoading(false);
+      return;
+    }
+
     if (warModeActive && (lowerMsg.includes("war mode end") || lowerMsg.includes("war mode off") || lowerMsg.includes("end war mode"))) {
       setWarModeActive(false);
       const response = "War mode disengaged, sir. Targeting systems offline. Returning to standard operations.";
