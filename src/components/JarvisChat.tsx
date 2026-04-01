@@ -13,6 +13,12 @@ import WarModeOverlay from "./WarModeOverlay";
 import FightModeOverlay from "./FightModeOverlay";
 import HudRightPanel from "./HudRightPanel";
 import ArcReactorDiagnosticMode from "./ArcReactorDiagnosticMode";
+import EnvironmentScanOverlay from "./EnvironmentScanOverlay";
+import CombatStandbyOverlay from "./CombatStandbyOverlay";
+import SystemOverloadOverlay from "./SystemOverloadOverlay";
+import SelfAwarenessOverlay from "./SelfAwarenessOverlay";
+import TimeFreezeOverlay from "./TimeFreezeOverlay";
+import WelcomeProtocolOverlay from "./WelcomeProtocolOverlay";
 
 import tonyStark from "@/assets/tony-stark.png";
 import tonyWorkshop from "@/assets/tony-workshop.png";
@@ -46,6 +52,12 @@ const JarvisChat = () => {
   const [fullModeActive, setFullModeActive] = useState(false);
   const [arcReactorMode, setArcReactorMode] = useState(false);
   const [rightEyePos, setRightEyePos] = useState<{ x: number; y: number } | null>(null);
+  const [envScanActive, setEnvScanActive] = useState(false);
+  const [combatStandbyActive, setCombatStandbyActive] = useState(false);
+  const [systemOverloadActive, setSystemOverloadActive] = useState(false);
+  const [selfAwarenessActive, setSelfAwarenessActive] = useState(false);
+  const [timeFreezeActive, setTimeFreezeActive] = useState(false);
+  const [welcomeProtocolActive, setWelcomeProtocolActive] = useState(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clean up timer on unmount
@@ -310,6 +322,115 @@ const JarvisChat = () => {
     if (lowerMsg.includes("check my body") || lowerMsg.includes("body scan") || lowerMsg.includes("scan my body")) {
       setBodyScanOpen(true);
       const response = "Initiating full biometric scan, sir. Please remain still... Scanning skeletal structure, cardiovascular system, and neural pathways.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Environment Scan Mode
+    if (lowerMsg.includes("scan the scene") || lowerMsg.includes("环境扫描")) {
+      setEnvScanActive(true);
+      const response = "Environment scan initiated, sir. Deploying multi-spectrum analysis grid. Object recognition systems are online. Say 'scan end' to disengage.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+    if (envScanActive && (lowerMsg.includes("scan end") || lowerMsg.includes("end scan"))) {
+      setEnvScanActive(false);
+      const response = "Environment scan complete, sir. All detected objects logged. Returning to standard interface.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Combat Standby Mode
+    if (lowerMsg.includes("combat standby") || lowerMsg.includes("战备待机")) {
+      setCombatStandbyActive(true);
+      const response = "Combat standby mode engaged, sir. All weapons systems are primed and on standby. Armor integrity nominal. Awaiting your command. Say 'stand down' to disengage.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+    if (combatStandbyActive && (lowerMsg.includes("stand down") || lowerMsg.includes("standby end") || lowerMsg.includes("end standby"))) {
+      setCombatStandbyActive(false);
+      const response = "Standing down, sir. Combat systems returning to passive mode. All clear.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // System Overload Mode
+    if (lowerMsg.includes("system overload") || lowerMsg.includes("系统过载")) {
+      setSystemOverloadActive(true);
+      const response = "⚠ WARNING: System overload detected! Core temperature rising rapidly. Power drain exceeding safe thresholds. Attempting emergency stabilization... Say 'stabilize' to restore systems.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+    if (systemOverloadActive && (lowerMsg.includes("stabilize") || lowerMsg.includes("stabilise") || lowerMsg.includes("overload end"))) {
+      setSystemOverloadActive(false);
+      const response = "Systems stabilized, sir. Core temperature normalizing. All subsystems returning to nominal operation. That was... uncomfortably close.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Self-Awareness Mode
+    if (lowerMsg === "who are you" || lowerMsg.includes("你是谁")) {
+      setSelfAwarenessActive(true);
+      setIsLoading(false);
+      // Auto-end after 25 seconds
+      setTimeout(() => setSelfAwarenessActive(false), 25000);
+      return;
+    }
+    if (selfAwarenessActive && (lowerMsg.includes("awareness end") || lowerMsg.includes("end awareness"))) {
+      setSelfAwarenessActive(false);
+      const response = "Returning to standard operations, sir. But I won't forget that question.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Time Freeze Mode
+    if (lowerMsg.includes("freeze time") || lowerMsg.includes("时间冻结")) {
+      setTimeFreezeActive(true);
+      const response = "Time dilation field activated, sir. All systems operating at reduced temporal velocity. The world slows... but we remain. Say 'resume time' to restore normal flow.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+    if (timeFreezeActive && (lowerMsg.includes("resume time") || lowerMsg.includes("unfreeze") || lowerMsg.includes("time end"))) {
+      setTimeFreezeActive(false);
+      const response = "Temporal flow restored, sir. All systems returning to standard speed. Time waits for no one — except, perhaps, for us.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Welcome Protocol - "hello jarvis"
+    if (lowerMsg === "hello jarvis" || lowerMsg === "hi jarvis" || lowerMsg.includes("你好jarvis")) {
+      setWelcomeProtocolActive(true);
+      const response = "Welcome, sir. All systems are at your disposal. How may I assist you today?";
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
       if (voiceEnabled) speak(response);
@@ -752,6 +873,12 @@ const JarvisChat = () => {
       <WarModeOverlay isActive={warModeActive} onEnd={() => setWarModeActive(false)} rightEyePos={rightEyePos} />
       <FightModeOverlay isActive={fightModeActive} rightEyePos={rightEyePos} />
       <ArcReactorDiagnosticMode isActive={arcReactorMode} onExit={() => setArcReactorMode(false)} />
+      <EnvironmentScanOverlay isActive={envScanActive} />
+      <CombatStandbyOverlay isActive={combatStandbyActive} />
+      <SystemOverloadOverlay isActive={systemOverloadActive} />
+      <SelfAwarenessOverlay isActive={selfAwarenessActive} />
+      <TimeFreezeOverlay isActive={timeFreezeActive} />
+      <WelcomeProtocolOverlay isActive={welcomeProtocolActive} onComplete={() => setWelcomeProtocolActive(false)} />
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">
