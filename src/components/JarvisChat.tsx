@@ -533,7 +533,60 @@ const JarvisChat = () => {
       return;
     }
 
-    if (easterEgg && (lowerMsg.includes("lets go back to work") || lowerMsg.includes("let go back to work") || lowerMsg.includes("back to work"))) {
+    // Return Portal Protocol - "on your left"
+    if (lowerMsg.includes("on your left")) {
+      setReturnPortalActive(true);
+      const response = "Signal received, sir. \"On your left.\" Multiple allies online. Reintegration protocol initiated. Trust confirmed.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Thunder Recall Protocol - "bring me thanos"
+    if (lowerMsg.includes("bring me thanos")) {
+      setThunderRecallActive(true);
+      const response = "Energy spike detected, sir. Thunder field active. Channeling power to designated coordinates. Bring me Thanos.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Stealth Intel Mode - "red in my ledger"
+    if (lowerMsg.includes("red in my ledger")) {
+      setStealthIntelActive(true);
+      const response = "Intel mode active, sir. Stealth priority. Targets tagged. Quiet protocol engaged.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Web Assist Mode - "friendly neighborhood"
+    if (lowerMsg.includes("friendly neighborhood") || lowerMsg.includes("friendly neighbourhood")) {
+      setWebAssistActive(true);
+      const response = "Web assist online. Mobility optimized. Targeting aid active. Hello, neighbour.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Nanotech Assembly - "nanotech suit"
+    if (lowerMsg.includes("nanotech suit") || lowerMsg.includes("nano suit")) {
+      setNanotechActive(true);
+      const response = "Nanotech deployed, sir. Structure assembling. Stand by... system ready.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
       if (tonyMessageTimerRef.current) { clearTimeout(tonyMessageTimerRef.current); tonyMessageTimerRef.current = null; }
       setEasterEgg(false);
       const response = "Right away, sir. All systems back online. Let's get to work.";
