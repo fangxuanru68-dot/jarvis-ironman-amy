@@ -21,6 +21,11 @@ import TimeFreezeOverlay from "./TimeFreezeOverlay";
 import WelcomeProtocolOverlay from "./WelcomeProtocolOverlay";
 import SnapDisintegrationOverlay from "./SnapDisintegrationOverlay";
 import PrecisionEliminationMode from "./PrecisionEliminationMode";
+import ReturnPortalOverlay from "./ReturnPortalOverlay";
+import ThunderRecallOverlay from "./ThunderRecallOverlay";
+import StealthIntelOverlay from "./StealthIntelOverlay";
+import WebAssistOverlay from "./WebAssistOverlay";
+import NanotechAssemblyOverlay from "./NanotechAssemblyOverlay";
 
 import tonyStark from "@/assets/tony-stark.png";
 import tonyWorkshop from "@/assets/tony-workshop.png";
