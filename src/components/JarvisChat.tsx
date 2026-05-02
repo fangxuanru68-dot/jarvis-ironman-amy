@@ -67,6 +67,11 @@ const JarvisChat = () => {
   const [welcomeProtocolActive, setWelcomeProtocolActive] = useState(false);
   const [snapActive, setSnapActive] = useState(false);
   const [precisionEliminationActive, setPrecisionEliminationActive] = useState(false);
+  const [returnPortalActive, setReturnPortalActive] = useState(false);
+  const [thunderRecallActive, setThunderRecallActive] = useState(false);
+  const [stealthIntelActive, setStealthIntelActive] = useState(false);
+  const [webAssistActive, setWebAssistActive] = useState(false);
+  const [nanotechActive, setNanotechActive] = useState(false);
   const [voiceChatMode, setVoiceChatMode] = useState(false);
   const voiceChatModeRef = useRef(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
