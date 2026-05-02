@@ -1031,6 +1031,11 @@ const JarvisChat = () => {
       <WelcomeProtocolOverlay isActive={welcomeProtocolActive} onComplete={() => setWelcomeProtocolActive(false)} />
       <SnapDisintegrationOverlay isActive={snapActive} onComplete={() => setSnapActive(false)} />
       <PrecisionEliminationMode isActive={precisionEliminationActive} rightEyePos={rightEyePos} />
+      <ReturnPortalOverlay isActive={returnPortalActive} onComplete={() => setReturnPortalActive(false)} />
+      <ThunderRecallOverlay isActive={thunderRecallActive} onComplete={() => setThunderRecallActive(false)} />
+      <StealthIntelOverlay isActive={stealthIntelActive} onComplete={() => setStealthIntelActive(false)} />
+      <WebAssistOverlay isActive={webAssistActive} onComplete={() => setWebAssistActive(false)} />
+      <NanotechAssemblyOverlay isActive={nanotechActive} onComplete={() => setNanotechActive(false)} />
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">
