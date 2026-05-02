@@ -587,6 +587,8 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
+
+    if (easterEgg && (lowerMsg.includes("lets go back to work") || lowerMsg.includes("let go back to work") || lowerMsg.includes("back to work"))) {
       if (tonyMessageTimerRef.current) { clearTimeout(tonyMessageTimerRef.current); tonyMessageTimerRef.current = null; }
       setEasterEgg(false);
       const response = "Right away, sir. All systems back online. Let's get to work.";
