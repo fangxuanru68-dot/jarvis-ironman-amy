@@ -21,6 +21,11 @@ import TimeFreezeOverlay from "./TimeFreezeOverlay";
 import WelcomeProtocolOverlay from "./WelcomeProtocolOverlay";
 import SnapDisintegrationOverlay from "./SnapDisintegrationOverlay";
 import PrecisionEliminationMode from "./PrecisionEliminationMode";
+import ReturnPortalOverlay from "./ReturnPortalOverlay";
+import ThunderRecallOverlay from "./ThunderRecallOverlay";
+import StealthIntelOverlay from "./StealthIntelOverlay";
+import WebAssistOverlay from "./WebAssistOverlay";
+import NanotechAssemblyOverlay from "./NanotechAssemblyOverlay";
 
 import tonyStark from "@/assets/tony-stark.png";
 import tonyWorkshop from "@/assets/tony-workshop.png";
@@ -62,6 +67,11 @@ const JarvisChat = () => {
   const [welcomeProtocolActive, setWelcomeProtocolActive] = useState(false);
   const [snapActive, setSnapActive] = useState(false);
   const [precisionEliminationActive, setPrecisionEliminationActive] = useState(false);
+  const [returnPortalActive, setReturnPortalActive] = useState(false);
+  const [thunderRecallActive, setThunderRecallActive] = useState(false);
+  const [stealthIntelActive, setStealthIntelActive] = useState(false);
+  const [webAssistActive, setWebAssistActive] = useState(false);
+  const [nanotechActive, setNanotechActive] = useState(false);
   const [voiceChatMode, setVoiceChatMode] = useState(false);
   const voiceChatModeRef = useRef(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -523,6 +533,61 @@ const JarvisChat = () => {
       return;
     }
 
+    // Return Portal Protocol - "on your left"
+    if (lowerMsg.includes("on your left")) {
+      setReturnPortalActive(true);
+      const response = "Signal received, sir. \"On your left.\" Multiple allies online. Reintegration protocol initiated. Trust confirmed.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Thunder Recall Protocol - "bring me thanos"
+    if (lowerMsg.includes("bring me thanos")) {
+      setThunderRecallActive(true);
+      const response = "Energy spike detected, sir. Thunder field active. Channeling power to designated coordinates. Bring me Thanos.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Stealth Intel Mode - "red in my ledger"
+    if (lowerMsg.includes("red in my ledger")) {
+      setStealthIntelActive(true);
+      const response = "Intel mode active, sir. Stealth priority. Targets tagged. Quiet protocol engaged.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Web Assist Mode - "friendly neighborhood"
+    if (lowerMsg.includes("friendly neighborhood") || lowerMsg.includes("friendly neighbourhood")) {
+      setWebAssistActive(true);
+      const response = "Web assist online. Mobility optimized. Targeting aid active. Hello, neighbour.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Nanotech Assembly - "nanotech suit"
+    if (lowerMsg.includes("nanotech suit") || lowerMsg.includes("nano suit")) {
+      setNanotechActive(true);
+      const response = "Nanotech deployed, sir. Structure assembling. Stand by... system ready.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
     if (easterEgg && (lowerMsg.includes("lets go back to work") || lowerMsg.includes("let go back to work") || lowerMsg.includes("back to work"))) {
       if (tonyMessageTimerRef.current) { clearTimeout(tonyMessageTimerRef.current); tonyMessageTimerRef.current = null; }
       setEasterEgg(false);
@@ -966,6 +1031,11 @@ const JarvisChat = () => {
       <WelcomeProtocolOverlay isActive={welcomeProtocolActive} onComplete={() => setWelcomeProtocolActive(false)} />
       <SnapDisintegrationOverlay isActive={snapActive} onComplete={() => setSnapActive(false)} />
       <PrecisionEliminationMode isActive={precisionEliminationActive} rightEyePos={rightEyePos} />
+      <ReturnPortalOverlay isActive={returnPortalActive} onComplete={() => setReturnPortalActive(false)} />
+      <ThunderRecallOverlay isActive={thunderRecallActive} onComplete={() => setThunderRecallActive(false)} />
+      <StealthIntelOverlay isActive={stealthIntelActive} onComplete={() => setStealthIntelActive(false)} />
+      <WebAssistOverlay isActive={webAssistActive} onComplete={() => setWebAssistActive(false)} />
+      <NanotechAssemblyOverlay isActive={nanotechActive} onComplete={() => setNanotechActive(false)} />
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">
