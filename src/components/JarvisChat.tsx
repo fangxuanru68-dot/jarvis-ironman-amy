@@ -20,6 +20,7 @@ import SelfAwarenessOverlay from "./SelfAwarenessOverlay";
 import TimeFreezeOverlay from "./TimeFreezeOverlay";
 import WelcomeProtocolOverlay from "./WelcomeProtocolOverlay";
 import SnapDisintegrationOverlay from "./SnapDisintegrationOverlay";
+import PrecisionEliminationMode from "./PrecisionEliminationMode";
 
 import tonyStark from "@/assets/tony-stark.png";
 import tonyWorkshop from "@/assets/tony-workshop.png";
@@ -60,6 +61,7 @@ const JarvisChat = () => {
   const [timeFreezeActive, setTimeFreezeActive] = useState(false);
   const [welcomeProtocolActive, setWelcomeProtocolActive] = useState(false);
   const [snapActive, setSnapActive] = useState(false);
+  const [precisionEliminationActive, setPrecisionEliminationActive] = useState(false);
   const [voiceChatMode, setVoiceChatMode] = useState(false);
   const voiceChatModeRef = useRef(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -472,6 +474,26 @@ const JarvisChat = () => {
     if (timeFreezeActive && (lowerMsg.includes("resume time") || lowerMsg.includes("unfreeze") || lowerMsg.includes("time end"))) {
       setTimeFreezeActive(false);
       const response = "Temporal flow restored, sir. All systems returning to standard speed. Time waits for no one — except, perhaps, for us.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Precision Elimination Mode - 一击必杀模式
+    if (lowerMsg === "precision elimination mode" || lowerMsg.includes("一击必杀") || lowerMsg.includes("精确消灭")) {
+      setPrecisionEliminationActive(true);
+      const response = "Precision Elimination Mode engaged, sir. Right eye lock acquired. Weapon reserves ready. Standing by for fire authorization.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+    if (precisionEliminationActive && (lowerMsg === "mode end" || lowerMsg.includes("end mode") || lowerMsg.includes("退出模式"))) {
+      setPrecisionEliminationActive(false);
+      const response = "Precision Elimination Mode disengaged. Returning to standard interface, sir.";
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
       if (voiceEnabled) speak(response);
@@ -943,6 +965,7 @@ const JarvisChat = () => {
       <TimeFreezeOverlay isActive={timeFreezeActive} />
       <WelcomeProtocolOverlay isActive={welcomeProtocolActive} onComplete={() => setWelcomeProtocolActive(false)} />
       <SnapDisintegrationOverlay isActive={snapActive} onComplete={() => setSnapActive(false)} />
+      <PrecisionEliminationMode isActive={precisionEliminationActive} rightEyePos={rightEyePos} />
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">
