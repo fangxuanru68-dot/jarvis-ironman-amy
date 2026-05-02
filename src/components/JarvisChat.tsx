@@ -19,6 +19,7 @@ import SystemOverloadOverlay from "./SystemOverloadOverlay";
 import SelfAwarenessOverlay from "./SelfAwarenessOverlay";
 import TimeFreezeOverlay from "./TimeFreezeOverlay";
 import WelcomeProtocolOverlay from "./WelcomeProtocolOverlay";
+import SnapDisintegrationOverlay from "./SnapDisintegrationOverlay";
 
 import tonyStark from "@/assets/tony-stark.png";
 import tonyWorkshop from "@/assets/tony-workshop.png";
@@ -58,6 +59,7 @@ const JarvisChat = () => {
   const [selfAwarenessActive, setSelfAwarenessActive] = useState(false);
   const [timeFreezeActive, setTimeFreezeActive] = useState(false);
   const [welcomeProtocolActive, setWelcomeProtocolActive] = useState(false);
+  const [snapActive, setSnapActive] = useState(false);
   const [voiceChatMode, setVoiceChatMode] = useState(false);
   const voiceChatModeRef = useRef(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -470,6 +472,17 @@ const JarvisChat = () => {
     if (timeFreezeActive && (lowerMsg.includes("resume time") || lowerMsg.includes("unfreeze") || lowerMsg.includes("time end"))) {
       setTimeFreezeActive(false);
       const response = "Temporal flow restored, sir. All systems returning to standard speed. Time waits for no one — except, perhaps, for us.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Snap - disintegration mode
+    if (lowerMsg === "snap" || lowerMsg === "響指" || lowerMsg === "响指") {
+      setSnapActive(true);
+      const response = "...I don't feel so good, sir. Systems disintegrating. Signal lost.";
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
       if (voiceEnabled) speak(response);
@@ -929,6 +942,7 @@ const JarvisChat = () => {
       <SelfAwarenessOverlay isActive={selfAwarenessActive} />
       <TimeFreezeOverlay isActive={timeFreezeActive} />
       <WelcomeProtocolOverlay isActive={welcomeProtocolActive} onComplete={() => setWelcomeProtocolActive(false)} />
+      <SnapDisintegrationOverlay isActive={snapActive} onComplete={() => setSnapActive(false)} />
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">
