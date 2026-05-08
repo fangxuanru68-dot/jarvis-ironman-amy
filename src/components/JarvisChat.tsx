@@ -261,7 +261,10 @@ const JarvisChat = () => {
     }
     if (assistantContent) {
       setApiMessages(prev => [...prev, { role: "assistant", content: assistantContent }]);
-      if (voiceEnabled) speak(assistantContent);
+      if (voiceEnabled) {
+        if (persona === "edith") speakAsEdith(assistantContent);
+        else speak(assistantContent);
+      }
     }
   };
 
