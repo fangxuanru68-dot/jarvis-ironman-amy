@@ -196,11 +196,34 @@ const JarvisChat = () => {
     }
   }, [voiceEnabled, speak]);
 
-  const streamChat = async (allMessages: Message[]) => {
+  const speakAsEdith = useCallback((text: string) => {
+    if (!voiceEnabled || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const clean = text.replace(/```[\s\S]*?```/g, "code block").replace(/[*_~`#>-]/g, "").trim();
+    if (!clean) return;
+    const u = new SpeechSynthesisUtterance(clean);
+    u.rate = 0.98; u.pitch = 1.15; u.volume = 1;
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = [
+      "Google UK English Female", "Microsoft Sonia Online (Natural)",
+      "Microsoft Libby Online (Natural)", "Microsoft Hazel", "Samantha",
+      "Karen", "Serena", "Kate", "Fiona",
+    ];
+    let v: SpeechSynthesisVoice | undefined;
+    for (const n of preferred) { v = voices.find(x => x.name.includes(n)); if (v) break; }
+    if (!v) v = voices.find(x => x.lang === "en-GB" && /female|sonia|libby|hazel|kate/i.test(x.name))
+      || voices.find(x => /female/i.test(x.name) && x.lang.startsWith("en"))
+      || voices.find(x => x.lang === "en-GB")
+      || voices.find(x => x.lang.startsWith("en"));
+    if (v) u.voice = v;
+    window.speechSynthesis.speak(u);
+  }, [voiceEnabled]);
+
+  const streamChat = async (allMessages: Message[], persona?: "edith") => {
     const resp = await fetch(CHAT_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-      body: JSON.stringify({ messages: allMessages }),
+      body: JSON.stringify({ messages: allMessages, persona }),
     });
     if (!resp.ok) { const err = await resp.json().catch(() => ({ error: "Connection failed" })); throw new Error(err.error || "Systems offline"); }
     if (!resp.body) throw new Error("No stream");
