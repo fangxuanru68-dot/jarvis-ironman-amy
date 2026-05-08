@@ -26,6 +26,7 @@ import ThunderRecallOverlay from "./ThunderRecallOverlay";
 import StealthIntelOverlay from "./StealthIntelOverlay";
 import WebAssistOverlay from "./WebAssistOverlay";
 import NanotechAssemblyOverlay from "./NanotechAssemblyOverlay";
+import EdithMode from "./EdithMode";
 
 import tonyStark from "@/assets/tony-stark.png";
 import tonyWorkshop from "@/assets/tony-workshop.png";
