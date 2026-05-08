@@ -303,27 +303,6 @@ const JarvisChat = () => {
     const lowerMsg = msg.toLowerCase().replace(/[^a-z\s]/g, "").trim();
 
     // Helper: EDITH speaks with calm female British voice
-    const speakAsEdith = (text: string) => {
-      if (!voiceEnabled || !window.speechSynthesis) return;
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.rate = 0.98; u.pitch = 1.15; u.volume = 1;
-      const voices = window.speechSynthesis.getVoices();
-      const preferred = [
-        "Google UK English Female", "Microsoft Sonia Online (Natural)",
-        "Microsoft Libby Online (Natural)", "Microsoft Hazel", "Samantha",
-        "Karen", "Serena", "Kate", "Fiona",
-      ];
-      let v: SpeechSynthesisVoice | undefined;
-      for (const n of preferred) { v = voices.find(x => x.name.includes(n)); if (v) break; }
-      if (!v) v = voices.find(x => x.lang === "en-GB" && /female|sonia|libby|hazel|kate/i.test(x.name))
-        || voices.find(x => /female/i.test(x.name) && x.lang.startsWith("en"))
-        || voices.find(x => x.lang === "en-GB")
-        || voices.find(x => x.lang.startsWith("en"));
-      if (v) u.voice = v;
-      window.speechSynthesis.speak(u);
-    };
-
     // === EDITH MODE ===
     // Activation
     if (!edithModeRef.current && (lowerMsg.includes("im peter parker") || lowerMsg.includes("i am peter parker") || lowerMsg.includes("我是彼得"))) {
@@ -336,9 +315,8 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
-    // Inside EDITH mode
+    // Inside EDITH mode — handle exit / fire-lock; everything else falls through to the AI with EDITH persona.
     if (edithModeRef.current) {
-      // Exit
       if (lowerMsg === "mode end" || lowerMsg.includes("end mode") || lowerMsg.includes("退出模式")) {
         setEdithModeActive(false);
         edithModeRef.current = false;
@@ -350,44 +328,18 @@ const JarvisChat = () => {
         setIsLoading(false);
         return;
       }
-      // Aggressive command lock
-      if (/\b(attack|fire|execute|kill|launch|strike|destroy)\b/.test(lowerMsg)) {
+      if (/\b(attack|fire|execute|kill|launch|strike|destroy|eliminate)\b/.test(lowerMsg)) {
         setEdithFireLock(true);
         setTimeout(() => setEdithFireLock(false), 4500);
-        const response = "I cannot execute that command. Simulation mode only. Fire control is locked, Peter.";
+        const response = "I cannot execute that command, Peter. Simulation mode only. Fire control is locked.";
         setMessages(prev => [...prev, { role: "assistant", content: response }]);
         setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
         speakAsEdith(response);
         setIsLoading(false);
         return;
       }
-      // Scripted EDITH replies for common queries
-      const edithReplies: Array<[RegExp, string]> = [
-        [/\b(scan|surveillance|recogni[sz]e|identify)\b/, "Running facial recognition across the global feed. Identity scan in progress."],
-        [/\b(drone|swarm)\b/, "Drone swarm is on standby. 248 units linked. Targeting system ready."],
-        [/\b(satellite|network|uplink)\b/, "Satellite link is active. Stark global network is fully operational."],
-        [/\b(threat|danger|hostile)\b/, "Threat analysis complete. Current risk level is low, Peter."],
-        [/\b(who am i|access|level)\b/, "Access granted, Peter. You hold full Stark-level authorization."],
-        [/\b(hello|hi|hey)\b/, "Hello, Peter. EDITH at your service. Would you like me to run a scan?"],
-      ];
-      for (const [re, reply] of edithReplies) {
-        if (re.test(lowerMsg)) {
-          setMessages(prev => [...prev, { role: "assistant", content: reply }]);
-          setApiMessages(prev => [...prev, { role: "assistant", content: reply }]);
-          speakAsEdith(reply);
-          setIsLoading(false);
-          return;
-        }
-      }
-      // Default EDITH reply (concise, system tone)
-      const fallback = "Acknowledged, Peter. Processing your request through the Stark global network.";
-      setMessages(prev => [...prev, { role: "assistant", content: fallback }]);
-      setApiMessages(prev => [...prev, { role: "assistant", content: fallback }]);
-      speakAsEdith(fallback);
-      setIsLoading(false);
-      return;
+      // fall through — AI handles the conversation in EDITH persona
     }
-
 
     // Voice Chat Mode exit - "mode end"
     if (voiceChatMode && (lowerMsg.includes("mode end") || lowerMsg.includes("end mode") || lowerMsg.includes("stop talking"))) {
