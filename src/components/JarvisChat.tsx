@@ -1127,6 +1127,7 @@ const JarvisChat = () => {
       <StealthIntelOverlay isActive={stealthIntelActive} onComplete={() => setStealthIntelActive(false)} />
       <WebAssistOverlay isActive={webAssistActive} onComplete={() => setWebAssistActive(false)} />
       <NanotechAssemblyOverlay isActive={nanotechActive} onComplete={() => setNanotechActive(false)} />
+      <EdithMode isActive={edithModeActive} fireLockWarning={edithFireLock} />
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">
