@@ -73,6 +73,9 @@ const JarvisChat = () => {
   const [stealthIntelActive, setStealthIntelActive] = useState(false);
   const [webAssistActive, setWebAssistActive] = useState(false);
   const [nanotechActive, setNanotechActive] = useState(false);
+  const [edithModeActive, setEdithModeActive] = useState(false);
+  const [edithFireLock, setEdithFireLock] = useState(false);
+  const edithModeRef = useRef(false);
   const [voiceChatMode, setVoiceChatMode] = useState(false);
   const voiceChatModeRef = useRef(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
