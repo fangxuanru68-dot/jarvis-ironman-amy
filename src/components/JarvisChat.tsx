@@ -852,7 +852,7 @@ const JarvisChat = () => {
       return;
     }
 
-    try { await streamChat(newApiMessages); }
+    try { await streamChat(newApiMessages, edithModeRef.current ? "edith" : undefined); }
     catch (e) {
       const errMsg = `⚠ ${e instanceof Error ? e.message : "Systems offline."}`;
       setMessages(prev => [...prev, { role: "assistant", content: errMsg }]);
