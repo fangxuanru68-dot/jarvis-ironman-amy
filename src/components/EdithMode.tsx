@@ -109,34 +109,7 @@ const EdithMode = ({ isActive, fireLockWarning = false }: EdithModeProps) => {
         />
       ))}
 
-      {/* simulated facial recognition boxes */}
-      {FACE_DETECTIONS.map((f, i) => (
-        <div
-          key={i}
-          className="absolute"
-          style={{
-            left: `${f.x}%`,
-            top: `${f.y}%`,
-            width: `${f.w}%`,
-            height: `${f.h}%`,
-            animation: `edith-fade-in 0.8s ease-out ${0.3 + i * 0.2}s both`,
-          }}
-        >
-          <div className="relative w-full h-full">
-            <div className="absolute inset-0 border border-cyan-200/70" />
-            <div className="absolute -top-px -left-px w-3 h-3 border-l-2 border-t-2 border-cyan-100" />
-            <div className="absolute -top-px -right-px w-3 h-3 border-r-2 border-t-2 border-cyan-100" />
-            <div className="absolute -bottom-px -left-px w-3 h-3 border-l-2 border-b-2 border-cyan-100" />
-            <div className="absolute -bottom-px -right-px w-3 h-3 border-r-2 border-b-2 border-cyan-100" />
-            <div className="absolute -bottom-12 left-0 text-[10px] tracking-widest text-cyan-100 leading-tight">
-              <div>{f.id}</div>
-              <div className="text-amber-200/80">{f.name}</div>
-              <div>CONF {f.conf}%</div>
-              <div className="opacity-70">{f.flag}</div>
-            </div>
-          </div>
-        </div>
-      ))}
+      {/* facial recognition boxes removed per user request */}
 
       {/* TOP STATUS BAR */}
       <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-6 px-6 py-2 border border-cyan-200/30 bg-[rgba(8,18,32,0.35)] backdrop-blur-sm text-[11px] tracking-[0.25em] text-cyan-100">
