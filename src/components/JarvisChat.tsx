@@ -27,6 +27,7 @@ import StealthIntelOverlay from "./StealthIntelOverlay";
 import WebAssistOverlay from "./WebAssistOverlay";
 import NanotechAssemblyOverlay from "./NanotechAssemblyOverlay";
 import EdithMode from "./EdithMode";
+import spiderEmblem from "@/assets/spider-emblem.png";
 
 import tonyStark from "@/assets/tony-stark.png";
 import tonyWorkshop from "@/assets/tony-workshop.png";
@@ -305,7 +306,7 @@ const JarvisChat = () => {
     // Helper: EDITH speaks with calm female British voice
     // === EDITH MODE ===
     // Activation
-    if (!edithModeRef.current && (lowerMsg.includes("im peter parker") || lowerMsg.includes("i am peter parker") || lowerMsg.includes("我是彼得"))) {
+    if (!edithModeRef.current && (lowerMsg === "edith" || lowerMsg.includes("im peter parker") || lowerMsg.includes("i am peter parker") || lowerMsg.includes("我是彼得"))) {
       setEdithModeActive(true);
       edithModeRef.current = true;
       const response = "Welcome, Peter. EDITH system is now active. Global network connection established. Awaiting your command.";
@@ -315,7 +316,7 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
-    // Inside EDITH mode — handle exit / fire-lock; everything else falls through to the AI with EDITH persona.
+    // Inside EDITH mode — only "mode end" exits. Everything else is routed to the EDITH AI persona.
     if (edithModeRef.current) {
       if (lowerMsg === "mode end" || lowerMsg.includes("end mode") || lowerMsg.includes("退出模式")) {
         setEdithModeActive(false);
@@ -338,7 +339,11 @@ const JarvisChat = () => {
         setIsLoading(false);
         return;
       }
-      // fall through — AI handles the conversation in EDITH persona
+      // Route directly to EDITH AI persona — do not fall through to other mode triggers
+      try { await streamChat(newApiMessages, "edith"); }
+      catch (e) { console.error(e); }
+      finally { setIsLoading(false); }
+      return;
     }
 
     // Voice Chat Mode exit - "mode end"
@@ -914,49 +919,13 @@ const JarvisChat = () => {
       {/* Camera off: EDITH mode shows Spider-Man emblem; otherwise JARVIS Arc Reactor */}
       {!cameraOn && !easterEgg && edithModeActive && (
         <div className="fixed inset-0 z-[1] flex items-center justify-center bg-background overflow-hidden">
-          {/* radial backdrop */}
-          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, rgba(40,8,12,0.55) 0%, rgba(0,0,0,0.85) 70%)" }} />
-          <svg viewBox="-110 -110 220 220" className="relative w-[60vmin] h-[60vmin] drop-shadow-[0_0_40px_rgba(255,40,60,0.55)]" style={{ animation: "edith-fade-in 1s ease-out both" }}>
-            <defs>
-              <radialGradient id="spider-grad" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#ff3a4a" />
-                <stop offset="60%" stopColor="#c81a28" />
-                <stop offset="100%" stopColor="#5a0810" />
-              </radialGradient>
-            </defs>
-            {/* Spider body */}
-            <g fill="url(#spider-grad)" stroke="#ffd6dc" strokeWidth="0.6">
-              <ellipse cx="0" cy="6" rx="22" ry="34" />
-              <ellipse cx="0" cy="-22" rx="14" ry="12" />
-            </g>
-            {/* 8 legs */}
-            <g fill="none" stroke="url(#spider-grad)" strokeWidth="5" strokeLinecap="round">
-              {[
-                "M -16 -12 Q -55 -40 -82 -22 Q -90 -10 -78 -2",
-                "M -18 0 Q -60 -10 -86 8 Q -94 22 -80 30",
-                "M -18 14 Q -56 30 -78 56 Q -84 70 -68 74",
-                "M -14 28 Q -40 60 -34 92 Q -28 102 -16 96",
-                "M 16 -12 Q 55 -40 82 -22 Q 90 -10 78 -2",
-                "M 18 0 Q 60 -10 86 8 Q 94 22 80 30",
-                "M 18 14 Q 56 30 78 56 Q 84 70 68 74",
-                "M 14 28 Q 40 60 34 92 Q 28 102 16 96",
-              ].map((d, i) => <path key={i} d={d} />)}
-            </g>
-            {/* white inset eyes hint */}
-            <g fill="#0a0204">
-              <ellipse cx="-5" cy="-22" rx="3.5" ry="2" />
-              <ellipse cx="5" cy="-22" rx="3.5" ry="2" />
-            </g>
-          </svg>
-          {/* faint web grid */}
-          <svg className="absolute inset-0 w-full h-full opacity-15 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
-            {Array.from({ length: 16 }).map((_, i) => (
-              <line key={`r${i}`} x1="50" y1="50" x2={50 + 80 * Math.cos((i / 16) * Math.PI * 2)} y2={50 + 80 * Math.sin((i / 16) * Math.PI * 2)} stroke="rgba(255,200,210,0.6)" strokeWidth="0.15" />
-            ))}
-            {[15, 30, 45, 60].map(r => (
-              <circle key={r} cx="50" cy="50" r={r} fill="none" stroke="rgba(255,200,210,0.5)" strokeWidth="0.15" strokeDasharray="1 2" />
-            ))}
-          </svg>
+          <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at center, rgba(20,20,24,0.6) 0%, rgba(0,0,0,0.92) 75%)" }} />
+          <img
+            src={spiderEmblem}
+            alt="Spider-Man emblem"
+            className="relative w-[60vmin] h-[60vmin] object-contain drop-shadow-[0_0_50px_rgba(180,200,220,0.35)]"
+            style={{ animation: "edith-fade-in 1s ease-out both" }}
+          />
         </div>
       )}
       {!cameraOn && !easterEgg && !edithModeActive && (
