@@ -340,8 +340,6 @@ const JarvisChat = () => {
         return;
       }
       // Route directly to EDITH AI persona — do not fall through to other mode triggers
-      const newApiMessages: Message[] = [...apiMessages, { role: "user", content: msg }];
-      setApiMessages(newApiMessages);
       try { await streamChat(newApiMessages, "edith"); }
       catch (e) { console.error(e); }
       finally { setIsLoading(false); }
