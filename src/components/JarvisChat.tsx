@@ -306,7 +306,7 @@ const JarvisChat = () => {
     // Helper: EDITH speaks with calm female British voice
     // === EDITH MODE ===
     // Activation
-    if (!edithModeRef.current && (lowerMsg.includes("im peter parker") || lowerMsg.includes("i am peter parker") || lowerMsg.includes("我是彼得"))) {
+    if (!edithModeRef.current && (lowerMsg === "edith" || lowerMsg.includes("im peter parker") || lowerMsg.includes("i am peter parker") || lowerMsg.includes("我是彼得"))) {
       setEdithModeActive(true);
       edithModeRef.current = true;
       const response = "Welcome, Peter. EDITH system is now active. Global network connection established. Awaiting your command.";
@@ -316,7 +316,7 @@ const JarvisChat = () => {
       setIsLoading(false);
       return;
     }
-    // Inside EDITH mode — handle exit / fire-lock; everything else falls through to the AI with EDITH persona.
+    // Inside EDITH mode — only "mode end" exits. Everything else is routed to the EDITH AI persona.
     if (edithModeRef.current) {
       if (lowerMsg === "mode end" || lowerMsg.includes("end mode") || lowerMsg.includes("退出模式")) {
         setEdithModeActive(false);
@@ -339,7 +339,13 @@ const JarvisChat = () => {
         setIsLoading(false);
         return;
       }
-      // fall through — AI handles the conversation in EDITH persona
+      // Route directly to EDITH AI persona — do not fall through to other mode triggers
+      const newApiMessages: Message[] = [...apiMessages, { role: "user", content: msg }];
+      setApiMessages(newApiMessages);
+      try { await streamChat(newApiMessages, "edith"); }
+      catch (e) { console.error(e); }
+      finally { setIsLoading(false); }
+      return;
     }
 
     // Voice Chat Mode exit - "mode end"
