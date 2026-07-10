@@ -856,8 +856,8 @@ const JarvisChat = () => {
         videoElement={videoElement}
         isActive={cameraOn}
         onGesture={handleGesture}
-        onHandData={(lms, g) => { gestureResize.handleHandData(lms, g); setHandVisible(lms.length > 0); }}
-        onFaceData={(faceBox, eye) => { setRightEyePos(eye); setFaceVisible(!!faceBox); }}
+        onHandData={(lms, g) => { gestureResize.handleHandData(lms, g); setHandLandmarks(lms); }}
+        onFaceData={(fb, eye) => { setRightEyePos(eye); setFaceVisible(!!fb); setFaceBox(fb); }}
       />
 
       {/* Easter egg: Tony Stark memorial background */}
