@@ -829,7 +829,13 @@ const JarvisChat = () => {
     <>
       {/* Full-screen camera background */}
       <FullScreenCamera isActive={cameraOn} onVideoReady={setVideoElement} />
-      <FaceHandTracker videoElement={videoElement} isActive={cameraOn} onGesture={handleGesture} onHandData={gestureResize.handleHandData} onFaceData={(_faceBox, eye) => setRightEyePos(eye)} />
+      <FaceHandTracker
+        videoElement={videoElement}
+        isActive={cameraOn}
+        onGesture={handleGesture}
+        onHandData={(lms, g) => { gestureResize.handleHandData(lms, g); setHandVisible(lms.length > 0); }}
+        onFaceData={(faceBox, eye) => { setRightEyePos(eye); setFaceVisible(!!faceBox); }}
+      />
 
       {/* Easter egg: Tony Stark memorial background */}
       {easterEgg && (
