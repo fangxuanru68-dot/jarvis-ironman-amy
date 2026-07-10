@@ -590,6 +590,28 @@ const JarvisChat = () => {
       return;
     }
 
+    // Study / Supervised Learning Mode - "underoos" / "study mode"
+    if (!studyModeRef.current && (lowerMsg === "underoos" || lowerMsg === "study mode" || lowerMsg.includes("学习模式") || lowerMsg.includes("监督学习"))) {
+      setStudyModeActive(true);
+      studyModeRef.current = true;
+      const response = "Supervised study protocol engaged, kid. Eyes forward, phone down. I shall be watching. Say 'mode end' to release.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+    if (studyModeRef.current && (lowerMsg === "mode end" || lowerMsg.includes("end mode") || lowerMsg.includes("退出模式"))) {
+      setStudyModeActive(false);
+      studyModeRef.current = false;
+      const response = "Study session concluded, sir. Well done. Returning to standard interface.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
     // Snap - disintegration mode
     if (lowerMsg === "snap" || lowerMsg === "響指" || lowerMsg === "响指") {
       setSnapActive(true);
