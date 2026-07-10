@@ -1159,7 +1159,8 @@ const JarvisChat = () => {
       <StudyMode
         isActive={studyModeActive}
         faceVisible={faceVisible}
-        handVisible={handVisible}
+        faceBox={faceBox}
+        handLandmarks={handLandmarks}
         onRemind={(msg) => { if (voiceEnabled) speak(msg); }}
       />
 
