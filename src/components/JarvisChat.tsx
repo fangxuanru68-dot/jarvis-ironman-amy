@@ -81,7 +81,8 @@ const JarvisChat = () => {
   const [studyModeActive, setStudyModeActive] = useState(false);
   const studyModeRef = useRef(false);
   const [faceVisible, setFaceVisible] = useState(false);
-  const [handVisible, setHandVisible] = useState(false);
+  const [faceBox, setFaceBox] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+  const [handLandmarks, setHandLandmarks] = useState<Array<{ x: number; y: number; z: number }>>([]);
   const [voiceChatMode, setVoiceChatMode] = useState(false);
   const voiceChatModeRef = useRef(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -855,8 +856,8 @@ const JarvisChat = () => {
         videoElement={videoElement}
         isActive={cameraOn}
         onGesture={handleGesture}
-        onHandData={(lms, g) => { gestureResize.handleHandData(lms, g); setHandVisible(lms.length > 0); }}
-        onFaceData={(faceBox, eye) => { setRightEyePos(eye); setFaceVisible(!!faceBox); }}
+        onHandData={(lms, g) => { gestureResize.handleHandData(lms, g); setHandLandmarks(lms); }}
+        onFaceData={(fb, eye) => { setRightEyePos(eye); setFaceVisible(!!fb); setFaceBox(fb); }}
       />
 
       {/* Easter egg: Tony Stark memorial background */}
@@ -1158,7 +1159,8 @@ const JarvisChat = () => {
       <StudyMode
         isActive={studyModeActive}
         faceVisible={faceVisible}
-        handVisible={handVisible}
+        faceBox={faceBox}
+        handLandmarks={handLandmarks}
         onRemind={(msg) => { if (voiceEnabled) speak(msg); }}
       />
 
