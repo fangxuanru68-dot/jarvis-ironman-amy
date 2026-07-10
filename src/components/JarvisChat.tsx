@@ -78,6 +78,10 @@ const JarvisChat = () => {
   const [edithModeActive, setEdithModeActive] = useState(false);
   const [edithFireLock, setEdithFireLock] = useState(false);
   const edithModeRef = useRef(false);
+  const [studyModeActive, setStudyModeActive] = useState(false);
+  const studyModeRef = useRef(false);
+  const [faceVisible, setFaceVisible] = useState(false);
+  const [handVisible, setHandVisible] = useState(false);
   const [voiceChatMode, setVoiceChatMode] = useState(false);
   const voiceChatModeRef = useRef(false);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
