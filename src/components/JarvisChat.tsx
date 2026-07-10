@@ -1155,6 +1155,12 @@ const JarvisChat = () => {
       <WebAssistOverlay isActive={webAssistActive} onComplete={() => setWebAssistActive(false)} />
       <NanotechAssemblyOverlay isActive={nanotechActive} onComplete={() => setNanotechActive(false)} />
       <EdithMode isActive={edithModeActive} fireLockWarning={edithFireLock} />
+      <StudyMode
+        isActive={studyModeActive}
+        faceVisible={faceVisible}
+        handVisible={handVisible}
+        onRemind={(msg) => { if (voiceEnabled) speak(msg); }}
+      />
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">
