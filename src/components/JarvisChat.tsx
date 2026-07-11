@@ -616,6 +616,29 @@ const JarvisChat = () => {
       return;
     }
 
+    // Work Mode - screen share assist
+    if (!workModeRef.current && (lowerMsg === "work mode" || lowerMsg.includes("工作模式") || lowerMsg.includes("办公模式"))) {
+      setWorkModeActive(true);
+      workModeRef.current = true;
+      const response = "Work mode engaged, sir. Share your screen and highlight anything unclear — I shall explain, research, or summarise as required.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+    if (workModeRef.current && (lowerMsg === "mode end" || lowerMsg.includes("end mode") || lowerMsg.includes("退出模式"))) {
+      setWorkModeActive(false);
+      workModeRef.current = false;
+      const response = "Work mode disengaged. Returning to standard interface, sir.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+
     // Snap - disintegration mode
     if (lowerMsg === "snap" || lowerMsg === "響指" || lowerMsg === "响指") {
       setSnapActive(true);
