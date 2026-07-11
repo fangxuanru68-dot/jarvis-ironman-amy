@@ -81,6 +81,8 @@ const JarvisChat = () => {
   const edithModeRef = useRef(false);
   const [studyModeActive, setStudyModeActive] = useState(false);
   const studyModeRef = useRef(false);
+  const [workModeActive, setWorkModeActive] = useState(false);
+  const workModeRef = useRef(false);
   const [faceVisible, setFaceVisible] = useState(false);
   const [faceBox, setFaceBox] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
   const [handLandmarks, setHandLandmarks] = useState<Array<{ x: number; y: number; z: number }>>([]);
