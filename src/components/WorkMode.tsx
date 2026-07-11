@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { X, Crop, Send, Loader2, MonitorUp, Trash2 } from "lucide-react";
+import { X, Send, Loader2, MonitorUp, Camera, Trash2, Minus, Move, Crop, ChevronUp } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 interface Props {
@@ -11,27 +11,45 @@ interface Props {
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/jarvis-chat`;
 
 type Rect = { x: number; y: number; w: number; h: number };
-type QA = { q: string; a: string; loading?: boolean };
+type Shot = { id: number; url: string; label: string };
+type QA = { q: string; a: string; loading?: boolean; thumb?: string };
 
 const WorkMode = ({ isActive, onExit, onSpeak }: Props) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const widgetRef = useRef<HTMLDivElement>(null);
   const [sharing, setSharing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [rect, setRect] = useState<Rect | null>(null);
-  const [drawing, setDrawing] = useState<Rect | null>(null);
+  const [minimized, setMinimized] = useState(false);
+  const [pos, setPos] = useState({ x: 24, y: 100 });
+  const [dragging, setDragging] = useState<{ dx: number; dy: number } | null>(null);
   const [question, setQuestion] = useState("");
   const [history, setHistory] = useState<QA[]>([]);
   const [busy, setBusy] = useState(false);
+  const [shots, setShots] = useState<Shot[]>([]);
+  const [activeShotId, setActiveShotId] = useState<number | null>(null);
+  const [sessionStart] = useState(Date.now());
+  const [elapsed, setElapsed] = useState("00:00");
+  const [cropMode, setCropMode] = useState(false);
+  const [drawing, setDrawing] = useState<Rect | null>(null);
+  const cropContainerRef = useRef<HTMLDivElement>(null);
+
+  // Session timer
+  useEffect(() => {
+    if (!isActive) return;
+    const t = setInterval(() => {
+      const s = Math.floor((Date.now() - sessionStart) / 1000);
+      const m = Math.floor(s / 60).toString().padStart(2, "0");
+      const ss = (s % 60).toString().padStart(2, "0");
+      setElapsed(`${m}:${ss}`);
+    }, 1000);
+    return () => clearInterval(t);
+  }, [isActive, sessionStart]);
 
   const startShare = useCallback(async () => {
     setError(null);
     try {
-      const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: { frameRate: 15 },
-        audio: false,
-      });
+      const stream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: 15 }, audio: false });
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -51,60 +69,45 @@ const WorkMode = ({ isActive, onExit, onSpeak }: Props) => {
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
     setSharing(false);
-    setRect(null);
   }, []);
 
   useEffect(() => {
     if (!isActive) {
       stopShare();
       setHistory([]);
+      setShots([]);
       setQuestion("");
       setError(null);
+      setActiveShotId(null);
+      setCropMode(false);
     }
   }, [isActive, stopShare]);
 
   useEffect(() => () => stopShare(), [stopShare]);
 
-  // Drawing handlers on the video overlay
-  const getPos = (e: React.PointerEvent) => {
-    const el = e.currentTarget as HTMLDivElement;
-    const r = el.getBoundingClientRect();
-    return { x: e.clientX - r.left, y: e.clientY - r.top, w: r.width, h: r.height };
-  };
-  const onDown = (e: React.PointerEvent) => {
-    if (!sharing) return;
+  // Drag widget
+  const onDragStart = (e: React.PointerEvent) => {
+    if (!widgetRef.current) return;
+    const r = widgetRef.current.getBoundingClientRect();
+    setDragging({ dx: e.clientX - r.left, dy: e.clientY - r.top });
     (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
-    const p = getPos(e);
-    setDrawing({ x: p.x, y: p.y, w: 0, h: 0 });
-    setRect(null);
   };
-  const onMove = (e: React.PointerEvent) => {
-    if (!drawing) return;
-    const p = getPos(e);
-    setDrawing({ x: drawing.x, y: drawing.y, w: p.x - drawing.x, h: p.y - drawing.y });
+  const onDragMove = (e: React.PointerEvent) => {
+    if (!dragging) return;
+    const nx = Math.max(4, Math.min(window.innerWidth - 60, e.clientX - dragging.dx));
+    const ny = Math.max(4, Math.min(window.innerHeight - 60, e.clientY - dragging.dy));
+    setPos({ x: nx, y: ny });
   };
-  const onUp = () => {
-    if (!drawing) return;
-    const norm: Rect = {
-      x: Math.min(drawing.x, drawing.x + drawing.w),
-      y: Math.min(drawing.y, drawing.y + drawing.h),
-      w: Math.abs(drawing.w),
-      h: Math.abs(drawing.h),
-    };
-    setDrawing(null);
-    if (norm.w > 8 && norm.h > 8) setRect(norm);
-  };
+  const onDragEnd = () => setDragging(null);
 
-  // Capture frame; optionally crop
+  // Capture full frame or crop
   const captureFrame = (crop?: Rect, boxSize?: { w: number; h: number }): string | null => {
     const video = videoRef.current;
     if (!video || !video.videoWidth) return null;
-    const vw = video.videoWidth;
-    const vh = video.videoHeight;
+    const vw = video.videoWidth, vh = video.videoHeight;
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     if (!ctx) return null;
-
     if (crop && boxSize) {
       const sx = (crop.x / boxSize.w) * vw;
       const sy = (crop.y / boxSize.h) * vh;
@@ -123,29 +126,67 @@ const WorkMode = ({ isActive, onExit, onSpeak }: Props) => {
     return canvas.toDataURL("image/jpeg", 0.82);
   };
 
-  const ask = async () => {
-    if (!sharing || busy) return;
-    const q = question.trim() || (rect ? "Explain what's inside this highlighted region." : "Explain what's on my screen and what I should focus on.");
-    const boxSize = containerRef.current ? { w: containerRef.current.clientWidth, h: containerRef.current.clientHeight } : null;
-    const imgs: string[] = [];
-    // Always include full screen for context
-    const full = captureFrame();
-    if (full) imgs.push(full);
-    if (rect && boxSize) {
-      const cropped = captureFrame(rect, boxSize);
-      if (cropped) imgs.push(cropped);
-    }
-    if (!imgs.length) { setError("No frame captured yet"); return; }
+  const takeScreenshot = () => {
+    if (!sharing) { setError("Start screen share first"); return; }
+    const url = captureFrame();
+    if (!url) { setError("Capture failed"); return; }
+    const s: Shot = { id: Date.now(), url, label: `SHOT ${shots.length + 1}` };
+    setShots((p) => [...p, s]);
+    setActiveShotId(s.id);
+    setError(null);
+  };
 
+  // Crop overlay handlers
+  const getPos = (e: React.PointerEvent) => {
+    const el = e.currentTarget as HTMLDivElement;
+    const r = el.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  };
+  const onCropDown = (e: React.PointerEvent) => {
+    (e.currentTarget as HTMLDivElement).setPointerCapture(e.pointerId);
+    const p = getPos(e);
+    setDrawing({ x: p.x, y: p.y, w: 0, h: 0 });
+  };
+  const onCropMove = (e: React.PointerEvent) => {
+    if (!drawing) return;
+    const p = getPos(e);
+    setDrawing({ x: drawing.x, y: drawing.y, w: p.x - drawing.x, h: p.y - drawing.y });
+  };
+  const onCropUp = () => {
+    if (!drawing || !cropContainerRef.current) { setDrawing(null); return; }
+    const norm: Rect = {
+      x: Math.min(drawing.x, drawing.x + drawing.w),
+      y: Math.min(drawing.y, drawing.y + drawing.h),
+      w: Math.abs(drawing.w),
+      h: Math.abs(drawing.h),
+    };
+    setDrawing(null);
+    if (norm.w < 10 || norm.h < 10) return;
+    const box = { w: cropContainerRef.current.clientWidth, h: cropContainerRef.current.clientHeight };
+    const url = captureFrame(norm, box);
+    if (url) {
+      const s: Shot = { id: Date.now(), url, label: `CROP ${shots.length + 1}` };
+      setShots((p) => [...p, s]);
+      setActiveShotId(s.id);
+    }
+    setCropMode(false);
+  };
+
+  const ask = async () => {
+    if (busy) return;
+    const activeShot = shots.find((s) => s.id === activeShotId);
+    const q = question.trim() || (activeShot ? "Explain what's in this screenshot and what I should do." : "What can you help me with, sir?");
     setBusy(true);
     setQuestion("");
-    setHistory((h) => [...h, { q, a: "", loading: true }]);
+    const thumb = activeShot?.url;
+    setHistory((h) => [...h, { q, a: "", loading: true, thumb }]);
 
     try {
       const content: any[] = [
-        { type: "text", text: `You are in WORK MODE, helping the user with what's on their shared screen. Be concise (under 60 words), practical, direct. ${rect ? "The second image is the region the user highlighted — focus your explanation there." : ""}\n\nUser question: ${q}` },
-        ...imgs.map((url) => ({ type: "image_url", image_url: { url } })),
+        { type: "text", text: `You are in WORK MODE — a floating desktop assistant helping the user with their tasks. Be concise (under 60 words), practical, actionable. Suggest concrete next steps.\n\nUser: ${q}` },
       ];
+      if (activeShot) content.push({ type: "image_url", image_url: { url: activeShot.url } });
+
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -154,8 +195,7 @@ const WorkMode = ({ isActive, onExit, onSpeak }: Props) => {
       if (!resp.ok || !resp.body) throw new Error(`Request failed (${resp.status})`);
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
-      let acc = "";
-      let buf = "";
+      let acc = "", buf = "";
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
@@ -173,25 +213,25 @@ const WorkMode = ({ isActive, onExit, onSpeak }: Props) => {
             if (delta) {
               acc += delta;
               setHistory((h) => {
-                const copy = [...h];
-                copy[copy.length - 1] = { q, a: acc, loading: true };
-                return copy;
+                const c = [...h];
+                c[c.length - 1] = { ...c[c.length - 1], a: acc, loading: true };
+                return c;
               });
             }
           } catch {}
         }
       }
       setHistory((h) => {
-        const copy = [...h];
-        copy[copy.length - 1] = { q, a: acc, loading: false };
-        return copy;
+        const c = [...h];
+        c[c.length - 1] = { ...c[c.length - 1], a: acc, loading: false };
+        return c;
       });
       if (acc) onSpeak(acc);
     } catch (e: any) {
       setHistory((h) => {
-        const copy = [...h];
-        copy[copy.length - 1] = { q, a: `Systems offline: ${e?.message || "error"}`, loading: false };
-        return copy;
+        const c = [...h];
+        c[c.length - 1] = { ...c[c.length - 1], a: `Systems offline: ${e?.message || "error"}`, loading: false };
+        return c;
       });
     } finally {
       setBusy(false);
@@ -200,139 +240,222 @@ const WorkMode = ({ isActive, onExit, onSpeak }: Props) => {
 
   if (!isActive) return null;
 
-  return (
-    <div className="fixed inset-0 z-[80] bg-background/95 backdrop-blur-sm animate-fade-in flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-primary/30 bg-card/60">
-        <div className="flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          <div className="font-orbitron text-sm tracking-[0.3em] text-primary">WORK MODE // J.A.R.V.I.S ASSIST</div>
+  // Minimized: just logo
+  if (minimized) {
+    return (
+      <div
+        ref={widgetRef}
+        className="fixed z-[80] select-none"
+        style={{ left: pos.x, top: pos.y }}
+      >
+        <div
+          onPointerDown={onDragStart}
+          onPointerMove={onDragMove}
+          onPointerUp={onDragEnd}
+          onDoubleClick={() => setMinimized(false)}
+          className="relative w-14 h-14 rounded-full border-2 border-primary/70 bg-background/80 backdrop-blur-md flex items-center justify-center cursor-move animate-arc-pulse group"
+          title="Double-click to expand"
+        >
+          <div className="absolute inset-1 rounded-full border border-primary/40 animate-rotate-slow" />
+          <div className="absolute inset-2 rounded-full border border-primary/30 animate-rotate-reverse" />
+          <div className="w-4 h-4 rounded-full bg-primary shadow-[0_0_12px_hsl(195_100%_60%)]" />
+          <button
+            onClick={(e) => { e.stopPropagation(); setMinimized(false); }}
+            className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-background border border-primary/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition"
+          >
+            <ChevronUp className="w-3 h-3 text-primary" />
+          </button>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="mt-1 text-center font-mono text-[9px] tracking-widest text-primary/70">{elapsed}</div>
+      </div>
+    );
+  }
+
+  const activeShot = shots.find((s) => s.id === activeShotId);
+
+  return (
+    <>
+      {/* Hidden video for capture */}
+      <video ref={videoRef} className="hidden" playsInline muted />
+
+      {/* Crop overlay (fullscreen when active) */}
+      {cropMode && sharing && (
+        <div className="fixed inset-0 z-[90] bg-background/95 backdrop-blur-sm flex flex-col animate-fade-in">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-primary/30">
+            <div className="font-mono text-xs tracking-widest text-primary">▸ HIGHLIGHT REGION</div>
+            <button onClick={() => setCropMode(false)} className="text-xs font-mono text-muted-foreground hover:text-primary">CANCEL</button>
+          </div>
+          <div
+            ref={cropContainerRef}
+            className="flex-1 relative bg-black/60 cursor-crosshair"
+            onPointerDown={onCropDown}
+            onPointerMove={onCropMove}
+            onPointerUp={onCropUp}
+          >
+            {videoRef.current && (
+              <img
+                src={captureFrame() || ""}
+                alt="screen"
+                className="w-full h-full object-contain pointer-events-none"
+              />
+            )}
+            {drawing && (() => {
+              const r = {
+                x: Math.min(drawing.x, drawing.x + drawing.w),
+                y: Math.min(drawing.y, drawing.y + drawing.h),
+                w: Math.abs(drawing.w), h: Math.abs(drawing.h),
+              };
+              return (
+                <div className="absolute border-2 border-primary pointer-events-none"
+                  style={{ left: r.x, top: r.y, width: r.w, height: r.h,
+                    boxShadow: "0 0 0 9999px hsl(220 30% 3% / 0.5), 0 0 20px hsl(195 100% 50% / 0.6)" }} />
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
+      {/* Floating widget */}
+      <div
+        ref={widgetRef}
+        className="fixed z-[80] w-[340px] rounded-lg border border-primary/40 bg-background/85 backdrop-blur-xl shadow-[0_0_40px_hsl(195_100%_50%/0.25)] animate-fade-in overflow-hidden"
+        style={{ left: pos.x, top: pos.y }}
+      >
+        {/* Header (drag handle) */}
+        <div
+          onPointerDown={onDragStart}
+          onPointerMove={onDragMove}
+          onPointerUp={onDragEnd}
+          className="flex items-center justify-between px-3 py-2 border-b border-primary/30 bg-card/70 cursor-move"
+        >
+          <div className="flex items-center gap-2">
+            <div className="relative w-6 h-6 rounded-full border border-primary/70 flex items-center justify-center">
+              <div className="absolute inset-0.5 rounded-full border border-primary/40 animate-rotate-slow" />
+              <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_6px_hsl(195_100%_60%)]" />
+            </div>
+            <div className="font-orbitron text-[10px] tracking-[0.3em] text-primary">WORK MODE</div>
+            <Move className="w-3 h-3 text-muted-foreground/60" />
+          </div>
+          <div className="flex items-center gap-1">
+            <button onClick={() => setMinimized(true)} className="p-1 text-muted-foreground hover:text-primary" title="Minimise to logo">
+              <Minus className="w-3.5 h-3.5" />
+            </button>
+            <button onClick={onExit} className="p-1 text-muted-foreground hover:text-destructive" title="Exit (mode end)">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Compact stats */}
+        <div className="grid grid-cols-3 gap-px bg-primary/20 border-b border-primary/20">
+          <div className="bg-card/60 px-2 py-1.5 text-center">
+            <div className="font-mono text-[8px] tracking-widest text-muted-foreground">SESSION</div>
+            <div className="font-mono text-xs text-primary">{elapsed}</div>
+          </div>
+          <div className="bg-card/60 px-2 py-1.5 text-center">
+            <div className="font-mono text-[8px] tracking-widest text-muted-foreground">FEED</div>
+            <div className={`font-mono text-xs ${sharing ? "text-primary" : "text-muted-foreground"}`}>{sharing ? "LIVE" : "OFF"}</div>
+          </div>
+          <div className="bg-card/60 px-2 py-1.5 text-center">
+            <div className="font-mono text-[8px] tracking-widest text-muted-foreground">SHOTS</div>
+            <div className="font-mono text-xs text-primary">{shots.length.toString().padStart(2, "0")}</div>
+          </div>
+        </div>
+
+        {/* Controls */}
+        <div className="grid grid-cols-3 gap-1 p-2 border-b border-primary/20">
           {!sharing ? (
-            <button onClick={startShare} className="flex items-center gap-2 px-3 py-1.5 text-xs font-mono border border-primary/50 text-primary hover:bg-primary/10 rounded">
-              <MonitorUp className="w-3.5 h-3.5" /> START SCREEN SHARE
+            <button onClick={startShare} className="col-span-3 flex items-center justify-center gap-1.5 px-2 py-1.5 text-[10px] font-mono tracking-widest border border-primary/50 text-primary hover:bg-primary/10 rounded">
+              <MonitorUp className="w-3 h-3" /> START SCREEN SHARE
             </button>
           ) : (
-            <button onClick={stopShare} className="flex items-center gap-2 px-3 py-1.5 text-xs font-mono border border-destructive/50 text-destructive hover:bg-destructive/10 rounded">
-              <Trash2 className="w-3.5 h-3.5" /> STOP SHARE
-            </button>
+            <>
+              <button onClick={takeScreenshot} className="flex items-center justify-center gap-1 px-2 py-1.5 text-[10px] font-mono tracking-wider border border-primary/50 text-primary hover:bg-primary/10 rounded">
+                <Camera className="w-3 h-3" /> SNAP
+              </button>
+              <button onClick={() => setCropMode(true)} className="flex items-center justify-center gap-1 px-2 py-1.5 text-[10px] font-mono tracking-wider border border-primary/50 text-primary hover:bg-primary/10 rounded">
+                <Crop className="w-3 h-3" /> CROP
+              </button>
+              <button onClick={stopShare} className="flex items-center justify-center gap-1 px-2 py-1.5 text-[10px] font-mono tracking-wider border border-destructive/50 text-destructive hover:bg-destructive/10 rounded">
+                <Trash2 className="w-3 h-3" /> STOP
+              </button>
+            </>
           )}
-          <button onClick={onExit} className="flex items-center gap-2 px-3 py-1.5 text-xs font-mono border border-border text-muted-foreground hover:text-primary hover:border-primary/50 rounded">
-            <X className="w-3.5 h-3.5" /> EXIT (mode end)
+        </div>
+
+        {/* Shot strip */}
+        {shots.length > 0 && (
+          <div className="flex gap-1 p-2 overflow-x-auto border-b border-primary/20 bg-black/20">
+            {shots.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => setActiveShotId(s.id === activeShotId ? null : s.id)}
+                className={`relative flex-shrink-0 w-16 h-10 rounded overflow-hidden border transition ${s.id === activeShotId ? "border-primary shadow-[0_0_8px_hsl(195_100%_50%/0.6)]" : "border-primary/30 opacity-70 hover:opacity-100"}`}
+                title={s.label}
+              >
+                <img src={s.url} alt={s.label} className="w-full h-full object-cover" />
+              </button>
+            ))}
+            {activeShot && (
+              <button
+                onClick={() => setShots((p) => p.filter((x) => x.id !== activeShot.id))}
+                className="flex-shrink-0 w-6 h-10 flex items-center justify-center text-destructive/70 hover:text-destructive"
+                title="Delete active shot"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Chat log */}
+        <div className="max-h-[240px] overflow-y-auto px-3 py-2 space-y-3 bg-background/40">
+          {history.length === 0 && (
+            <div className="text-[11px] text-muted-foreground font-rajdhani leading-relaxed">
+              Share your screen, snap or crop a region, then ask — I'll explain, research, or plan your next step. Shrink your main chat aside; this floats above everything, sir.
+            </div>
+          )}
+          {history.map((qa, i) => (
+            <div key={i} className="space-y-1">
+              {qa.thumb && <img src={qa.thumb} alt="ctx" className="w-full max-h-24 object-cover rounded border border-primary/30" />}
+              <div className="text-[9px] font-mono text-primary/70 tracking-widest">▸ YOU</div>
+              <div className="text-xs text-foreground/90">{qa.q}</div>
+              <div className="text-[9px] font-mono text-primary/70 tracking-widest pt-0.5">▸ JARVIS</div>
+              <div className="text-xs text-foreground/90 prose prose-invert prose-sm max-w-none">
+                {qa.loading && !qa.a
+                  ? <span className="inline-flex items-center gap-1.5 text-muted-foreground"><Loader2 className="w-3 h-3 animate-spin" /> analysing…</span>
+                  : <ReactMarkdown>{qa.a}</ReactMarkdown>}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Input */}
+        <div className="border-t border-primary/20 p-2 space-y-1.5 bg-card/50">
+          {error && <div className="text-[10px] font-mono text-destructive">{error}</div>}
+          {activeShot && (
+            <div className="text-[9px] font-mono text-primary/70 tracking-widest">▸ CONTEXT: {activeShot.label}</div>
+          )}
+          <textarea
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); ask(); } }}
+            placeholder={activeShot ? "Ask about this shot…" : "Ask JARVIS anything…"}
+            rows={2}
+            disabled={busy}
+            className="w-full resize-none bg-background/60 border border-primary/30 rounded px-2 py-1.5 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary disabled:opacity-50"
+          />
+          <button
+            onClick={ask}
+            disabled={busy}
+            className="w-full flex items-center justify-center gap-1.5 py-1.5 text-[10px] font-mono tracking-widest border border-primary bg-primary/10 text-primary hover:bg-primary/20 disabled:opacity-40 rounded"
+          >
+            {busy ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
+            {busy ? "ANALYSING" : "ASK JARVIS"}
           </button>
         </div>
       </div>
-
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left: shared screen viewport with drawing */}
-        <div className="flex-1 relative bg-black/60 flex items-center justify-center overflow-hidden">
-          {!sharing && (
-            <div className="text-center max-w-md px-6">
-              <div className="font-orbitron text-primary text-lg mb-3">Awaiting screen share</div>
-              <p className="text-sm text-muted-foreground mb-6 font-rajdhani">
-                Click <span className="text-primary">START SCREEN SHARE</span> and pick a tab, window, or your entire screen. Then drag on the video to highlight anything you want me to explain, sir.
-              </p>
-              {error && <div className="text-xs text-destructive font-mono">{error}</div>}
-            </div>
-          )}
-          {sharing && (
-            <div
-              ref={containerRef}
-              className="relative w-full h-full cursor-crosshair select-none"
-              onPointerDown={onDown}
-              onPointerMove={onMove}
-              onPointerUp={onUp}
-            >
-              <video ref={videoRef} className="w-full h-full object-contain pointer-events-none" playsInline muted />
-              {/* Highlight rect */}
-              {(drawing || rect) && (() => {
-                const r = drawing
-                  ? { x: Math.min(drawing.x, drawing.x + drawing.w), y: Math.min(drawing.y, drawing.y + drawing.h), w: Math.abs(drawing.w), h: Math.abs(drawing.h) }
-                  : rect!;
-                return (
-                  <div
-                    className="absolute border-2 border-primary pointer-events-none"
-                    style={{
-                      left: r.x, top: r.y, width: r.w, height: r.h,
-                      boxShadow: "0 0 0 9999px hsl(220 30% 3% / 0.35), 0 0 20px hsl(195 100% 50% / 0.6)",
-                    }}
-                  >
-                    <div className="absolute -top-6 left-0 font-mono text-[10px] tracking-widest text-primary bg-background/80 px-1.5 py-0.5 border border-primary/40">
-                      TARGETED REGION
-                    </div>
-                    <div className="absolute -top-1 -left-1 w-3 h-3 border-l-2 border-t-2 border-primary" />
-                    <div className="absolute -top-1 -right-1 w-3 h-3 border-r-2 border-t-2 border-primary" />
-                    <div className="absolute -bottom-1 -left-1 w-3 h-3 border-l-2 border-b-2 border-primary" />
-                    <div className="absolute -bottom-1 -right-1 w-3 h-3 border-r-2 border-b-2 border-primary" />
-                  </div>
-                );
-              })()}
-              {rect && (
-                <button
-                  onClick={() => setRect(null)}
-                  className="absolute top-3 right-3 flex items-center gap-1.5 px-2 py-1 text-[10px] font-mono border border-primary/40 bg-background/70 text-primary hover:bg-primary/10 rounded"
-                >
-                  <Crop className="w-3 h-3" /> CLEAR SELECTION
-                </button>
-              )}
-              {/* Corner brackets */}
-              <div className="absolute top-2 left-2 w-6 h-6 border-l-2 border-t-2 border-primary/40 pointer-events-none" />
-              <div className="absolute top-2 right-2 w-6 h-6 border-r-2 border-t-2 border-primary/40 pointer-events-none" />
-              <div className="absolute bottom-2 left-2 w-6 h-6 border-l-2 border-b-2 border-primary/40 pointer-events-none" />
-              <div className="absolute bottom-2 right-2 w-6 h-6 border-r-2 border-b-2 border-primary/40 pointer-events-none" />
-            </div>
-          )}
-        </div>
-
-        {/* Right: assistant panel */}
-        <div className="w-[380px] border-l border-primary/30 bg-card/70 flex flex-col">
-          <div className="px-4 py-2 border-b border-primary/20 font-mono text-[10px] tracking-[0.3em] text-primary/80">
-            ▸ ANALYSIS FEED
-          </div>
-          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
-            {history.length === 0 && (
-              <div className="text-xs text-muted-foreground font-rajdhani leading-relaxed">
-                Share your screen, highlight anything unclear, then ask me a question. I'll explain, research, or summarise — like Mr. Stark's own assistant.
-              </div>
-            )}
-            {history.map((qa, i) => (
-              <div key={i} className="space-y-1.5">
-                <div className="text-[11px] font-mono text-primary/70 tracking-wider">▸ YOU</div>
-                <div className="text-sm text-foreground/90">{qa.q}</div>
-                <div className="text-[11px] font-mono text-primary/70 tracking-wider pt-1">▸ JARVIS</div>
-                <div className="text-sm text-foreground/90 prose prose-invert prose-sm max-w-none">
-                  {qa.loading && !qa.a ? (
-                    <span className="inline-flex items-center gap-2 text-muted-foreground"><Loader2 className="w-3 h-3 animate-spin" /> analysing…</span>
-                  ) : (
-                    <ReactMarkdown>{qa.a}</ReactMarkdown>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="border-t border-primary/20 p-3 space-y-2">
-            <textarea
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); ask(); } }}
-              placeholder={rect ? "Ask about the highlighted region…" : "Ask about what's on screen…"}
-              rows={2}
-              disabled={!sharing || busy}
-              className="w-full resize-none bg-background/60 border border-primary/30 rounded px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary disabled:opacity-50"
-            />
-            <button
-              onClick={ask}
-              disabled={!sharing || busy}
-              className="w-full flex items-center justify-center gap-2 py-2 text-xs font-mono tracking-widest border border-primary bg-primary/10 text-primary hover:bg-primary/20 disabled:opacity-40 disabled:cursor-not-allowed rounded"
-            >
-              {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-              {busy ? "ANALYSING" : rect ? "EXPLAIN SELECTION" : "ASK JARVIS"}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    </>
   );
 };
 
