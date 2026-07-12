@@ -370,6 +370,33 @@ const JarvisChat = () => {
     // Easter egg close
     const lowerMsg = msg.toLowerCase().replace(/[^a-z\s]/g, "").trim();
 
+    // Weather trigger — show telemetry card alongside normal AI response
+    if (/\b(weather|forecast|temperature|raining|sunny)\b/i.test(msg) || /天气|温度|下雨|气温/.test(msg)) {
+      const cityMatch = msg.match(/(?:in|at|for)\s+([A-Z][a-zA-Z\s]+?)(?:$|[?.,])/) ||
+                        msg.match(/([\u4e00-\u9fa5]+?)(?:的)?天气/);
+      const city = (cityMatch?.[1] || "Malibu").trim();
+      const conds: WeatherData["condition"][] = ["sunny", "cloudy", "rain", "windy"];
+      const cond = conds[Math.floor(Math.random() * conds.length)];
+      const baseTemp = 15 + Math.floor(Math.random() * 15);
+      const days = ["MON", "TUE", "WED", "THU", "FRI"];
+      setWeatherData({
+        city,
+        temp: baseTemp,
+        condition: cond,
+        high: baseTemp + 3,
+        low: baseTemp - 5,
+        humidity: 40 + Math.floor(Math.random() * 40),
+        wind: 5 + Math.floor(Math.random() * 20),
+        forecast: days.map(d => ({
+          day: d,
+          hi: baseTemp + Math.floor(Math.random() * 6 - 2),
+          lo: baseTemp - 4 + Math.floor(Math.random() * 4 - 2),
+          cond: conds[Math.floor(Math.random() * conds.length)],
+        })),
+      });
+    }
+
+
     // Helper: EDITH speaks with calm female British voice
     // === EDITH MODE ===
     // Activation
