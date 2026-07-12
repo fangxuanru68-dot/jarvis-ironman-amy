@@ -34,7 +34,7 @@ const LiveModeOverlay = ({ isActive, isListening, isSpeaking, interimText, lastU
   const mm = String(Math.floor(elapsed / 60)).padStart(2, "0");
   const ss = String(elapsed % 60).padStart(2, "0");
   const status = isSpeaking ? "J.A.R.V.I.S. SPEAKING" : isListening ? "LISTENING" : "STANDBY";
-  const statusColor = isSpeaking ? "hsl(45, 100%, 60%)" : isListening ? "hsl(160, 100%, 55%)" : "hsl(195, 100%, 60%)";
+  const statusColor = isSpeaking ? "hsl(195, 100%, 65%)" : isListening ? "hsl(200, 100%, 70%)" : "hsl(195, 100%, 55%)";
 
   return (
     <div className="fixed inset-0 z-[80] pointer-events-none">
