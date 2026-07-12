@@ -30,6 +30,8 @@ import EdithMode from "./EdithMode";
 import StudyMode from "./StudyMode";
 import WorkMode from "./WorkMode";
 import LiveModeOverlay from "./LiveModeOverlay";
+import WeatherWidget, { WeatherData } from "./WeatherWidget";
+import IncomingStarkCall from "./IncomingStarkCall";
 import spiderEmblem from "@/assets/spider-emblem.png";
 
 import tonyStark from "@/assets/tony-stark.png";
@@ -92,6 +94,9 @@ const JarvisChat = () => {
   const [liveModeActive, setLiveModeActive] = useState(false);
   const liveModeRef = useRef(false);
   const [liveInterim, setLiveInterim] = useState("");
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [starkCallActive, setStarkCallActive] = useState(false);
+  const [starkCallCount, setStarkCallCount] = useState(0);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clean up timer on unmount
@@ -225,16 +230,21 @@ const JarvisChat = () => {
     try { recognition.start(); setIsListening(true); } catch {}
   }, []);
 
-  // Auto-restart listening after TTS finishes in classic voice chat mode
+  // Auto-restart listening after TTS finishes in classic voice chat mode OR live mode
   const prevIsSpeakingRef = useRef(false);
   useEffect(() => {
-    if (prevIsSpeakingRef.current && !isSpeaking && voiceChatModeRef.current && !liveModeRef.current) {
-      setTimeout(() => {
-        if (voiceChatModeRef.current && !liveModeRef.current) startListening();
-      }, 500);
+    if (prevIsSpeakingRef.current && !isSpeaking) {
+      if (liveModeRef.current) {
+        // In live mode, force-restart continuous listening after JARVIS finishes
+        setTimeout(() => { if (liveModeRef.current) startLiveListening(); }, 350);
+      } else if (voiceChatModeRef.current) {
+        setTimeout(() => {
+          if (voiceChatModeRef.current && !liveModeRef.current) startListening();
+        }, 500);
+      }
     }
     prevIsSpeakingRef.current = isSpeaking;
-  }, [isSpeaking, startListening]);
+  }, [isSpeaking, startListening, startLiveListening]);
 
   const checkClassicTrigger = (text: string): string | null => {
     const lower = text.toLowerCase().trim();
@@ -359,6 +369,33 @@ const JarvisChat = () => {
 
     // Easter egg close
     const lowerMsg = msg.toLowerCase().replace(/[^a-z\s]/g, "").trim();
+
+    // Weather trigger — show telemetry card alongside normal AI response
+    if (/\b(weather|forecast|temperature|raining|sunny)\b/i.test(msg) || /天气|温度|下雨|气温/.test(msg)) {
+      const cityMatch = msg.match(/(?:in|at|for)\s+([A-Z][a-zA-Z\s]+?)(?:$|[?.,])/) ||
+                        msg.match(/([\u4e00-\u9fa5]+?)(?:的)?天气/);
+      const city = (cityMatch?.[1] || "Malibu").trim();
+      const conds: WeatherData["condition"][] = ["sunny", "cloudy", "rain", "windy"];
+      const cond = conds[Math.floor(Math.random() * conds.length)];
+      const baseTemp = 15 + Math.floor(Math.random() * 15);
+      const days = ["MON", "TUE", "WED", "THU", "FRI"];
+      setWeatherData({
+        city,
+        temp: baseTemp,
+        condition: cond,
+        high: baseTemp + 3,
+        low: baseTemp - 5,
+        humidity: 40 + Math.floor(Math.random() * 40),
+        wind: 5 + Math.floor(Math.random() * 20),
+        forecast: days.map(d => ({
+          day: d,
+          hi: baseTemp + Math.floor(Math.random() * 6 - 2),
+          lo: baseTemp - 4 + Math.floor(Math.random() * 4 - 2),
+          cond: conds[Math.floor(Math.random() * conds.length)],
+        })),
+      });
+    }
+
 
     // Helper: EDITH speaks with calm female British voice
     // === EDITH MODE ===
@@ -1266,6 +1303,7 @@ const JarvisChat = () => {
         faceBox={faceBox}
         handLandmarks={handLandmarks}
         onRemind={(msg) => { if (voiceEnabled) speak(msg); }}
+        onStarkAlert={(count) => { setStarkCallCount(count); setStarkCallActive(true); }}
       />
       <WorkMode
         isActive={workModeActive}
@@ -1291,6 +1329,15 @@ const JarvisChat = () => {
           if (voiceEnabled) speak(response);
         }}
       />
+
+      <WeatherWidget data={weatherData} onDismiss={() => setWeatherData(null)} />
+      <IncomingStarkCall
+        isActive={starkCallActive}
+        offenseCount={starkCallCount}
+        onClose={() => setStarkCallActive(false)}
+      />
+
+
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">

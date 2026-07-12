@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { AlertTriangle, Eye, Smartphone, ShieldAlert } from "lucide-react";
+import { AlertTriangle, Eye, Smartphone } from "lucide-react";
 
 type Landmark = { x: number; y: number; z: number };
 
@@ -10,6 +10,7 @@ interface StudyModeProps {
   faceBox: { x: number; y: number; w: number; h: number } | null;
   handLandmarks: Landmark[];
   onRemind: (text: string) => void;
+  onStarkAlert?: (offenseCount: number) => void;
 }
 
 type OffenseKind = "phone" | "head_down" | "away";
@@ -38,7 +39,7 @@ const LABELS: Record<OffenseKind, string> = {
   away: "GAZE LOST",
 };
 
-const StudyMode = ({ isActive, faceVisible, faceBox, handLandmarks, onRemind }: StudyModeProps) => {
+const StudyMode = ({ isActive, faceVisible, faceBox, handLandmarks, onRemind, onStarkAlert }: StudyModeProps) => {
   const [seconds, setSeconds] = useState(0);
   const [focusScore, setFocusScore] = useState(100);
   const [phoneOffenses, setPhoneOffenses] = useState(0);
@@ -124,14 +125,15 @@ const StudyMode = ({ isActive, faceVisible, faceBox, handLandmarks, onRemind }: 
   useEffect(() => {
     if (phoneOffenses >= 3 && !starkAlert) {
       setStarkAlert(true);
-      const msg = "Enough, Peter. That's three strikes on the phone. I've flagged this session and notified Mr. Stark.";
+      const msg = "Enough, Peter. That's three strikes on the phone. I've flagged this session and Mr. Stark is calling you now.";
       onRemind(msg);
-      toast.error("MR. STARK NOTIFIED", {
-        description: "Phone use exceeded threshold. Incident report dispatched.",
-        duration: 8000,
+      toast.error("INCOMING CALL: MR. STARK", {
+        description: "Phone use exceeded threshold. Answering incoming call...",
+        duration: 6000,
       });
+      onStarkAlert?.(phoneOffenses);
     }
-  }, [phoneOffenses, starkAlert, onRemind]);
+  }, [phoneOffenses, starkAlert, onRemind, onStarkAlert]);
 
   // Auto-dismiss alert banner
   useEffect(() => {
@@ -231,30 +233,7 @@ const StudyMode = ({ isActive, faceVisible, faceBox, handLandmarks, onRemind }: 
         </div>
       )}
 
-      {/* Stark escalation overlay */}
-      {starkAlert && (
-        <div className="absolute inset-0 flex items-center justify-center animate-fade-in">
-          <div className="absolute inset-0 bg-red-950/30 animate-pulse" />
-          <div className="relative w-[520px] bg-background/90 border-2 border-red-500 rounded-sm p-6 shadow-[0_0_60px_rgba(239,68,68,0.6)]">
-            <div className="flex items-center gap-3 mb-3">
-              <ShieldAlert className="w-8 h-8 text-red-500 animate-pulse" />
-              <div>
-                <div className="font-orbitron text-red-400 text-lg tracking-[0.3em]">INCIDENT REPORT</div>
-                <div className="font-mono text-[10px] text-red-300/70 tracking-widest">STARK INDUSTRIES / SECURE CHANNEL</div>
-              </div>
-            </div>
-            <div className="border-t border-red-500/30 pt-3 space-y-2 font-mono text-xs text-red-100">
-              <div className="flex justify-between"><span className="text-red-300/60">RECIPIENT</span><span>ANTHONY E. STARK</span></div>
-              <div className="flex justify-between"><span className="text-red-300/60">SUBJECT</span><span>P. PARKER — STUDY PROTOCOL BREACH</span></div>
-              <div className="flex justify-between"><span className="text-red-300/60">OFFENSES</span><span className="text-red-400 font-bold">PHONE × {phoneOffenses}</span></div>
-              <div className="flex justify-between"><span className="text-red-300/60">STATUS</span><span className="text-red-400">DELIVERED ✓</span></div>
-              <div className="pt-2 text-red-200/90 italic">
-                "Kid, I'm getting pings from your study session. We are going to have a talk about focus. — T.S."
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Stark call handled by parent via onStarkAlert → IncomingStarkCall overlay */}
 
       {/* Bottom hint */}
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 font-mono text-[10px] text-primary/50 tracking-[0.3em]">
