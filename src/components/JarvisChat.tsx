@@ -30,6 +30,8 @@ import EdithMode from "./EdithMode";
 import StudyMode from "./StudyMode";
 import WorkMode from "./WorkMode";
 import LiveModeOverlay from "./LiveModeOverlay";
+import WeatherWidget, { WeatherData } from "./WeatherWidget";
+import IncomingStarkCall from "./IncomingStarkCall";
 import spiderEmblem from "@/assets/spider-emblem.png";
 
 import tonyStark from "@/assets/tony-stark.png";
