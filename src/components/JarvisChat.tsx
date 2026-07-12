@@ -29,6 +29,7 @@ import NanotechAssemblyOverlay from "./NanotechAssemblyOverlay";
 import EdithMode from "./EdithMode";
 import StudyMode from "./StudyMode";
 import WorkMode from "./WorkMode";
+import LiveModeOverlay from "./LiveModeOverlay";
 import spiderEmblem from "@/assets/spider-emblem.png";
 
 import tonyStark from "@/assets/tony-stark.png";
