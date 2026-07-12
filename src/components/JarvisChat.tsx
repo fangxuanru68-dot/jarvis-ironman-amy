@@ -230,16 +230,21 @@ const JarvisChat = () => {
     try { recognition.start(); setIsListening(true); } catch {}
   }, []);
 
-  // Auto-restart listening after TTS finishes in classic voice chat mode
+  // Auto-restart listening after TTS finishes in classic voice chat mode OR live mode
   const prevIsSpeakingRef = useRef(false);
   useEffect(() => {
-    if (prevIsSpeakingRef.current && !isSpeaking && voiceChatModeRef.current && !liveModeRef.current) {
-      setTimeout(() => {
-        if (voiceChatModeRef.current && !liveModeRef.current) startListening();
-      }, 500);
+    if (prevIsSpeakingRef.current && !isSpeaking) {
+      if (liveModeRef.current) {
+        // In live mode, force-restart continuous listening after JARVIS finishes
+        setTimeout(() => { if (liveModeRef.current) startLiveListening(); }, 350);
+      } else if (voiceChatModeRef.current) {
+        setTimeout(() => {
+          if (voiceChatModeRef.current && !liveModeRef.current) startListening();
+        }, 500);
+      }
     }
     prevIsSpeakingRef.current = isSpeaking;
-  }, [isSpeaking, startListening]);
+  }, [isSpeaking, startListening, startLiveListening]);
 
   const checkClassicTrigger = (text: string): string | null => {
     const lower = text.toLowerCase().trim();
