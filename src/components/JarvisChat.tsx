@@ -430,6 +430,36 @@ const JarvisChat = () => {
       return;
     }
 
+    // Live Mode exit
+    if (liveModeRef.current && (lowerMsg.includes("mode end") || lowerMsg.includes("end mode") || lowerMsg.includes("挂断") || lowerMsg.includes("退出模式"))) {
+      liveModeRef.current = false;
+      setLiveModeActive(false);
+      setLiveInterim("");
+      try { recognitionRef.current?.stop(); } catch {}
+      setIsListening(false);
+      window.speechSynthesis.cancel();
+      const response = "Ending the call, sir. Line closed. A pleasure speaking with you.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Live Mode trigger — "live mode"
+    if (!liveModeRef.current && (lowerMsg === "live mode" || lowerMsg.includes("live mode") || lowerMsg.includes("语音通话") || lowerMsg.includes("打电话") || lowerMsg.includes("电话模式"))) {
+      liveModeRef.current = true;
+      setLiveModeActive(true);
+      setVoiceEnabled(true);
+      const response = "Live channel open, sir. The line is yours — speak whenever you please. Interrupt me any time; I shall yield the floor. Say 'mode end' to hang up.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      speak(response);
+      setTimeout(() => { if (liveModeRef.current) startLiveListening(); }, 400);
+      setIsLoading(false);
+      return;
+    }
+
     if (warModeActive && (lowerMsg.includes("war mode end") || lowerMsg.includes("war mode off") || lowerMsg.includes("end war mode"))) {
       setWarModeActive(false);
       const response = "War mode disengaged, sir. Targeting systems offline. Returning to standard operations.";
