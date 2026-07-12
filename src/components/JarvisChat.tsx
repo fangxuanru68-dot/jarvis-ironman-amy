@@ -1272,6 +1272,25 @@ const JarvisChat = () => {
         onExit={() => { setWorkModeActive(false); workModeRef.current = false; if (voiceEnabled) speak("Work mode disengaged, sir."); }}
         onSpeak={(t) => { if (voiceEnabled) speak(t); }}
       />
+      <LiveModeOverlay
+        isActive={liveModeActive}
+        isListening={isListening}
+        isSpeaking={isSpeaking}
+        interimText={liveInterim}
+        lastUserText={[...messages].reverse().find(m => m.role === "user")?.content || ""}
+        lastAssistantText={[...messages].reverse().find(m => m.role === "assistant")?.content || ""}
+        onExit={() => {
+          liveModeRef.current = false;
+          setLiveModeActive(false);
+          setLiveInterim("");
+          try { recognitionRef.current?.stop(); } catch {}
+          setIsListening(false);
+          window.speechSynthesis.cancel();
+          const response = "Line closed, sir.";
+          setMessages(prev => [...prev, { role: "assistant", content: response }]);
+          if (voiceEnabled) speak(response);
+        }}
+      />
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">
