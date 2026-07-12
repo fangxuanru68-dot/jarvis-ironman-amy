@@ -39,7 +39,7 @@ const LABELS: Record<OffenseKind, string> = {
   away: "GAZE LOST",
 };
 
-const StudyMode = ({ isActive, faceVisible, faceBox, handLandmarks, onRemind }: StudyModeProps) => {
+const StudyMode = ({ isActive, faceVisible, faceBox, handLandmarks, onRemind, onStarkAlert }: StudyModeProps) => {
   const [seconds, setSeconds] = useState(0);
   const [focusScore, setFocusScore] = useState(100);
   const [phoneOffenses, setPhoneOffenses] = useState(0);
