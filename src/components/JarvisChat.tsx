@@ -180,13 +180,57 @@ const JarvisChat = () => {
     startListening();
   }, [isListening, startListening]);
 
-  // Auto-restart listening after TTS finishes in voice chat mode
+  // Live Mode: continuous listening with barge-in
+  const startLiveListening = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+    if (recognitionRef.current) { try { recognitionRef.current.stop(); } catch {} }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "zh-CN";
+
+    recognition.onresult = (event: any) => {
+      let interim = "";
+      let finalText = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) finalText += event.results[i][0].transcript;
+        else interim += event.results[i][0].transcript;
+      }
+      // Barge-in: user started speaking while JARVIS was talking → cut TTS
+      if ((interim.trim().length > 1 || finalText.trim().length > 1) && window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+      }
+      setLiveInterim(interim || finalText);
+      if (finalText.trim()) {
+        setLiveInterim("");
+        setTimeout(() => sendMessage(finalText.trim()), 50);
+      }
+    };
+    recognition.onend = () => {
+      setIsListening(false);
+      // Auto-restart while in live mode
+      if (liveModeRef.current) {
+        setTimeout(() => { if (liveModeRef.current) startLiveListening(); }, 250);
+      }
+    };
+    recognition.onerror = (e: any) => {
+      setIsListening(false);
+      if (liveModeRef.current && e?.error !== "aborted") {
+        setTimeout(() => { if (liveModeRef.current) startLiveListening(); }, 600);
+      }
+    };
+    recognitionRef.current = recognition;
+    try { recognition.start(); setIsListening(true); } catch {}
+  }, []);
+
+  // Auto-restart listening after TTS finishes in classic voice chat mode
   const prevIsSpeakingRef = useRef(false);
   useEffect(() => {
-    if (prevIsSpeakingRef.current && !isSpeaking && voiceChatModeRef.current) {
-      // TTS just finished, restart listening after a short delay
+    if (prevIsSpeakingRef.current && !isSpeaking && voiceChatModeRef.current && !liveModeRef.current) {
       setTimeout(() => {
-        if (voiceChatModeRef.current) startListening();
+        if (voiceChatModeRef.current && !liveModeRef.current) startListening();
       }, 500);
     }
     prevIsSpeakingRef.current = isSpeaking;
