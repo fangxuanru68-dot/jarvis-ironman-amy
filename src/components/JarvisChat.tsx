@@ -1303,6 +1303,7 @@ const JarvisChat = () => {
         faceBox={faceBox}
         handLandmarks={handLandmarks}
         onRemind={(msg) => { if (voiceEnabled) speak(msg); }}
+        onStarkAlert={(count) => { setStarkCallCount(count); setStarkCallActive(true); }}
       />
       <WorkMode
         isActive={workModeActive}
