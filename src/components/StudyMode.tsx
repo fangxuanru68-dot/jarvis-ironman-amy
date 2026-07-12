@@ -10,6 +10,7 @@ interface StudyModeProps {
   faceBox: { x: number; y: number; w: number; h: number } | null;
   handLandmarks: Landmark[];
   onRemind: (text: string) => void;
+  onStarkAlert?: (offenseCount: number) => void;
 }
 
 type OffenseKind = "phone" | "head_down" | "away";
