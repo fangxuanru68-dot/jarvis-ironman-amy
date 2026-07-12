@@ -94,6 +94,9 @@ const JarvisChat = () => {
   const [liveModeActive, setLiveModeActive] = useState(false);
   const liveModeRef = useRef(false);
   const [liveInterim, setLiveInterim] = useState("");
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [starkCallActive, setStarkCallActive] = useState(false);
+  const [starkCallCount, setStarkCallCount] = useState(0);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clean up timer on unmount
