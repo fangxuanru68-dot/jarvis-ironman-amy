@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { AlertTriangle, Eye, Smartphone, ShieldAlert } from "lucide-react";
+import { AlertTriangle, Eye, Smartphone } from "lucide-react";
 
 type Landmark = { x: number; y: number; z: number };
 
