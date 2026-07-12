@@ -89,6 +89,9 @@ const JarvisChat = () => {
   const [handLandmarks, setHandLandmarks] = useState<Array<{ x: number; y: number; z: number }>>([]);
   const [voiceChatMode, setVoiceChatMode] = useState(false);
   const voiceChatModeRef = useRef(false);
+  const [liveModeActive, setLiveModeActive] = useState(false);
+  const liveModeRef = useRef(false);
+  const [liveInterim, setLiveInterim] = useState("");
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clean up timer on unmount
