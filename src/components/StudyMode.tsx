@@ -125,14 +125,15 @@ const StudyMode = ({ isActive, faceVisible, faceBox, handLandmarks, onRemind, on
   useEffect(() => {
     if (phoneOffenses >= 3 && !starkAlert) {
       setStarkAlert(true);
-      const msg = "Enough, Peter. That's three strikes on the phone. I've flagged this session and notified Mr. Stark.";
+      const msg = "Enough, Peter. That's three strikes on the phone. I've flagged this session and Mr. Stark is calling you now.";
       onRemind(msg);
-      toast.error("MR. STARK NOTIFIED", {
-        description: "Phone use exceeded threshold. Incident report dispatched.",
-        duration: 8000,
+      toast.error("INCOMING CALL: MR. STARK", {
+        description: "Phone use exceeded threshold. Answering incoming call...",
+        duration: 6000,
       });
+      onStarkAlert?.(phoneOffenses);
     }
-  }, [phoneOffenses, starkAlert, onRemind]);
+  }, [phoneOffenses, starkAlert, onRemind, onStarkAlert]);
 
   // Auto-dismiss alert banner
   useEffect(() => {
