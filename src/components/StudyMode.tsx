@@ -233,30 +233,7 @@ const StudyMode = ({ isActive, faceVisible, faceBox, handLandmarks, onRemind, on
         </div>
       )}
 
-      {/* Stark escalation overlay */}
-      {starkAlert && (
-        <div className="absolute inset-0 flex items-center justify-center animate-fade-in">
-          <div className="absolute inset-0 bg-red-950/30 animate-pulse" />
-          <div className="relative w-[520px] bg-background/90 border-2 border-red-500 rounded-sm p-6 shadow-[0_0_60px_rgba(239,68,68,0.6)]">
-            <div className="flex items-center gap-3 mb-3">
-              <ShieldAlert className="w-8 h-8 text-red-500 animate-pulse" />
-              <div>
-                <div className="font-orbitron text-red-400 text-lg tracking-[0.3em]">INCIDENT REPORT</div>
-                <div className="font-mono text-[10px] text-red-300/70 tracking-widest">STARK INDUSTRIES / SECURE CHANNEL</div>
-              </div>
-            </div>
-            <div className="border-t border-red-500/30 pt-3 space-y-2 font-mono text-xs text-red-100">
-              <div className="flex justify-between"><span className="text-red-300/60">RECIPIENT</span><span>ANTHONY E. STARK</span></div>
-              <div className="flex justify-between"><span className="text-red-300/60">SUBJECT</span><span>P. PARKER — STUDY PROTOCOL BREACH</span></div>
-              <div className="flex justify-between"><span className="text-red-300/60">OFFENSES</span><span className="text-red-400 font-bold">PHONE × {phoneOffenses}</span></div>
-              <div className="flex justify-between"><span className="text-red-300/60">STATUS</span><span className="text-red-400">DELIVERED ✓</span></div>
-              <div className="pt-2 text-red-200/90 italic">
-                "Kid, I'm getting pings from your study session. We are going to have a talk about focus. — T.S."
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Stark call handled by parent via onStarkAlert → IncomingStarkCall overlay */}
 
       {/* Bottom hint */}
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 font-mono text-[10px] text-primary/50 tracking-[0.3em]">
