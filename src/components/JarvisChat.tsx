@@ -29,6 +29,7 @@ import NanotechAssemblyOverlay from "./NanotechAssemblyOverlay";
 import EdithMode from "./EdithMode";
 import StudyMode from "./StudyMode";
 import WorkMode from "./WorkMode";
+import LiveModeOverlay from "./LiveModeOverlay";
 import spiderEmblem from "@/assets/spider-emblem.png";
 
 import tonyStark from "@/assets/tony-stark.png";
@@ -88,6 +89,9 @@ const JarvisChat = () => {
   const [handLandmarks, setHandLandmarks] = useState<Array<{ x: number; y: number; z: number }>>([]);
   const [voiceChatMode, setVoiceChatMode] = useState(false);
   const voiceChatModeRef = useRef(false);
+  const [liveModeActive, setLiveModeActive] = useState(false);
+  const liveModeRef = useRef(false);
+  const [liveInterim, setLiveInterim] = useState("");
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clean up timer on unmount
@@ -176,13 +180,57 @@ const JarvisChat = () => {
     startListening();
   }, [isListening, startListening]);
 
-  // Auto-restart listening after TTS finishes in voice chat mode
+  // Live Mode: continuous listening with barge-in
+  const startLiveListening = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+    if (recognitionRef.current) { try { recognitionRef.current.stop(); } catch {} }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "zh-CN";
+
+    recognition.onresult = (event: any) => {
+      let interim = "";
+      let finalText = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        if (event.results[i].isFinal) finalText += event.results[i][0].transcript;
+        else interim += event.results[i][0].transcript;
+      }
+      // Barge-in: user started speaking while JARVIS was talking → cut TTS
+      if ((interim.trim().length > 1 || finalText.trim().length > 1) && window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+      }
+      setLiveInterim(interim || finalText);
+      if (finalText.trim()) {
+        setLiveInterim("");
+        setTimeout(() => sendMessage(finalText.trim()), 50);
+      }
+    };
+    recognition.onend = () => {
+      setIsListening(false);
+      // Auto-restart while in live mode
+      if (liveModeRef.current) {
+        setTimeout(() => { if (liveModeRef.current) startLiveListening(); }, 250);
+      }
+    };
+    recognition.onerror = (e: any) => {
+      setIsListening(false);
+      if (liveModeRef.current && e?.error !== "aborted") {
+        setTimeout(() => { if (liveModeRef.current) startLiveListening(); }, 600);
+      }
+    };
+    recognitionRef.current = recognition;
+    try { recognition.start(); setIsListening(true); } catch {}
+  }, []);
+
+  // Auto-restart listening after TTS finishes in classic voice chat mode
   const prevIsSpeakingRef = useRef(false);
   useEffect(() => {
-    if (prevIsSpeakingRef.current && !isSpeaking && voiceChatModeRef.current) {
-      // TTS just finished, restart listening after a short delay
+    if (prevIsSpeakingRef.current && !isSpeaking && voiceChatModeRef.current && !liveModeRef.current) {
       setTimeout(() => {
-        if (voiceChatModeRef.current) startListening();
+        if (voiceChatModeRef.current && !liveModeRef.current) startListening();
       }, 500);
     }
     prevIsSpeakingRef.current = isSpeaking;
@@ -378,6 +426,36 @@ const JarvisChat = () => {
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
       setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
       speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Live Mode exit
+    if (liveModeRef.current && (lowerMsg.includes("mode end") || lowerMsg.includes("end mode") || lowerMsg.includes("挂断") || lowerMsg.includes("退出模式"))) {
+      liveModeRef.current = false;
+      setLiveModeActive(false);
+      setLiveInterim("");
+      try { recognitionRef.current?.stop(); } catch {}
+      setIsListening(false);
+      window.speechSynthesis.cancel();
+      const response = "Ending the call, sir. Line closed. A pleasure speaking with you.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response);
+      setIsLoading(false);
+      return;
+    }
+
+    // Live Mode trigger — "live mode"
+    if (!liveModeRef.current && (lowerMsg === "live mode" || lowerMsg.includes("live mode") || lowerMsg.includes("语音通话") || lowerMsg.includes("打电话") || lowerMsg.includes("电话模式"))) {
+      liveModeRef.current = true;
+      setLiveModeActive(true);
+      setVoiceEnabled(true);
+      const response = "Live channel open, sir. The line is yours — speak whenever you please. Interrupt me any time; I shall yield the floor. Say 'mode end' to hang up.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      speak(response);
+      setTimeout(() => { if (liveModeRef.current) startLiveListening(); }, 400);
       setIsLoading(false);
       return;
     }
@@ -1193,6 +1271,25 @@ const JarvisChat = () => {
         isActive={workModeActive}
         onExit={() => { setWorkModeActive(false); workModeRef.current = false; if (voiceEnabled) speak("Work mode disengaged, sir."); }}
         onSpeak={(t) => { if (voiceEnabled) speak(t); }}
+      />
+      <LiveModeOverlay
+        isActive={liveModeActive}
+        isListening={isListening}
+        isSpeaking={isSpeaking}
+        interimText={liveInterim}
+        lastUserText={[...messages].reverse().find(m => m.role === "user")?.content || ""}
+        lastAssistantText={[...messages].reverse().find(m => m.role === "assistant")?.content || ""}
+        onExit={() => {
+          liveModeRef.current = false;
+          setLiveModeActive(false);
+          setLiveInterim("");
+          try { recognitionRef.current?.stop(); } catch {}
+          setIsListening(false);
+          window.speechSynthesis.cancel();
+          const response = "Line closed, sir.";
+          setMessages(prev => [...prev, { role: "assistant", content: response }]);
+          if (voiceEnabled) speak(response);
+        }}
       />
 
       {/* Watermark */}
