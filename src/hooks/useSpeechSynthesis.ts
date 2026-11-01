@@ -4,7 +4,7 @@ export const useSpeechSynthesis = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  const speak = useCallback((text: string) => {
+  const speak = useCallback((text: string, profile: "jarvis" | "doom" = "jarvis") => {
     // Strip markdown for cleaner speech
     const clean = text
       .replace(/```[\s\S]*?```/g, "code block")
@@ -22,8 +22,8 @@ export const useSpeechSynthesis = () => {
 
     const utterance = new SpeechSynthesisUtterance(clean);
     // More JARVIS-like: slightly lower pitch, measured pace, precise diction
-    utterance.rate = 0.95;
-    utterance.pitch = 0.85;
+    utterance.rate = profile === "doom" ? 0.88 : 0.95;
+    utterance.pitch = profile === "doom" ? 0.65 : 0.85;
     utterance.volume = 1;
 
     // Prefer a refined British male voice
