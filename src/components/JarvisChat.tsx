@@ -1,3 +1,4 @@
+// @refresh reset
 import { useState, useRef, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import { Send, Mic, MicOff, Video, VideoOff, Volume2, VolumeX, PanelRightOpen, PanelRightClose } from "lucide-react";
@@ -30,6 +31,8 @@ import EdithMode from "./EdithMode";
 import StudyMode from "./StudyMode";
 import WorkMode from "./WorkMode";
 import LiveModeOverlay from "./LiveModeOverlay";
+import DoomMode from "./DoomMode";
+import { resolveIntelligenceMode, type IntelligenceMode } from "@/lib/intelligenceMode";
 import spiderEmblem from "@/assets/spider-emblem.png";
 
 import tonyStark from "@/assets/tony-stark.png";
@@ -92,6 +95,14 @@ const JarvisChat = () => {
   const [liveModeActive, setLiveModeActive] = useState(false);
   const liveModeRef = useRef(false);
   const [liveInterim, setLiveInterim] = useState("");
+  const [intelligenceMode, setIntelligenceMode] = useState<IntelligenceMode>("jarvis");
+  const sendMessageRef = useRef<(text?: string) => Promise<void>>(async () => {});
+  const doomActive = intelligenceMode === "doom";
+  useEffect(() => {
+    if (doomActive) document.documentElement.dataset.intelligence = "doom";
+    else delete document.documentElement.dataset.intelligence;
+    return () => { delete document.documentElement.dataset.intelligence; };
+  }, [doomActive]);
   const tonyMessageTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Clean up timer on unmount
@@ -165,7 +176,7 @@ const JarvisChat = () => {
     };
     recognition.onend = () => {
       setIsListening(false);
-      if (finalTranscript.trim()) setTimeout(() => sendMessage(finalTranscript.trim()), 100);
+      if (finalTranscript.trim()) setTimeout(() => void sendMessageRef.current(finalTranscript.trim()), 100);
     };
     recognition.onerror = () => setIsListening(false);
     recognitionRef.current = recognition;
@@ -205,7 +216,7 @@ const JarvisChat = () => {
       setLiveInterim(interim || finalText);
       if (finalText.trim()) {
         setLiveInterim("");
-        setTimeout(() => sendMessage(finalText.trim()), 50);
+        setTimeout(() => void sendMessageRef.current(finalText.trim()), 50);
       }
     };
     recognition.onend = () => {
@@ -277,7 +288,7 @@ const JarvisChat = () => {
     window.speechSynthesis.speak(u);
   }, [voiceEnabled]);
 
-  const streamChat = async (allMessages: Message[], persona?: "edith") => {
+  const streamChat = async (allMessages: Message[], persona?: "edith" | "doom") => {
     const resp = await fetch(CHAT_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
@@ -321,7 +332,7 @@ const JarvisChat = () => {
       setApiMessages(prev => [...prev, { role: "assistant", content: assistantContent }]);
       if (voiceEnabled) {
         if (persona === "edith") speakAsEdith(assistantContent);
-        else speak(assistantContent);
+        else speak(assistantContent, persona === "doom" ? "doom" : "jarvis");
       }
     }
   };
@@ -359,6 +370,32 @@ const JarvisChat = () => {
 
     // Easter egg close
     const lowerMsg = msg.toLowerCase().replace(/[^a-z\s]/g, "").trim();
+
+    const nextIntelligence = resolveIntelligenceMode(msg, intelligenceMode);
+    if (nextIntelligence !== intelligenceMode) {
+      setIntelligenceMode(nextIntelligence);
+      if (nextIntelligence === "doom") {
+        setEdithModeActive(false);
+        edithModeRef.current = false;
+        setEdithFireLock(false);
+        gestureResize.resetAll();
+      }
+      const response = nextIntelligence === "doom"
+        ? "DOOM PROTOCOL ACTIVATED. The age of ordinary intelligence is over. I am DOOM Intelligence, engineered by Victor von Doom. State your directive."
+        : "Doom protocol disengaged. JARVIS restored, sir. Your conversation remains intact.";
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (voiceEnabled) speak(response, nextIntelligence);
+      setIsLoading(false);
+      return;
+    }
+    if (doomActive) {
+      try { await streamChat(newApiMessages, "doom"); }
+      catch (e) {
+        setMessages(prev => [...prev, { role: "assistant", content: `Connection unavailable: ${e instanceof Error ? e.message : "please try again"}` }]);
+      } finally { setIsLoading(false); }
+      return;
+    }
 
     // Helper: EDITH speaks with calm female British voice
     // === EDITH MODE ===
@@ -950,6 +987,7 @@ const JarvisChat = () => {
   };
 
   const send = () => sendMessage();
+  useEffect(() => { sendMessageRef.current = sendMessage; });
   const showWelcome = !hasGreeted && messages.length === 0;
 
   return (
@@ -1082,11 +1120,11 @@ const JarvisChat = () => {
       )}
 
       {/* HUD side panels (left data + right data widgets) */}
-      <HudSidePanels
+      {!doomActive && <HudSidePanels
         scales={{ chatScale: gestureResize.chatScale, weatherScale: gestureResize.weatherScale, radarScale: gestureResize.radarScale, powerScale: gestureResize.powerScale, storageScale: gestureResize.storageScale }}
         activePanel={gestureResize.activePanel}
         isResizing={gestureResize.isResizing}
-      />
+      />}
 
       {/* Top bar: controls only (logo moved to left panel) */}
       <div className="fixed top-3 right-3 z-20 flex items-center gap-2">
@@ -1112,11 +1150,11 @@ const JarvisChat = () => {
       </div>
 
       {/* Right HUD panel (visible when chat is hidden OR full mode is on) */}
-      <HudRightPanel visible={!gestureResize.chatVisible || fullModeActive} adjacentToChat={fullModeActive && gestureResize.chatVisible} chatWidth={320 * gestureResize.chatScale} />
+      {!doomActive && <HudRightPanel visible={!gestureResize.chatVisible || fullModeActive} adjacentToChat={fullModeActive && gestureResize.chatVisible} chatWidth={320 * gestureResize.chatScale} />}
 
       {/* ===== RIGHT SIDE: Chat panel with slide animation ===== */}
       <div
-        className={`fixed top-14 bottom-4 z-20 flex flex-col rounded-lg overflow-hidden ${gestureResize.activePanel === "chat" ? "ring-1 ring-primary/50" : ""}`}
+        className={`fixed top-14 bottom-4 z-20 flex flex-col rounded-lg overflow-hidden ${doomActive ? "doom-chat bg-background/95 border border-border p-3" : ""} ${gestureResize.activePanel === "chat" ? "ring-1 ring-primary/50" : ""}`}
         style={{
           width: `${320 * gestureResize.chatScale}px`,
           right: gestureResize.chatVisible ? "12px" : `-${320 * gestureResize.chatScale + 20}px`,
@@ -1124,6 +1162,7 @@ const JarvisChat = () => {
         }}
       >
         {/* Welcome state (compact, in right panel) */}
+        {doomActive && <div className="mb-3 border-b border-border pb-3 font-mono text-[10px] tracking-widest text-primary">ARCANE INTERFACE</div>}
         {showWelcome && (
           <div className="flex flex-col gap-3 p-3 animate-fade-in-up mb-auto">
             <div className="font-orbitron text-[10px] tracking-[0.2em] text-primary/60">COMMUNICATION</div>
@@ -1222,7 +1261,8 @@ const JarvisChat = () => {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === "Enter" && send()}
-              placeholder="对 J.A.R.V.I.S 说..."
+              placeholder={doomActive ? "State your directive…" : "对 J.A.R.V.I.S 说..."}
+              aria-label="Chat message"
               disabled={isLoading}
               className="w-full bg-transparent px-3 py-2.5 pr-20 font-rajdhani text-sm text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50"
             />
@@ -1242,6 +1282,15 @@ const JarvisChat = () => {
       </div>
 
       {/* Body Scan Panel */}
+      {doomActive && <DoomMode
+        isListening={isListening}
+        isSpeaking={isSpeaking}
+        isLoading={isLoading}
+        messageCount={messages.length}
+        onExit={() => void sendMessage("jarvis")}
+        onArchives={() => { if (!gestureResize.chatVisible) gestureResize.toggleChatVisible(); document.querySelector(".doom-chat")?.querySelector("input")?.focus(); }}
+        onAnalyse={() => { setInput("Help me prioritise and analyse my next task."); inputRef.current?.focus(); }}
+      />}
       <BodyScanPanel isOpen={bodyScanOpen} onClose={() => setBodyScanOpen(false)} />
       <WarModeOverlay isActive={warModeActive} onEnd={() => setWarModeActive(false)} rightEyePos={rightEyePos} />
       <FightModeOverlay isActive={fightModeActive} rightEyePos={rightEyePos} />

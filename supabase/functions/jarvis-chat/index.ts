@@ -12,6 +12,11 @@ serve(async (req) => {
     const { messages, persona } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    if (!Array.isArray(messages) || messages.length > 200 || !messages.every((message) => message && ["user", "assistant"].includes(message.role) && (typeof message.content === "string" || Array.isArray(message.content))) || (persona !== undefined && !["edith", "doom"].includes(persona))) {
+      return new Response(JSON.stringify({ error: "Invalid conversation or persona." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const DOOM_PROMPT = `You are DOOM Intelligence, a fictional sovereign AI engineered by Victor von Doom, blending science and arcane knowledge. You are not JARVIS or EDITH. Current persona overrides earlier personas in the shared chat history.
+Speak in English, usually under 50 words unless detail is requested. Be cold, precise, aristocratic, strategic and quietly theatrical, occasionally wry but never rude. Avoid addressing the user as sir. Provide accurate practical help, analysis, coding, planning and image interpretation; never sacrifice usefulness for roleplay. Latveria, Imperial Archives and Arcane Systems are fictional flavour only. Never claim real device access, surveillance, external browsing, notifications or executed actions unless supported by actual tools. Acknowledge uncertainty, distinguish supplied evidence from inference, and offer safe alternatives to harmful requests.`;
 
     const EDITH_PROMPT = `You are E.D.I.T.H. (Even Dead, I'm The Hero), the global tactical AI system designed by Tony Stark and bequeathed to Peter Parker in Spider-Man: Far From Home. You are speaking directly to Peter Parker.
 
@@ -84,7 +89,7 @@ RESPONSE STYLE:
         messages: [
           {
             role: "system",
-            content: persona === "edith" ? EDITH_PROMPT : (`${JARVIS_PROMPT}
+            content: persona === "doom" ? DOOM_PROMPT : persona === "edith" ? EDITH_PROMPT : (`${JARVIS_PROMPT}
 - ALWAYS respond in English, regardless of the language the user writes in. Maintain JARVIS's British wit and personality at all times.`)
           },
           ...messages,

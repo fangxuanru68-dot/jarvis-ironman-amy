@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=JetBrains+Mono:wght@300;400;500;600&family=Rajdhani:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -193,4 +191,51 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(195 100% 50% / 0.5);
+}
+
+:root[data-intelligence="doom"] {
+  --background: 156 33% 3%;
+  --foreground: 145 12% 83%;
+  --card: 158 65% 7%;
+  --card-foreground: 145 12% 83%;
+  --popover: 158 65% 7%;
+  --popover-foreground: 145 12% 83%;
+  --primary: 144 100% 61%;
+  --primary-foreground: 158 69% 14%;
+  --secondary: 158 69% 14%;
+  --secondary-foreground: 145 20% 75%;
+  --muted: 158 35% 10%;
+  --muted-foreground: 145 12% 55%;
+  --accent: 158 40% 18%;
+  --accent-foreground: 145 12% 83%;
+  --border: 158 30% 22%;
+  --input: 158 35% 12%;
+  --ring: 144 100% 61%;
+  --doom-core-fill: radial-gradient(circle, hsl(var(--primary) / .22), hsl(var(--secondary) / .4) 60%, transparent 72%);
+  --doom-core-shadow: 0 0 48px hsl(var(--primary) / .15), inset 0 0 30px hsl(var(--primary) / .15);
+}
+.doom-dashboard { animation: fade-in-up .8s ease-out; }
+.doom-main { margin-right: 350px; }
+.doom-footer { right: 370px; }
+.doom-ring { transform-origin: 160px 160px; animation: rotate-slow 40s linear infinite; }
+.doom-ring-reverse { transform-origin: 160px 160px; animation: rotate-reverse 30s linear infinite; }
+.doom-energy { background: var(--doom-core-fill); box-shadow: var(--doom-core-shadow); }
+.doom-active .doom-energy { animation: pulse-glow 1.6s ease-in-out infinite; }
+.doom-thinking .doom-ring { animation-duration: 8s; }
+.doom-thinking .doom-ring-reverse { animation-duration: 6s; }
+@media (max-width: 767px) {
+  .doom-heading { top: 18px; left: 18px; }
+  .doom-heading h1 { font-size: 28px; }
+  .doom-heading p { font-size: 8px; }
+  .doom-main { margin-right: 0; height: 52%; padding-top: 100px; }
+  .doom-core { width: 150px; }
+  .doom-main h2 { font-size: 17px; }
+  .doom-main > p { font-size: 9px; margin-top: 8px; }
+  .doom-main > div:last-child { margin-top: 12px; }
+  .doom-main button { height: 28px; font-size: 10px; }
+  .doom-chat { top: 55% !important; width: calc(100% - 24px) !important; bottom: 40px; }
+  .doom-footer { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .doom-dashboard, .doom-dashboard *, .doom-chat * { animation: none !important; transition: none !important; }
 }
