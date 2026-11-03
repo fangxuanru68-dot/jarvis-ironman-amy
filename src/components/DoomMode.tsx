@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, BookOpen, AudioLines, BrainCircuit } from "lucide-react";
+import { ArrowLeft, BookOpen, AudioLines, BrainCircuit, Crown } from "lucide-react";
 import DoomEmblem from "./DoomEmblem";
 import { Button } from "@/components/ui/button";
 
@@ -11,9 +11,10 @@ interface Props {
   onExit: () => void;
   onArchives: () => void;
   onAnalyse: () => void;
+  onDecree: () => void;
 }
 
-export default function DoomMode({ isListening, isSpeaking, isLoading, messageCount, onExit, onArchives, onAnalyse }: Props) {
+export default function DoomMode({ isListening, isSpeaking, isLoading, messageCount, onExit, onArchives, onAnalyse, onDecree }: Props) {
   const [activating, setActivating] = useState(true);
   useEffect(() => {
     const timer = setTimeout(() => setActivating(false), 2600);
@@ -22,9 +23,12 @@ export default function DoomMode({ isListening, isSpeaking, isLoading, messageCo
   const status = isLoading ? "STRATEGIC ANALYSIS" : isSpeaking ? "TRANSMITTING" : isListening ? "LISTENING" : "AWAITING DIRECTIVE";
   return (
     <section className="doom-dashboard fixed inset-0 z-10 bg-background" aria-label="Doctor Doom mode">
+      <aside className="doom-side absolute left-6 top-32 hidden w-52 space-y-3 lg:block">
+        {[["SCIENCE / SORCERY","BALANCE 50 : 50"],["TIME PLATFORM","CALIBRATED"],["DOOMBOT LEGION","STANDBY / SIMULATION"],["LATVERIAN CITADEL","SHIELDS NOMINAL"],["ARMOUR INTEGRITY","100%"]].map(([k,v])=>(<div key={k} className="border-l-2 border-primary/50 bg-card/60 px-3 py-2"><p className="font-mono text-[9px] tracking-widest text-primary">{k}</p><p className="font-mono text-[11px] text-foreground/80">{v}</p></div>))}
+      </aside>
       <header className="doom-heading absolute left-6 top-6 flex items-start gap-3"><DoomEmblem className="h-14 w-14 shrink-0" /><div>
         <p className="font-mono text-[10px] tracking-widest text-primary">LATVERIA / SOVEREIGN INTELLIGENCE</p>
-        <h1 className="mt-2 font-serif text-4xl text-foreground">DOOM</h1>
+        <h1 className="mt-2 font-serif text-3xl text-foreground">DOCTOR DOOM</h1>
         <p className="mt-1 font-mono text-[10px] text-muted-foreground">ENGINEERED BY VICTOR VON DOOM</p></div>
       </header>
       <div className="doom-main flex h-full flex-col items-center justify-center px-6">
@@ -50,17 +54,18 @@ export default function DoomMode({ isListening, isSpeaking, isLoading, messageCo
             <DoomEmblem className="h-[70%] w-[70%]" />
           </div>
         </div>
-        <p className="mt-5 font-mono text-[10px] tracking-widest text-primary">DOOM CORE / {status}</p>
-        <h2 className="mt-3 text-center font-serif text-xl sm:text-2xl text-foreground" aria-live="polite">{activating ? "DOOM PROTOCOL ACTIVATED" : "The Sovereign Intelligence"}</h2>
+        <p className="mt-5 font-mono text-[10px] tracking-widest text-primary">DOCTOR DOOM CORE / {status}</p>
+        <h2 className="mt-3 text-center font-serif text-xl sm:text-2xl text-foreground" aria-live="polite">{activating ? "DOOM PROTOCOL ACTIVATED" : "Doom does not ask. Doom decides."}</h2>
         <p className="mt-2 text-center font-serif text-sm italic text-muted-foreground">{activating ? "The age of ordinary intelligence is over." : "Science. Sorcery. Absolute precision."}</p>
         <div className="mt-8 flex flex-wrap justify-center gap-2">
           <Button variant="outline" size="sm" onClick={onArchives}><BookOpen /> Imperial archives</Button>
           <Button variant="outline" size="sm" onClick={onAnalyse}><BrainCircuit /> Strategic analysis</Button>
+          <Button variant="outline" size="sm" onClick={onDecree}><Crown /> Royal decree</Button>
         </div>
       </div>
       <footer className="doom-footer absolute bottom-14 left-6 right-6 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
         <div className="font-mono text-[9px] text-muted-foreground space-y-1">
-          <p className="text-primary">SYSTEM SOVEREIGNTY / DOOM</p>
+          <p className="text-primary">SYSTEM SOVEREIGNTY / DOCTOR DOOM</p>
           <p>IMPERIAL ARCHIVES / {messageCount} MESSAGES</p>
           <p>LATVERIA NETWORK / SIMULATION</p>
         </div>
