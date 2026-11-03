@@ -1290,6 +1290,7 @@ const JarvisChat = () => {
         onExit={() => void sendMessage("jarvis")}
         onArchives={() => { if (!gestureResize.chatVisible) gestureResize.toggleChatVisible(); document.querySelector(".doom-chat")?.querySelector("input")?.focus(); }}
         onAnalyse={() => { setInput("Help me prioritise and analyse my next task."); inputRef.current?.focus(); }}
+        onDecree={() => { setInput("Issue a royal decree: organise my priorities for today."); inputRef.current?.focus(); }}
       />}
       <BodyScanPanel isOpen={bodyScanOpen} onClose={() => setBodyScanOpen(false)} />
       <WarModeOverlay isActive={warModeActive} onEnd={() => setWarModeActive(false)} rightEyePos={rightEyePos} />
