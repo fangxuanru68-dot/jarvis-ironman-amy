@@ -51,7 +51,7 @@ const EdithMode = ({ isActive, fireLockWarning = false }: EdithModeProps) => {
 
   return (
     <div
-      className={`fixed inset-0 z-[5] pointer-events-none transition-opacity duration-700 ${mounted ? "opacity-100" : "opacity-0"}`}
+      className={`fixed inset-0 z-[60] pointer-events-none transition-opacity duration-700 ${mounted ? "opacity-100" : "opacity-0"}`}
       style={{ fontFamily: "'Rajdhani', 'Orbitron', sans-serif" }}
     >
       {/* glasses-lens frame: thin corners only, centre stays clear */}
