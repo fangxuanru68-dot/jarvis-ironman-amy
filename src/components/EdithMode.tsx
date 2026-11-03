@@ -54,140 +54,42 @@ const EdithMode = ({ isActive, fireLockWarning = false }: EdithModeProps) => {
       className={`fixed inset-0 z-[60] pointer-events-none transition-opacity duration-700 ${mounted ? "opacity-100" : "opacity-0"}`}
       style={{ fontFamily: "'Rajdhani', 'Orbitron', sans-serif" }}
     >
-      {/* dim wash */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(8,20,40,0.35)_0%,rgba(0,0,0,0.55)_100%)]" />
+      {/* glasses-lens frame: thin corners only, centre stays clear */}
+      <div className="absolute inset-3 rounded-[28px] border border-cyan-200/10" />
+      {["left-3 top-3 border-l border-t","right-3 top-3 border-r border-t","left-3 bottom-3 border-l border-b","right-3 bottom-3 border-r border-b"].map(c => <span key={c} className={`absolute h-10 w-10 border-amber-200/50 ${c}`} />)}
+      <div className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-cyan-200/40 to-transparent" style={{ animation: "edith-scan 7s linear infinite" }} />
 
-      {/* faint global grid */}
-      <svg className="absolute inset-0 w-full h-full opacity-[0.18]" preserveAspectRatio="none">
-        <defs>
-          <pattern id="edith-grid" width="60" height="60" patternUnits="userSpaceOnUse">
-            <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgb(180,230,255)" strokeWidth="0.5" />
-          </pattern>
-          <radialGradient id="edith-globe" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="rgba(120,210,255,0.22)" />
-            <stop offset="100%" stopColor="rgba(120,210,255,0)" />
-          </radialGradient>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#edith-grid)" />
-      </svg>
-
-      {/* faux world map fragments */}
-      <svg className="absolute inset-0 w-full h-full opacity-25" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
-        <g fill="rgba(180,230,255,0.35)">
-          {Array.from({ length: 220 }).map((_, i) => {
-            const x = (i * 53) % 1000;
-            const y = (i * 91) % 600;
-            const s = ((i * 17) % 5) + 1;
-            return <rect key={i} x={x} y={y} width={s} height={s} />;
-          })}
-        </g>
-        {/* satellite orbit ellipses */}
-        <g fill="none" stroke="rgba(180,230,255,0.5)" strokeWidth="0.8">
-          {ORBITS.map((o, i) => (
-            <g key={i} style={{ transformOrigin: "500px 300px", animation: `edith-spin ${30 + i * 8}s linear infinite ${i % 2 ? "reverse" : ""}` }}>
-              <ellipse cx={500} cy={300} rx={o.rx} ry={o.ry} transform={`rotate(${o.rot} 500 300)`} />
-              <circle cx={500 + o.rx} cy={300} r={3} fill="rgba(255,215,120,0.9)" transform={`rotate(${o.rot} 500 300)`} />
-            </g>
-          ))}
-        </g>
-      </svg>
-
-      {/* slow scan line */}
-      <div className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-200/60 to-transparent" style={{ top: `${(tick * 4) % 100}%`, animation: "edith-scan 6s linear infinite" }} />
-
-      {/* pulsing nodes */}
-      {NODES.map((n) => (
-        <span
-          key={n.id}
-          className="absolute w-1.5 h-1.5 rounded-full bg-cyan-200"
-          style={{
-            left: `${n.cx}%`,
-            top: `${n.cy}%`,
-            boxShadow: "0 0 8px 2px rgba(160,230,255,0.8)",
-            animation: `edith-node-pulse 2.4s ease-in-out ${n.delay}s infinite`,
-          }}
-        />
-      ))}
-
-      {/* facial recognition boxes removed per user request */}
-
-      {/* TOP STATUS BAR */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-6 px-6 py-2 border border-cyan-200/30 bg-[rgba(8,18,32,0.35)] backdrop-blur-sm text-[11px] tracking-[0.25em] text-cyan-100">
-        <span className="flex items-center gap-2"><Dot color="cyan" /> EDITH ONLINE</span>
-        <span className="flex items-center gap-2"><Dot color="cyan" /> GLOBAL NETWORK CONNECTED</span>
-        <span className="flex items-center gap-2"><Dot color="amber" /> STARK ACCESS GRANTED</span>
-        <span className="flex items-center gap-2"><Dot color="cyan" /> SECURITY LEVEL: HIGH</span>
+      {/* compact top line */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-center" style={{ animation: "edith-fade-in .8s ease-out both" }}>
+        <div className="text-[10px] tracking-[0.5em] text-cyan-50/90">E.D.I.T.H. · EVEN DEAD, I'M THE HERO</div>
+        <div className="mt-1 text-[9px] tracking-[0.35em] text-amber-200/70">ACCESS LEVEL: PETER PARKER · STARK INDUSTRIES</div>
       </div>
 
-      {/* CENTER COMMAND CORE */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="relative w-[420px] h-[420px] flex items-center justify-center" style={{ animation: "edith-fade-in 1s ease-out both" }}>
-          <svg className="absolute inset-0" viewBox="-100 -100 200 200">
-            <defs>
-              <radialGradient id="edith-core" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="rgba(220,245,255,0.9)" />
-                <stop offset="60%" stopColor="rgba(140,210,255,0.25)" />
-                <stop offset="100%" stopColor="rgba(140,210,255,0)" />
-              </radialGradient>
-            </defs>
-            <circle cx="0" cy="0" r="60" fill="url(#edith-core)" style={{ animation: "edith-core-pulse 3.2s ease-in-out infinite" }} />
-            <g fill="none" strokeWidth="0.6">
-              <circle r="92" stroke="rgba(200,235,255,0.5)" strokeDasharray="2 6" style={{ transformOrigin: "center", animation: "edith-spin 22s linear infinite" }} />
-              <circle r="78" stroke="rgba(255,215,120,0.45)" strokeDasharray="14 6" style={{ transformOrigin: "center", animation: "edith-spin 30s linear infinite reverse" }} />
-              <circle r="62" stroke="rgba(200,235,255,0.7)" />
-              <circle r="48" stroke="rgba(200,235,255,0.4)" strokeDasharray="3 3" style={{ transformOrigin: "center", animation: "edith-spin 16s linear infinite" }} />
-            </g>
-            {/* tick marks */}
-            <g stroke="rgba(200,235,255,0.7)" strokeWidth="0.7">
-              {Array.from({ length: 60 }).map((_, i) => {
-                const a = (i / 60) * Math.PI * 2;
-                const r1 = 92, r2 = i % 5 === 0 ? 84 : 88;
-                return <line key={i} x1={Math.cos(a) * r1} y1={Math.sin(a) * r1} x2={Math.cos(a) * r2} y2={Math.sin(a) * r2} />;
-              })}
-            </g>
+      {/* left column: everything stays clear of the chat on the right */}
+      <div className="absolute left-5 top-16 bottom-16 w-[230px] flex flex-col gap-3 overflow-hidden">
+        <div className="relative mx-auto h-24 w-24">
+          <svg className="absolute inset-0" viewBox="-50 -50 100 100" fill="none">
+            <circle r="46" stroke="rgba(200,235,255,.5)" strokeDasharray="2 5" style={{ transformOrigin: "center", animation: "edith-spin 20s linear infinite" }} />
+            <circle r="38" stroke="rgba(255,215,120,.5)" strokeDasharray="10 5" style={{ transformOrigin: "center", animation: "edith-spin 28s linear infinite reverse" }} />
+            <circle r="26" fill="rgba(160,225,255,.18)" style={{ animation: "edith-core-pulse 3s ease-in-out infinite" }} />
           </svg>
-          <div className="relative text-center select-none">
-            <div className="text-cyan-50 text-xl tracking-[0.4em] font-light drop-shadow-[0_0_12px_rgba(180,230,255,0.8)]">EDITH</div>
-            <div className="text-cyan-100/80 text-[10px] tracking-[0.35em] mt-1">SYSTEM ONLINE</div>
-            <div className="mt-3 text-amber-200/80 text-[10px] tracking-[0.3em]">ACCESS LEVEL</div>
-            <div className="text-cyan-50 text-sm tracking-[0.3em]">PETER PARKER</div>
-          </div>
+          <div className="absolute inset-0 flex flex-col items-center justify-center"><span className="text-xs tracking-[0.3em] text-cyan-50">EDITH</span><span className="text-[7px] tracking-widest text-cyan-100/70">ONLINE</span></div>
         </div>
-      </div>
-
-      {/* LEFT PANEL - DRONE NETWORK */}
-      <Panel title="DRONE NETWORK" className="left-6 top-1/2 -translate-y-1/2" delay={0.4}>
-        <Row label="DRONE SWARM" status="STANDBY" pct={drone} dot="cyan" />
-        <Row label="TARGETING SYSTEM" status="READY" pct={targeting} dot="amber" />
-        <Row label="SATELLITE LINK" status="ACTIVE" pct={92} dot="cyan" />
-        <Row label="REMOTE ACCESS" status="ENABLED" pct={88} dot="cyan" />
-        <div className="mt-3 pt-3 border-t border-cyan-200/15 text-[9px] tracking-widest text-cyan-100/60">
-          <div className="flex justify-between"><span>SWARM SIZE</span><span className="text-cyan-50">248 UNITS</span></div>
-          <div className="flex justify-between"><span>UPLINK</span><span className="text-cyan-50">STARK-SAT-04</span></div>
-          <div className="flex justify-between"><span>LATENCY</span><span className="text-cyan-50">12 MS</span></div>
+        <Panel title="DRONE ARMADA" delay={0.3}>
+          <Row label="STARK DRONES" status="DOCKED" pct={drone} dot="cyan" />
+          <Row label="ORBITAL SAT" status="LINKED" pct={92} dot="cyan" />
+          <Row label="STRIKE AUTH" status="LOCKED" pct={0} dot="amber" />
+        </Panel>
+        <Panel title="INTEL & SURVEILLANCE" delay={0.45}>
+          <Row label="FACE ID" status="STANDBY" pct={idScan} dot="cyan" />
+          <Row label="PHONE / COMMS" status="PASSIVE" pct={60} dot="cyan" />
+          <Row label="ILLUSION CHECK" status={tick % 10 < 5 ? "SCANNING" : "NO DRONE PROJECTION"} pct={targeting} dot="amber" />
+        </Panel>
+        <div className="text-[9px] tracking-widest text-cyan-100/60 leading-5">
+          <div>UPLINK STARK-SAT-04 · 12MS</div>
+          <div>OWNERSHIP: TRANSFERRED BY T. STARK</div>
+          <div className="text-amber-200/70">FIRE CONTROL: SIMULATION ONLY</div>
         </div>
-      </Panel>
-
-      {/* RIGHT PANEL - SURVEILLANCE */}
-      <Panel title="SURVEILLANCE SYSTEM" className="right-6 top-1/2 -translate-y-1/2" delay={0.55} align="right">
-        <Row label="FACIAL RECOGNITION" status="ACTIVE" pct={94} dot="cyan" />
-        <Row label="IDENTITY SCAN" status="RUNNING" pct={idScan} dot="amber" />
-        <Row label="THREAT ANALYSIS" status="LOW" pct={22} dot="cyan" />
-        <Row label="VISUAL FEED" status="LIVE" pct={100} dot="cyan" />
-        <div className="mt-3 pt-3 border-t border-cyan-200/15 text-[9px] tracking-widest text-cyan-100/60">
-          <div className="flex justify-between"><span>FACES TRACKED</span><span className="text-cyan-50">{3 + (tick % 4)}</span></div>
-          <div className="flex justify-between"><span>DATABASE</span><span className="text-cyan-50">STARK GLOBAL</span></div>
-          <div className="flex justify-between"><span>FEEDS</span><span className="text-cyan-50">17 ACTIVE</span></div>
-        </div>
-      </Panel>
-
-      {/* floating data window */}
-      <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex gap-3 text-[10px] tracking-widest text-cyan-100/80">
-        <Chip>UPLINK 99.2%</Chip>
-        <Chip>NODES 248</Chip>
-        <Chip color="amber">STARK LEGACY</Chip>
-        <Chip>ENC AES-512</Chip>
-        <Chip>PING 11MS</Chip>
       </div>
 
       {/* FIRE LOCK WARNING */}
@@ -256,9 +158,9 @@ const Panel = ({
   align?: "left" | "right";
 }) => (
   <div
-    className={`absolute w-[280px] border border-cyan-200/25 bg-[rgba(8,18,32,0.45)] backdrop-blur-sm p-4 ${className}`}
+    className={`relative w-full border border-cyan-200/20 bg-[rgba(8,18,32,0.35)] backdrop-blur-sm p-3 ${className}`}
     style={{
-      animation: `${align === "right" ? "edith-slide-right" : "edith-slide-left"} 0.9s ease-out ${delay}s both`,
+      animation: `edith-fade-in 0.8s ease-out ${delay}s both`,
       boxShadow: "0 0 30px rgba(120,210,255,0.08), inset 0 0 20px rgba(120,210,255,0.04)",
     }}
   >
