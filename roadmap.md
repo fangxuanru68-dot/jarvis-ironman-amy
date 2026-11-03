@@ -1,2 +1,2 @@
-- [ ] Resolve the React hook-queue blank screen and verify rendering.
-- [ ] Add Doctor Doom mode triggered by `doom`, with green visuals and a Doom AI persona; verify activation and exit.
+- [x] Resolve the React hook-queue blank screen and verify rendering.
+- [x] Add Doctor Doom mode triggered by `doom`, with green visuals and a Doom AI persona; verify activation and exit.
