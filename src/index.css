@@ -196,13 +196,13 @@
 :root[data-intelligence="doom"] {
   --background: 156 33% 3%;
   --foreground: 145 12% 83%;
-  --card: 158 65% 7%;
+  --card: 164 65% 7%;
   --card-foreground: 145 12% 83%;
   --popover: 158 65% 7%;
   --popover-foreground: 145 12% 83%;
-  --primary: 144 100% 61%;
+  --primary: 145 100% 61%;
   --primary-foreground: 158 69% 14%;
-  --secondary: 158 69% 14%;
+  --secondary: 162 69% 14%;
   --secondary-foreground: 145 20% 75%;
   --muted: 158 35% 10%;
   --muted-foreground: 145 12% 55%;
@@ -210,7 +210,9 @@
   --accent-foreground: 145 12% 83%;
   --border: 158 30% 22%;
   --input: 158 35% 12%;
-  --ring: 144 100% 61%;
+  --ring: 145 100% 61%;
+  --doom-gold: 40 45% 52%;
+  --doom-silver: 200 6% 62%;
   --doom-core-fill: radial-gradient(circle, hsl(var(--primary) / .22), hsl(var(--secondary) / .4) 60%, transparent 72%);
   --doom-core-shadow: 0 0 48px hsl(var(--primary) / .15), inset 0 0 30px hsl(var(--primary) / .15);
 }
@@ -239,3 +241,7 @@
 @media (prefers-reduced-motion: reduce) {
   .doom-dashboard, .doom-dashboard *, .doom-chat * { animation: none !important; transition: none !important; }
 }
+
+:root[data-intelligence="doom"] .font-serif { font-family: "Cinzel", "Trajan Pro", Georgia, serif; letter-spacing: .08em; }
+.doom-eyes { animation: pulse-glow 2.4s ease-in-out infinite; }
+.doom-dashboard::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 40% 45%, hsl(var(--secondary) / .55), transparent 60%), repeating-linear-gradient(90deg, transparent 0 79px, hsl(var(--doom-gold) / .05) 79px 80px); }

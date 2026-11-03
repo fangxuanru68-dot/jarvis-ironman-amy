@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, BookOpen, Shield, AudioLines, BrainCircuit } from "lucide-react";
+import { ArrowLeft, BookOpen, AudioLines, BrainCircuit } from "lucide-react";
+import DoomEmblem from "./DoomEmblem";
 import { Button } from "@/components/ui/button";
 
 interface Props {
@@ -21,10 +22,10 @@ export default function DoomMode({ isListening, isSpeaking, isLoading, messageCo
   const status = isLoading ? "STRATEGIC ANALYSIS" : isSpeaking ? "TRANSMITTING" : isListening ? "LISTENING" : "AWAITING DIRECTIVE";
   return (
     <section className="doom-dashboard fixed inset-0 z-10 bg-background" aria-label="Doctor Doom mode">
-      <header className="doom-heading absolute left-6 top-6">
+      <header className="doom-heading absolute left-6 top-6 flex items-start gap-3"><DoomEmblem className="h-14 w-14 shrink-0" /><div>
         <p className="font-mono text-[10px] tracking-widest text-primary">LATVERIA / SOVEREIGN INTELLIGENCE</p>
         <h1 className="mt-2 font-serif text-4xl text-foreground">DOOM</h1>
-        <p className="mt-1 font-mono text-[10px] text-muted-foreground">ENGINEERED BY VICTOR VON DOOM</p>
+        <p className="mt-1 font-mono text-[10px] text-muted-foreground">ENGINEERED BY VICTOR VON DOOM</p></div>
       </header>
       <div className="doom-main flex h-full flex-col items-center justify-center px-6">
         <div className={`doom-core relative aspect-square w-64 sm:w-80 ${isLoading ? "doom-thinking" : ""} ${isListening || isSpeaking ? "doom-active" : ""}`}>
@@ -46,7 +47,7 @@ export default function DoomMode({ isListening, isSpeaking, isLoading, messageCo
             </g>
           </svg>
           <div className="doom-energy absolute inset-[27%] rounded-full border border-primary/40 flex items-center justify-center">
-            <Shield className="h-16 w-16 text-foreground/80" strokeWidth={0.8} />
+            <DoomEmblem className="h-[70%] w-[70%]" />
           </div>
         </div>
         <p className="mt-5 font-mono text-[10px] tracking-widest text-primary">DOOM CORE / {status}</p>
