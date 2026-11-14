@@ -1,0 +1,7 @@
+import { CalendarDays, NotebookPen, Radio, House, FileText, Sun, Timer } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { StonyPanel } from "@/lib/stonyProtocol";
+const tools = [["DAILY BRIEFING", "daily briefing", "briefing", Sun], ["CALENDAR", "calendar", "calendar", CalendarDays], ["PERSONAL NOTES", "personal notes", "notes", NotebookPen], ["MISSION ARCHIVE", "mission archive", "missions", FileText], ["RADIO", "radio", "radio", Radio], ["FOCUS", "focus mode", "focus", Timer], ["HOME", "home", "home", House]] as const;
+export default function StevePersonalTools({ panel, onCommand }: { panel: StonyPanel; onCommand: (text: string) => void }) {
+  return <nav className="stony-tools" aria-label="Steve's personal tools"><p className="stony-label">ROGERS / PERSONAL EFFECTS</p><div className="stony-tool-list">{tools.map(([name, command, target, Icon]) => <Button key={name} variant="ghost" aria-pressed={panel === target} onClick={() => onCommand(command)}><Icon /><span>{name}</span><span className={`stony-indicator ${panel === target ? "is-on" : ""}`} /></Button>)}</div><p className="stony-handwriting stony-tool-note">Nothing you don't need.<br />Everything you do. — T.</p></nav>;
+}

@@ -1,0 +1,7 @@
+import { LockKeyhole, Mail, FolderOpen } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { StonyPanel } from "@/lib/stonyProtocol";
+const records = [["tony", "PRIVATE CHANNEL / 01"], ["endurance", "FIELD ASSESSMENT / 02"], ["brooklyn", "BROOKLYN / 03"], ["language", "VOCABULARY / 04"], ["letter", "FOR STEVE / 05"]] as const;
+export default function StarkPrivateArchive({ unlocked, onOpen, warm }: { unlocked: StonyPanel[]; onOpen: (panel: StonyPanel) => void; warm: boolean }) {
+  return <aside className="stony-archive"><div className="flex items-center justify-between"><LockKeyhole size={17} /><span className={`stony-indicator ${warm ? "is-on" : ""}`} /></div><h2>STARK<br />PERSONAL ARCHIVE</h2><p className="stony-label">AUTHORIZED USER:<br />STEVEN G. ROGERS</p><Button variant="ghost" onClick={() => onOpen("missions")}><FolderOpen />READ ME FIRST</Button>{records.map(([panel, label]) => <Button key={panel} variant="ghost" disabled={!unlocked.includes(panel)} onClick={() => onOpen(panel)}>{unlocked.includes(panel) ? <Mail /> : <LockKeyhole />}<span>{unlocked.includes(panel) ? label : `SEALED / ${label.split(" / ")[1]}`}</span></Button>)}<p className="stony-handwriting">Some things are just for you.</p><small>FICTIONAL PERSONAL RECORDS</small></aside>;
+}
