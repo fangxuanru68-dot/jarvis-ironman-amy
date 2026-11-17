@@ -57,9 +57,11 @@ export default function StonyProtocolMode(props: Props) {
   const upload = useRef<HTMLInputElement>(null);
   useEffect(() => { const interval = setInterval(() => setNow(new Date()), 1000); const timer = setTimeout(() => setActivating(false), 3600); return () => { clearInterval(interval); clearTimeout(timer); }; }, []);
   useEffect(() => { chatEnd.current?.scrollIntoView({ block: "nearest" }); }, [messages]);
-  useEffect(() => { if (panel !== "letter") return; const timer = setTimeout(() => onCommand("home"), 20000); return () => clearTimeout(timer); }, [panel]);
+  const commandRef = useRef(onCommand);
+  commandRef.current = onCommand;
+  useEffect(() => { if (panel !== "letter") return; const timer = setTimeout(() => commandRef.current("home"), 20000); return () => clearTimeout(timer); }, [panel]);
   const save = (next: StonyStore) => { onStore(next); setStorageError(writeStonyStore(next) ? "" : "Changes are temporary: this browser could not save them."); };
-  const open = (p: StonyPanel) => onCommand(({ tony: "where's tony", endurance: "i can do this all day", brooklyn: "show me brooklyn", letter: "i love you", language: "language", missions: "mission archive" } as Partial<Record<StonyPanel, string>>)[p] || p);
+  const open = (p: StonyPanel) => onCommand(({ tony: "where's tony", endurance: "i can do this all day", brooklyn: "show me brooklyn", letter: "i love you", language: "language", missions: "mission archive", briefing: "daily briefing", notes: "personal notes", focus: "focus mode" } as Partial<Record<StonyPanel, string>>)[p] || p);
   const status = isLoading ? "THINKING IT THROUGH" : props.isSpeaking ? "PERSONAL CHANNEL / SPEAKING" : props.isListening ? "ROGERS / LISTENING" : "PERSONAL CHANNEL / STANDING BY";
   const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
   const today = store.events.filter(e => e.date === localDate);
