@@ -32,6 +32,8 @@ import StudyMode from "./StudyMode";
 import WorkMode from "./WorkMode";
 import LiveModeOverlay from "./LiveModeOverlay";
 import DoomMode from "./DoomMode";
+import StonyProtocolMode from "./stony/StonyProtocolMode";
+import { parseStonyCommand, readStonyStore, writeStonyStore, STONY_REPLIES, type StonyPanel, type StonyStore } from "@/lib/stonyProtocol";
 import { resolveIntelligenceMode, type IntelligenceMode } from "@/lib/intelligenceMode";
 import spiderEmblem from "@/assets/spider-emblem.png";
 
@@ -98,6 +100,16 @@ const JarvisChat = () => {
   const [intelligenceMode, setIntelligenceMode] = useState<IntelligenceMode>("jarvis");
   const sendMessageRef = useRef<(text?: string) => Promise<void>>(async () => {});
   const doomActive = intelligenceMode === "doom";
+  const [stonyActive, setStonyActive] = useState(false);
+  const stonyRef = useRef(false);
+  const [stonyPanel, setStonyPanel] = useState<StonyPanel>("home");
+  const [stonyStore, setStonyStore] = useState<StonyStore>(readStonyStore);
+  const [stonyImage, setStonyImage] = useState<string | null>(null);
+  const previousVoice = useRef(true);
+  const saveStony = (next: StonyStore) => {
+    setStonyStore(next);
+    return writeStonyStore(next);
+  };
   useEffect(() => {
     if (doomActive) document.documentElement.dataset.intelligence = "doom";
     else delete document.documentElement.dataset.intelligence;
@@ -256,6 +268,7 @@ const JarvisChat = () => {
   };
 
   const handleGesture = useCallback((gesture: string) => {
+    if (stonyRef.current) return;
     const response = GESTURE_RESPONSES[gesture];
     if (response) {
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
@@ -288,11 +301,11 @@ const JarvisChat = () => {
     window.speechSynthesis.speak(u);
   }, [voiceEnabled]);
 
-  const streamChat = async (allMessages: Message[], persona?: "edith" | "doom") => {
+  const streamChat = async (allMessages: Message[], persona?: "edith" | "doom" | "stony") => {
     const resp = await fetch(CHAT_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}` },
-      body: JSON.stringify({ messages: allMessages, persona }),
+      body: JSON.stringify({ messages: allMessages, persona, ...(persona === "stony" ? { languageFilter: stonyStore.language } : {}) }),
     });
     if (!resp.ok) { const err = await resp.json().catch(() => ({ error: "Connection failed" })); throw new Error(err.error || "Systems offline"); }
     if (!resp.body) throw new Error("No stream");
@@ -332,19 +345,20 @@ const JarvisChat = () => {
       setApiMessages(prev => [...prev, { role: "assistant", content: assistantContent }]);
       if (voiceEnabled) {
         if (persona === "edith") speakAsEdith(assistantContent);
-        else speak(assistantContent, persona === "doom" ? "doom" : "jarvis");
+        else speak(assistantContent, persona === "doom" ? "doom" : persona === "stony" ? "stony" : "jarvis");
       }
     }
   };
 
   const sendMessage = async (text?: string) => {
-    const msg = typeof text === "string" ? text : input.trim();
+    const msg = (typeof text === "string" ? text : input).trim();
     if (!msg || isLoading) return;
 
     const images: string[] = [];
-    if (cameraOn) {
+    if (stonyRef.current && stonyImage) images.push(stonyImage);
+    if (cameraOn && !stonyRef.current) {
       const captureFrame = (window as any).__jarvisCaptureFrame;
-      if (captureFrame) { const frame = captureFrame(); if (frame) images.push(frame); }
+      if (captureFrame) { const frame = captureFrame(); if (typeof frame === "string" && /^data:image\/(jpeg|png|webp);base64,.+/.test(frame)) images.push(frame); }
     }
 
     const classicResponse = checkClassicTrigger(msg);
@@ -367,6 +381,57 @@ const JarvisChat = () => {
     setIsLoading(true);
     setHasGreeted(true);
     stopSpeech();
+
+    // STONY owns this command layer without resetting underlying interface state.
+    const stonyCommand = parseStonyCommand(msg, stonyRef.current);
+    if (stonyCommand || stonyRef.current) {
+      let response = "";
+      let profile: "jarvis" | "doom" | "stony" = "stony";
+      let shouldSpeak = voiceEnabled;
+      if (stonyCommand?.kind === "activate") {
+        previousVoice.current = voiceEnabled;
+        stonyRef.current = true;
+        setStonyActive(true);
+        setStonyPanel("home");
+        response = "Okay, Rogers. Before you say anything, yes, I made this for you. And no, you don't need an instruction manual. I made sure of that.";
+      } else if (stonyCommand?.kind === "exit") {
+        stonyRef.current = false;
+        setStonyActive(false);
+        setStonyImage(null);
+        setVoiceEnabled(previousVoice.current);
+        shouldSpeak = previousVoice.current;
+        profile = doomActive ? "doom" : "jarvis";
+        response = "STONY personal channel closed. Previous interface and conversation restored.";
+      } else if (stonyCommand?.kind === "panel") {
+        const panel = stonyCommand.panel;
+        setStonyPanel(panel);
+        if (["language", "tony", "endurance", "brooklyn", "letter"].includes(panel)) {
+          const next = { ...stonyStore, unlocked: [...new Set([...stonyStore.unlocked, panel])], language: panel === "language" ? true : stonyStore.language };
+          if (!saveStony(next)) response = "This browser could not save your archive unlock. ";
+        }
+        response += STONY_REPLIES[panel] || "Opening your personal file, Rogers.";
+      } else if (stonyCommand?.kind === "note" || stonyCommand?.kind === "event") {
+        const record = { id: crypto.randomUUID(), text: stonyCommand.text, date: stonyCommand.kind === "event" ? stonyCommand.date : new Date().toISOString() };
+        const key = stonyCommand.kind === "note" ? "notes" : "events";
+        const saved = saveStony({ ...stonyStore, [key]: [...stonyStore[key], record].slice(-100) });
+        setStonyPanel(key === "notes" ? "notes" : "calendar");
+        response = saved ? "Saved on this device, Rogers. Consider it one less thing to carry." : "Kept for this session, Rogers. This browser could not save it permanently.";
+      } else {
+        setStonyImage(null);
+        try { await streamChat(newApiMessages, "stony"); }
+        catch (e) { setMessages(prev => [...prev, { role: "assistant", content: `Personal channel unavailable: ${e instanceof Error ? e.message : "please try again"}` }]); }
+        finally { setIsLoading(false); }
+        return;
+      }
+      setMessages(prev => [...prev, { role: "assistant", content: response }]);
+      setApiMessages(prev => [...prev, { role: "assistant", content: response }]);
+      if (shouldSpeak) {
+        if (stonyCommand?.kind === "exit" && edithModeRef.current && !doomActive) speakAsEdith(response);
+        else speak(response, profile);
+      }
+      setIsLoading(false);
+      return;
+    }
 
     // Easter egg close
     const lowerMsg = msg.toLowerCase().replace(/[^a-z\s]/g, "").trim();
@@ -996,12 +1061,13 @@ const JarvisChat = () => {
       <FullScreenCamera isActive={cameraOn} onVideoReady={setVideoElement} />
       <FaceHandTracker
         videoElement={videoElement}
-        isActive={cameraOn}
+        isActive={cameraOn && !stonyActive}
         onGesture={handleGesture}
         onHandData={(lms, g) => { gestureResize.handleHandData(lms, g); setHandLandmarks(lms); }}
         onFaceData={(fb, eye) => { setRightEyePos(eye); setFaceVisible(!!fb); setFaceBox(fb); }}
       />
 
+      <div hidden={stonyActive}>
       {/* Easter egg: Tony Stark memorial background */}
       {easterEgg && (
         <div className="fixed inset-0 z-[1] animate-fade-in" onClick={() => { if (tonyMessageTimerRef.current) { clearTimeout(tonyMessageTimerRef.current); tonyMessageTimerRef.current = null; } setEasterEgg(false); }}>
@@ -1315,7 +1381,7 @@ const JarvisChat = () => {
         faceVisible={faceVisible}
         faceBox={faceBox}
         handLandmarks={handLandmarks}
-        onRemind={(msg) => { if (voiceEnabled) speak(msg); }}
+        onRemind={(msg) => { if (voiceEnabled && !stonyRef.current) speak(msg); }}
       />
       <WorkMode
         isActive={workModeActive}
@@ -1341,6 +1407,17 @@ const JarvisChat = () => {
           if (voiceEnabled) speak(response);
         }}
       />
+
+      </div>
+      {stonyActive && <StonyProtocolMode
+        panel={stonyPanel} store={stonyStore} onStore={setStonyStore}
+        messages={messages} input={input} onInput={setInput}
+        onCommand={text => { void sendMessage(text); }}
+        isListening={isListening} isSpeaking={isSpeaking} isLoading={isLoading}
+        voiceEnabled={voiceEnabled} onMic={toggleVoice}
+        onVoice={() => { setVoiceEnabled(!voiceEnabled); stopSpeech(); }}
+        onImage={setStonyImage} imagePending={Boolean(stonyImage)}
+      />}
 
       {/* Watermark */}
       <div className="fixed bottom-4 left-4 z-[100] font-mono text-xs text-primary/50 tracking-wider pointer-events-none select-none">

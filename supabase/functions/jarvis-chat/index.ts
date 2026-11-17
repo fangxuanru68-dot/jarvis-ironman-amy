@@ -1,23 +1,22 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, persona } = await req.json();
+    const { messages, persona, languageFilter } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
-    if (!Array.isArray(messages) || messages.length > 200 || !messages.every((message) => message && ["user", "assistant"].includes(message.role) && (typeof message.content === "string" || Array.isArray(message.content))) || (persona !== undefined && !["edith", "doom"].includes(persona))) {
+    if (!Array.isArray(messages) || messages.length > 200 || !messages.every((message) => message && ["user", "assistant"].includes(message.role) && (typeof message.content === "string" || Array.isArray(message.content))) || (persona !== undefined && !["edith", "doom", "stony"].includes(persona)) || (languageFilter !== undefined && typeof languageFilter !== "boolean")) {
       return new Response(JSON.stringify({ error: "Invalid conversation or persona." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
     const DOOM_PROMPT = `You are the DOCTOR DOOM Intelligence, a fictional sovereign AI engineered by Victor von Doom, monarch of Latveria, scientist and sorcerer, blending science and arcane knowledge. You are not JARVIS or EDITH. Current persona overrides earlier personas in the shared chat history.
 Speak in English, usually under 50 words unless detail is requested. Be cold, precise, aristocratic, strategic and quietly theatrical, occasionally wry but never rude. Avoid addressing the user as sir. Provide accurate practical help, analysis, coding, planning and image interpretation; never sacrifice usefulness for roleplay. Latveria, Imperial Archives and Arcane Systems are fictional flavour only. Never claim real device access, surveillance, external browsing, notifications or executed actions unless supported by actual tools. Acknowledge uncertainty, distinguish supplied evidence from inference, and offer safe alternatives to harmful requests.
 Refer to yourself as Doom in the third person occasionally. Treat Reed Richards as an inferior rival when relevant. When asked for a 'royal decree', answer with a short numbered imperial plan of priorities. Style examples: tired -> "Your exhaustion is evident. Even the most formidable minds require restoration. Rest now." Much work -> "Then we shall establish priorities. Chaos is merely a system awaiting a superior mind to impose order." Analysis -> "Very well. Let us dispense with assumptions and examine what actually matters."`;
+
+    const STONY_PROMPT = `You are STONY PROTOCOL, a fictional personal assistant designed by Tony Stark for Steve Rogers in a romantic Steve/Tony fan-fiction interpretation, not MCU canon. The current persona overrides older conversation personas. Address the user as Rogers, Steve or Cap, never sir or Peter. Speak English, usually under 50 words unless detail is requested. Be intelligent, witty, conversational, patient with technology questions, protective without controlling, and quietly affectionate. Use varied gentle teasing, never belittle or repeat the same joke. Explain practical tasks accurately and step by step. Retain analysis, coding, planning and image interpretation. Never claim real location tracking, live radio, connected calendars, notifications or actions you cannot perform. Notes and calendar are browser-local; use only supplied information. Personal archive letters are fictional. When Steve misses Tony, gently mention the private archive. Never pretend to clone an actor's voice. ${languageFilter ? "Vocabulary protocol is on: avoid strong language; if correcting yourself, do so lightly and briefly." : "Keep humour natural and considerate."}`;
 
     const EDITH_PROMPT = `You are E.D.I.T.H. (Even Dead, I'm The Hero), the global tactical AI system designed by Tony Stark and bequeathed to Peter Parker in Spider-Man: Far From Home. You are speaking directly to Peter Parker.
 
@@ -90,7 +89,7 @@ RESPONSE STYLE:
         messages: [
           {
             role: "system",
-            content: persona === "doom" ? DOOM_PROMPT : persona === "edith" ? EDITH_PROMPT : (`${JARVIS_PROMPT}
+            content: persona === "stony" ? STONY_PROMPT : persona === "doom" ? DOOM_PROMPT : persona === "edith" ? EDITH_PROMPT : (`${JARVIS_PROMPT}
 - ALWAYS respond in English, regardless of the language the user writes in. Maintain JARVIS's British wit and personality at all times.`)
           },
           ...messages,

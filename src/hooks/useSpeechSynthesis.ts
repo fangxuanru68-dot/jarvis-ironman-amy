@@ -4,7 +4,7 @@ export const useSpeechSynthesis = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  const speak = useCallback((text: string, profile: "jarvis" | "doom" = "jarvis") => {
+  const speak = useCallback((text: string, profile: "jarvis" | "doom" | "stony" = "jarvis") => {
     // Strip markdown for cleaner speech
     const clean = text
       .replace(/```[\s\S]*?```/g, "code block")
@@ -22,13 +22,13 @@ export const useSpeechSynthesis = () => {
 
     const utterance = new SpeechSynthesisUtterance(clean);
     // More JARVIS-like: slightly lower pitch, measured pace, precise diction
-    utterance.rate = profile === "doom" ? 0.88 : 0.95;
-    utterance.pitch = profile === "doom" ? 0.65 : 0.85;
+    utterance.rate = profile === "doom" ? 0.88 : profile === "stony" ? 1.02 : 0.95;
+    utterance.pitch = profile === "doom" ? 0.65 : profile === "stony" ? 1 : 0.85;
     utterance.volume = 1;
 
     // Prefer a refined British male voice
     const voices = window.speechSynthesis.getVoices();
-    const preferred = [
+    const preferred = profile === "stony" ? ["Microsoft Guy", "Microsoft Davis", "Alex", "Google US English", "Daniel"] : [
       // Chrome/Edge high quality voices
       "Google UK English Male",
       "Microsoft Ryan Online (Natural)",
