@@ -1,5 +1,7 @@
 - [x] Resolve the React hook-queue blank screen and verify rendering.
 - [x] Add Doctor Doom mode triggered by `doom`, with green visuals and a Doom AI persona; verify activation and exit.
-- [ ] Add isolated STONY console, personal tools, persistent notes and fictional archive Easter eggs.
-- [ ] Connect STONY to existing text, speech and streaming AI; preserve previous interface on exit.
-- [ ] Test commands, persistence, real AI replies and desktop/mobile layouts.
+- [x] Add isolated STONY console, personal tools, persistent notes and fictional archive Easter eggs.
+- [x] Connect STONY to existing text, speech and streaming AI; preserve previous interface on exit.
+- [x] Separate tool drafts, finish attachment feedback and clean up radio audio resources.
+- [x] Test calendar, archives, focus, persistence, real image replies and desktop/mobile layouts.
+- [ ] Verify real microphone recognition and audible speech on the user's device (requires device access).

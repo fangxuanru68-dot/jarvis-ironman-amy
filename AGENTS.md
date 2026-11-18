@@ -4,3 +4,4 @@
 - Reset JarvisChat on Fast Refresh when its hook layout changes; development must not reuse incompatible React hook queues.
 - Keep STONY in a separately scoped console with a shared pure command parser and browser-local validated storage; its typed and spoken commands must use the existing message pipeline without resetting underlying modes.
 - Send STONY persona and vocabulary settings through the existing chat function; keep attachment capture explicit inside STONY so hidden camera state cannot leak into personal conversations.
+- Keep each STONY tool's unsaved draft separate and attachment state owned by the shared conversation; switching tools must not mix personal records or hide pending media.

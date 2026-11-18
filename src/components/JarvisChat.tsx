@@ -1416,7 +1416,7 @@ const JarvisChat = () => {
         isListening={isListening} isSpeaking={isSpeaking} isLoading={isLoading}
         voiceEnabled={voiceEnabled} onMic={toggleVoice}
         onVoice={() => { setVoiceEnabled(!voiceEnabled); stopSpeech(); }}
-        onImage={setStonyImage} imagePending={Boolean(stonyImage)}
+        onImage={setStonyImage} pendingImage={stonyImage}
       />}
 
       {/* Watermark */}
