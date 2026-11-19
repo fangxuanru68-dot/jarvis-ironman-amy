@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { STONY_REPLIES, writeStonyStore, type StonyPanel, type StonyStore } from "@/lib/stonyProtocol";
 import VintageCommandConsole from "./VintageCommandConsole";
 import StevePersonalTools from "./StevePersonalTools";
+import { NewItemsGuide, ControlDeck } from "./StonyExtras";
 import StarkPrivateArchive from "./StarkPrivateArchive";
 import brooklyn from "@/assets/stony-brooklyn.jpg";
 import "./stony.css";
@@ -90,6 +91,8 @@ export default function StonyProtocolMode(props: Props) {
         {panel === "radio" && <VintageRadio />}
         {panel === "tony" && <VintageRadio privateChannel />}
         {panel === "focus" && <FocusTimer />}
+        {panel === "items" && <NewItemsGuide onAsk={onCommand} />}
+        {panel === "control" && <ControlDeck />}
         {panel === "language" && <><h2 className="stony-stamp">LANGUAGE PROTOCOL ACTIVATED</h2><div className="stony-switch"><span>OFF</span><span className="stony-switch-on">ON</span></div><p className="stony-handwriting">{STONY_REPLIES.language}</p><Button variant="outline" onClick={() => save({ ...store, language: !store.language })}>{store.language ? "Relax vocabulary filter" : "Enable vocabulary filter"}</Button><p className="stony-label">VOCABULARY FILTER / {store.language ? "ON" : "OFF"}</p></>}
         {panel === "endurance" && <><p className="stony-label">STARK PERSONAL FIELD ASSESSMENT / FICTIONAL</p><h2>STEVEN ROGERS</h2><div className="stony-assessment"><p>ENDURANCE <strong>EXCEPTIONAL</strong></p><p>STUBBORNNESS <strong>OFF THE CHARTS</strong></p></div><p className="stony-handwriting">Yeah, I know.<br />That's what worries me.</p><Button variant="outline" onClick={() => onCommand("focus mode")}>Take a quiet moment</Button></>}
         {panel === "brooklyn" && <><p className="stony-label">BROOKLYN / AN IMAGINED ARCHIVE</p><h2>Something familiar.</h2><img src={brooklyn} alt="Original nostalgic illustration of a Brooklyn street beneath an elevated railway" width={1536} height={1024} loading="lazy" /><div className="stony-map" aria-label="Stylized fictional Brooklyn map"><span>EAST RIVER</span><span>BROOKLYN</span><span>ATLANTIC AVENUE</span></div><div className="stony-timeline"><p><strong>1930s</strong> Brownstone stoops, neighborhood shops, elevated trains.</p><p><strong>1940s</strong> A wartime city, carried here as an imagined keepsake.</p><p><strong>NOW</strong> A familiar corner, rebuilt by Stark engineering.</p></div><p className="stony-label">ORIGINAL ARTWORK / STYLIZED MAP / FICTIONAL PERSONAL NOTES, NOT HISTORICAL EVIDENCE</p></>}

@@ -1,4 +1,4 @@
-export type StonyPanel = "home" | "briefing" | "calendar" | "notes" | "missions" | "radio" | "focus" | "language" | "tony" | "endurance" | "brooklyn" | "letter";
+export type StonyPanel = "home" | "briefing" | "calendar" | "notes" | "missions" | "radio" | "focus" | "language" | "tony" | "endurance" | "brooklyn" | "letter" | "items" | "control";
 export type StonyRecord = { id: string; text: string; date: string };
 export type StonyStore = { notes: StonyRecord[]; events: StonyRecord[]; unlocked: StonyPanel[]; language: boolean };
 export type StonyCommand = { kind: "activate" | "exit" } | { kind: "panel"; panel: StonyPanel } | { kind: "note"; text: string } | { kind: "event"; date: string; text: string };
@@ -9,7 +9,7 @@ export function parseStonyCommand(text: string, active: boolean): StonyCommand |
   const command = value.toLowerCase();
   if (!active) return command === "stony" ? { kind: "activate" } : null;
   if (command === "mode end") return { kind: "exit" };
-  const panels: Record<string, StonyPanel> = { home: "home", "daily briefing": "briefing", calendar: "calendar", "personal notes": "notes", "show notes": "notes", "read notes": "notes", "mission archive": "missions", radio: "radio", "focus mode": "focus", language: "language", "where's tony": "tony", "wheres tony": "tony", "where is tony": "tony", "i can do this all day": "endurance", "show me brooklyn": "brooklyn", "i love you": "letter" };
+  const panels: Record<string, StonyPanel> = { home: "home", "daily briefing": "briefing", calendar: "calendar", "personal notes": "notes", "show notes": "notes", "read notes": "notes", "mission archive": "missions", radio: "radio", "focus mode": "focus", language: "language", "where's tony": "tony", "wheres tony": "tony", "where is tony": "tony", "i can do this all day": "endurance", "show me brooklyn": "brooklyn", "i love you": "letter", "new items": "items", control: "control" };
   if (panels[command]) return { kind: "panel", panel: panels[command] };
   const note = value.match(/^(?:save note|note|remember)\s*[:\s]\s*(.+)$/i);
   if (note?.[1]) return { kind: "note", text: note[1].trim().slice(0, 2000) };
@@ -37,6 +37,8 @@ export const STONY_REPLIES: Partial<Record<StonyPanel, string>> = {
   missions: "Opening the mission archive. These are fictional personal records, not official history.",
   radio: "An old-fashioned dial with Stark engineering underneath. Local radio-tone demo, not a live broadcast.",
   focus: "One thing at a time, Rogers. The world can wait twenty-five minutes.",
+  items: "New items. A field guide to the twenty-first century. You missed a few things, Cap. I took notes. You're welcome.",
+  control: "Control panel. Keys to the kingdom, Rogers. Try not to buy a jet by accident.",
   language: "Seriously, Steve? I built you an entire artificial intelligence and you're still policing my vocabulary?",
   tony: "If you're looking for me, Rogers, you know where to find me. Probably in the workshop. Probably making something I promised I wouldn't.",
   endurance: "Yeah, I know. That's what worries me.",
